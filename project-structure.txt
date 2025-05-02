@@ -1,0 +1,44 @@
+Project Structure Overview - JavaFX + Spring Boot
+online_store_system
+┣ controller // Accept user input and handles UI or API logic
+┃ ┣ ProductController.java
+┃ ┣ CartController.java
+┃ ┣ PaymentController.java
+┃ ┣ OrderController.java
+┃ ┗ ReviewController.java
+┣ model/entity // Contains business/domain data classes
+┃ ┣ Product.java (abstract)
+┃ ┣ Electronics.java
+┃ ┣ Clothing.java
+┃ ┣ Grocery.java
+┃ ┣ ShoppingCart.java
+┃ ┣ Payment.java
+┃ ┣ OrderHistory.java
+┃ ┗ ProductReview.java
+┣ repository // Data access layer interfaces and implementations (connects to DB)
+┃ ┣ ProductRepository.java
+┃ ┣ OrderRepository.java
+┃ ┣ PaymentRepository.java
+┃ ┗ ReviewRepository.java
+┣ service // Core business logic layer
+┃ ┣ ProductService.java
+┃ ┣ CartService.java
+┃ ┣ PaymentService.java
+┃ ┣ OrderService.java
+┃ ┗ ReviewService.java
+┣ ui // JavaFX front-end layout and controller files
+┃ ┣ MainApp.java
+┃ ┣ ProductListView.fxml
+┃ ┣ CartView.fxml
+┃ ┣ PaymentView.fxml
+┃ ┣ OrderHistoryView.fxml
+┃ ┗ ReviewView.fxml
+┣ application.properties // App-wide config settings
+┣ pom.xml // Maven build file
+┣ OnlineStoreSystemApplication.java // App entry point (main app class)
+
+Data Access Object (DAO): ProductRepository, OrderRepository, PaymentRepository, ReviewRepository
+
+Service Layer: ProductService, CartService, PaymentService, OrderService, ReviewService
+
+Controller Layer: ProductController, CartController, PaymentController, OrderController, ReviewController
