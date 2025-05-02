@@ -39,6 +39,17 @@ online_store_system
 
 Data Access Object (DAO): ProductRepository, OrderRepository, PaymentRepository, ReviewRepository
 
-Service Layer: ProductService, CartService, PaymentService, OrderService, ReviewService
+A DAO is a Java class or interface whose only job is to communicate with the database:
 
-Controller Layer: ProductController, CartController, PaymentController, OrderController, ReviewController
+- save data
+- get data
+- update data
+- delete data
+
+You use it so that your business logic doesn't contain SQL code.
+
+Now, with Spring Boot + JPA — You Don’t Write DAO Code Yourself
+Spring gives you a magic shortcut:
+
+You just create an interface that extends JpaRepository,
+and Spring writes all the SQL code for you automatically.
