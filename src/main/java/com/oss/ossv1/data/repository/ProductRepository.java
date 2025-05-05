@@ -13,6 +13,6 @@ import com.oss.ossv1.data.entity.Product;
  *
  * You can use them directly in your ProductService or ProductController.
  */
-public class ProductRepository extends JpaRepository<Product, Long> {
+public interface ProductRepository extends JpaRepository<Product, Long> {
     // You don't need to add anything here
 }

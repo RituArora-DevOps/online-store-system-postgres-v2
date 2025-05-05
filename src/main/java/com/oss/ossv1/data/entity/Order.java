@@ -19,7 +19,8 @@ public class Order {
 
     // List of products in this order
     @ManyToMany
-    @JoinTable(
+    @JoinTable( // You use @JoinTable(...) to customize the join table, like naming it order_products, and naming the join columns.
+            // Without it, JPA generates a default join table with generic names.
             name = "order_products",
             joinColumns = @JoinColumn(name = "order_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id")

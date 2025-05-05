@@ -17,7 +17,7 @@ import java.io.Serializable;
 
 public class Product implements Serializable {
     @Id
-    @Column(name = "id", nullable = false, length = 5)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @Column(name = "name", length = 50)
@@ -28,4 +28,8 @@ public class Product implements Serializable {
 
     @Column(name = "price", length = 50)
     private double price;
+
+    @Column(name = "category", nullable = false, length = 50)
+    private String category;
+
 }

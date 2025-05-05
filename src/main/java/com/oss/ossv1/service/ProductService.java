@@ -1,27 +1,29 @@
 package com.oss.ossv1.service;
 
-import com.oss.ossv1.entity.Customer;
+import com.oss.ossv1.data.entity.Product;
 import com.oss.ossv1.data.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@Service
 public class ProductService {
+
     @Autowired
     private ProductRepository productRepository;
 
-    public Iterable<Customer> listProducts() {
+    public Iterable<Product> listProducts() {
         return productRepository.findAll();
     }
 
-    public Customer getProduct(Long id) {
-        return productRepository.findById(id).get();
+    public Product getProduct(Long id) {
+        return productRepository.findById(id).orElse(null); // safer than .get()
     }
 
-    public Customer createProduct(Customer product) {
+    public Product createProduct(Product product) {
         return productRepository.save(product);
     }
 
-    public Customer updateProduct(Customer product) {
+    public Product updateProduct(Product product) {
         return productRepository.save(product);
     }
 

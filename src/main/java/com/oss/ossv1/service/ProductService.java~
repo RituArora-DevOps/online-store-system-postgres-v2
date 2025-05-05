@@ -1,6 +1,0 @@
-package com.oss.ossv1.service;
-
-import com.oss.ossv1.entity.Customer;
-import com.oss.ossv1.entity.Product;
-public class ProductService {
-}
