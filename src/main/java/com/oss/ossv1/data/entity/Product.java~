@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "Products") // match actual table name (case-insensitive for SQL Server)
+@Table(name = "products") // match actual table name (case-insensitive for SQL Server)
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @NoArgsConstructor

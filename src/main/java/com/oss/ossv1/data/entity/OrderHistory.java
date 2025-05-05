@@ -2,11 +2,12 @@ package com.oss.ossv1.data.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.LocalDateTime;
 
 import java.util.List;
 
 @Entity
-@Table(name = "order_history")
+@Table(name = "OrderHistory")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,10 +15,22 @@ public class OrderHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "history_id")
+    private Integer id;
 
-    // Store past orders
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "order_history_id")
-    private List<Order> orders;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id", nullable = false)
+    private Order order;
+
+    @Column(length = 100)
+    private String action;
+
+    @Column(name = "action_date")
+    private LocalDateTime actionDate;
+
+
 }

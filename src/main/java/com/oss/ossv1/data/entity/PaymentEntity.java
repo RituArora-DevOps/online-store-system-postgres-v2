@@ -6,7 +6,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "payment")
+@Table(name = "Payment")
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @NoArgsConstructor
@@ -15,7 +15,7 @@ public abstract class PaymentEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(nullable = false)
     private double amount;

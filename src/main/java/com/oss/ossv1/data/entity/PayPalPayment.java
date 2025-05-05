@@ -7,7 +7,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "paypal_payment")
+@Table(name = "PayPalPayment")
 @PrimaryKeyJoinColumn(name = "id") // FK to PaymentEntity
 @Data
 @NoArgsConstructor

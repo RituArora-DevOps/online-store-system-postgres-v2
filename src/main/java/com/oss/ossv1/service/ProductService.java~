@@ -15,7 +15,7 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public Product getProduct(Integer id) {
+    public Product getProduct(Long id) {
         return productRepository.findById(id).orElse(null); // safer than .get()
     }
 
@@ -27,7 +27,7 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public void deleteProduct(Integer id) {
+    public void deleteProduct(Long id) {
         productRepository.deleteById(id);
     }
 

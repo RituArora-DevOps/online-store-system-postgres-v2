@@ -7,7 +7,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "credit_card_payment")
+@Table(name = "CreditCardPayment")
 @PrimaryKeyJoinColumn(name = "id") // FK to payment table
 @Data
 @NoArgsConstructor

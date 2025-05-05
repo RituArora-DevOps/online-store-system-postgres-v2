@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "orders") // 'order' is a reserved SQL word
+@Table(name = "Orders")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,22 +15,22 @@ public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "order_id")
+    private Integer id;
 
-    // List of products in this order
-    @ManyToMany
-    @JoinTable( // You use @JoinTable(...) to customize the join table, like naming it order_products, and naming the join columns.
-            // Without it, JPA generates a default join table with generic names.
-            name = "order_products",
-            joinColumns = @JoinColumn(name = "order_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id")
-    )
-    private List<Product> products;
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
-    // Associated payment
+    @Column(nullable = false)
+    private int quantity;
+
+    @Column(name = "order_date")
+    private LocalDateTime orderDate;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "payment_id")
     private PaymentEntity payment;
 
-    private LocalDateTime orderDate;
+
 }

@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "electronics")
+@Table(name = "Electronics")
 @PrimaryKeyJoinColumn(name = "product_id") // maps inheritance to Product ID
 @Data
 @NoArgsConstructor
@@ -20,4 +20,17 @@ public class Electronics extends Product {
 
     @Column(name = "warranty_period")
     private int warrantyPeriod; // e.g. 24 months
+
+    /**
+     * Displays information about the electronic product.
+     * Includes inherited product details and warranty period.
+     */
+    @Override
+    public String displayInfo() {
+        return "Electronics Product: " + getName() + "\n" +
+                "Price: $" + String.format("%.2f", getPrice()) + "\n" +
+                "Warranty: " + warrantyPeriod + " months\n" +
+                "Description: " + getDescription();
+    }
+
 }
