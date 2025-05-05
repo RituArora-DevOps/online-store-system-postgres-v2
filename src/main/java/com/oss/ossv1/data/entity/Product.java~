@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 
 import java.io.Serializable;
 
-@Entity // Declares that this Java class is a JPA entity, meaning it maps to a table in your database.
+@Entity // 
 @Table(name = "product", schema = "dbo")
 @Inheritance(strategy = InheritanceType.JOINED) // This annotation tells JPA how to map inheritance between the base class and subclasses.
 @Data

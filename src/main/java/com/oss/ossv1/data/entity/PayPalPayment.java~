@@ -1,0 +1,37 @@
+package com.oss.ossv1.data.entity;
+
+import com.oss.ossv1.interfaces.Payment;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "paypal_payment")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class PayPalPayment implements Payment {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "paypal_email", nullable = false, length = 100)
+    private String paypalEmail;
+
+    @Column(name = "amount", nullable = false)
+    private double amount;
+
+    @Column(name = "payment_date")
+    private LocalDateTime paymentDate;
+
+    @Override
+    public boolean processPayment(double amount) {
+        this.amount = amount;
+        this.paymentDate = LocalDateTime.now();
+        System.out.println("Processed PayPal payment of $" + amount + " from " + paypalEmail);
+        return true; // Simulate success
+    }
+}
+
