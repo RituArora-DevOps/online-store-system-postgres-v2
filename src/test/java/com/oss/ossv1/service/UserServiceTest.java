@@ -44,7 +44,7 @@ class UserServiceTest {
 
             assertTrue(saved.getPasswordHash().startsWith("$2a$"));
         } catch (Exception e) {
-            System.out.println("❌ Registration failed unexpectedly: " + e.getMessage());
+            System.out.println("Registration failed unexpectedly: " + e.getMessage());
             fail();
         }
     }
@@ -56,10 +56,10 @@ class UserServiceTest {
 
         try {
             userService.registerUser(username, "test@example.com", "password");
-            System.out.println("❌ Registration should have failed but didn't.");
+            System.out.println("Registration should have failed but didn't.");
             fail();
         } catch (IllegalArgumentException e) {
-            System.out.println("✅ Correctly failed registration: " + e.getMessage());
+            System.out.println("Correctly failed registration: " + e.getMessage());
             assertEquals("Username already exists", e.getMessage());
         }
     }
@@ -75,9 +75,9 @@ class UserServiceTest {
 
         Optional<User> result = userService.loginUser(username, rawPassword);
         if (result.isPresent()) {
-            System.out.println("✅ Login successful: " + result.get().getUsername());
+            System.out.println("Login successful: " + result.get().getUsername());
         } else {
-            System.out.println("❌ Login failed unexpectedly.");
+            System.out.println("Login failed unexpectedly.");
             fail();
         }
     }
@@ -93,9 +93,9 @@ class UserServiceTest {
 
         Optional<User> result = userService.loginUser(username, rawPassword);
         if (result.isEmpty()) {
-            System.out.println("✅ Login failed correctly for wrong password.");
+            System.out.println("Login failed correctly for wrong password.");
         } else {
-            System.out.println("❌ Login should have failed, but succeeded.");
+            System.out.println("Login should have failed, but succeeded.");
             fail();
         }
     }
