@@ -1,11 +1,15 @@
 package com.oss.ossv1.gui.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Product {
     private int id;
     private String name;
     private String description;
     private double price;
     private String category;
+    private String type;
 
     // Getters and setters
     public int getId() { return id; }
@@ -22,4 +26,7 @@ public class Product {
 
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
+
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
 }

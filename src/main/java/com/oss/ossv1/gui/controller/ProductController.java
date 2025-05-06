@@ -1,18 +1,25 @@
 package com.oss.ossv1.gui.controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.oss.ossv1.gui.model.Product;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.Scanner;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.oss.ossv1.gui.model.Product;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 public class ProductController {
 
@@ -43,10 +50,6 @@ public class ProductController {
 
         // Load all products initially
         fetchProductsFromUrl("http://localhost:8080/products");
-
-        // Button listeners
-        filterButton.setOnAction(e -> onFilterClicked());
-        clearButton.setOnAction(e -> onClearClicked());
     }
 
     private void fetchProductsFromUrl(String urlString) {
@@ -54,27 +57,37 @@ public class ProductController {
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
+            connection.setConnectTimeout(5000); // 5 second timeout
 
-            Scanner scanner = new Scanner(connection.getInputStream());
-            StringBuilder json = new StringBuilder();
-            while (scanner.hasNext()) {
-                json.append(scanner.nextLine());
-            }
-            scanner.close();
+            try {
+                Scanner scanner = new Scanner(connection.getInputStream());
+                StringBuilder json = new StringBuilder();
+                while (scanner.hasNext()) {
+                    json.append(scanner.nextLine());
+                }
+                scanner.close();
 
-            ObjectMapper mapper = new ObjectMapper();
-            List<Product> productList = mapper.readValue(json.toString(), new TypeReference<>() {});
-            ObservableList<Product> observableList = FXCollections.observableArrayList(productList);
-            productTable.setItems(observableList);
-            if (observableList.isEmpty()) {
-                showAlert(Alert.AlertType.INFORMATION, "No Results", "No products found for the selected criteria.");
+                ObjectMapper mapper = new ObjectMapper();
+                List<Product> productList = mapper.readValue(json.toString(), new TypeReference<>() {});
+                ObservableList<Product> observableList = FXCollections.observableArrayList(productList);
+                productTable.setItems(observableList);
+                if (observableList.isEmpty()) {
+                    showAlert(Alert.AlertType.INFORMATION, "No Results", "No products found for the selected criteria.");
+                }
+            } catch (IOException e) {
+                showAlert(Alert.AlertType.ERROR, "Connection Error", 
+                    "Could not read data from server. Make sure the Spring Boot application is running on port 8080.");
+                e.printStackTrace();
             }
         } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Connection Error", 
+                "Could not connect to server. Make sure the Spring Boot application is running on port 8080.");
             e.printStackTrace();
         }
     }
 
-    private void onFilterClicked() {
+    @FXML
+    public void onFilterClicked() {
         String category = categoryCombo.getValue();
         String minPriceText = minPriceField.getText();
         String maxPriceText = maxPriceField.getText();
@@ -102,8 +115,8 @@ public class ProductController {
         fetchProductsFromUrl(url);
     }
 
-
-    private void onClearClicked() {
+    @FXML
+    public void onClearClicked() {
         categoryCombo.setValue(null);
         minPriceField.clear();
         maxPriceField.clear();
@@ -117,5 +130,4 @@ public class ProductController {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
 }
