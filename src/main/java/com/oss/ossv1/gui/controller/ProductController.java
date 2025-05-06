@@ -3,22 +3,19 @@ package com.oss.ossv1.gui.controller;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.oss.ossv1.gui.model.CartItem;
 import com.oss.ossv1.gui.model.Product;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 public class ProductController {
@@ -29,6 +26,7 @@ public class ProductController {
     @FXML private TableColumn<Product, String> descriptionColumn;
     @FXML private TableColumn<Product, Double> priceColumn;
     @FXML private TableColumn<Product, String> categoryColumn;
+    @FXML private TableColumn<Product, Void> actionColumn;
 
     @FXML private ComboBox<String> categoryCombo;
     @FXML private TextField minPriceField;
@@ -44,6 +42,28 @@ public class ProductController {
         descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
         categoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
+
+        actionColumn.setCellFactory(col -> new TableCell<>() {
+            private final Button addButton = new Button("Add to Cart");
+
+            {
+                addButton.setOnAction(e -> {
+                    Product selectedProduct = getTableView().getItems().get(getIndex());
+                    CartManager.addToCart(selectedProduct);
+                    System.out.println("Added to cart: " + selectedProduct.getName());
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(addButton);
+                }
+            }
+        });
 
         // Category dropdown options
         categoryCombo.getItems().addAll("clothing", "electronics", "grocery");
@@ -129,5 +149,27 @@ public class ProductController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    public static class CartManager {
+        private static final List<CartItem> cartItems = new ArrayList<>();
+
+        public static void addToCart(Product product) {
+            for (CartItem item : cartItems) {
+                if (item.getProduct().getId() == product.getId()) {
+                    item.setQuantity(item.getQuantity() + 1);
+                    return;
+                }
+            }
+            cartItems.add(new CartItem(product, 1));
+        }
+
+        public static List<CartItem> getCartItems() {
+            return cartItems;
+        }
+
+        public static void clearCart() {
+            cartItems.clear();
+        }
     }
 }

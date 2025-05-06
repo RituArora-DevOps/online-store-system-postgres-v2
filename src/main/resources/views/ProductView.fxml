@@ -23,6 +23,7 @@
             <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="200" />
             <TableColumn fx:id="priceColumn" text="Price" prefWidth="100" />
             <TableColumn fx:id="categoryColumn" text="Category" prefWidth="100" />
+            <TableColumn fx:id="actionColumn" text="Action" prefWidth="100"/>
         </columns>
     </TableView>
 </VBox>

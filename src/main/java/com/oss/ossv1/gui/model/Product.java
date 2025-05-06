@@ -1,32 +1,43 @@
 package com.oss.ossv1.gui.model;
 
+import javafx.beans.property.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Product {
-    private int id;
-    private String name;
-    private String description;
-    private double price;
-    private String category;
-    private String type;
+    private final IntegerProperty id = new SimpleIntegerProperty();
+    private final StringProperty name = new SimpleStringProperty();
+    private final StringProperty description = new SimpleStringProperty();
+    private final DoubleProperty price = new SimpleDoubleProperty();
+    private final StringProperty category = new SimpleStringProperty();
 
-    // Getters and setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public Product() {}
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public Product(int id, String name, String description, double price, String category) {
+        this.id.set(id);
+        this.name.set(name);
+        this.description.set(description);
+        this.price.set(price);
+        this.category.set(category);
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public int getId() { return id.get(); }
+    public void setId(int id) { this.id.set(id); }
+    public IntegerProperty idProperty() { return id; }
 
-    public double getPrice() { return price; }
-    public void setPrice(double price) { this.price = price; }
+    public String getName() { return name.get(); }
+    public void setName(String name) { this.name.set(name); }
+    public StringProperty nameProperty() { return name; }
 
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public String getDescription() { return description.get(); }
+    public void setDescription(String description) { this.description.set(description); }
+    public StringProperty descriptionProperty() { return description; }
 
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
+    public double getPrice() { return price.get(); }
+    public void setPrice(double price) { this.price.set(price); }
+    public DoubleProperty priceProperty() { return price; }
+
+    public String getCategory() { return category.get(); }
+    public void setCategory(String category) { this.category.set(category); }
+    public StringProperty categoryProperty() { return category; }
 }

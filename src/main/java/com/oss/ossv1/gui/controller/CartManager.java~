@@ -1,0 +1,50 @@
+package com.oss.ossv1.gui.controller;
+
+import com.oss.ossv1.gui.model.CartItem;
+import com.oss.ossv1.gui.model.Product;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
+public class CartManager {
+
+    private static CartManager instance; // singleton instance
+    private final ObservableList<CartItem> cartItems = FXCollections.observableArrayList();
+
+    private CartManager() {
+    }
+
+    public static CartManager getInstance() {
+        if (instance == null) {
+            instance = new CartManager();
+        }
+        return instance;
+    }
+
+    public ObservableList<CartItem> getCartItems() {
+        return cartItems;
+    }
+
+    public void addToCart(Product product) {
+        for (CartItem item : cartItems) {
+            if (item.getProduct().getId() == product.getId()) {
+                item.setQuantity(item.getQuantity() + 1);
+                return;
+            }
+        }
+        cartItems.add(new CartItem(product, 1));
+    }
+
+    public void removeFromCart(CartItem item) {
+        cartItems.remove(item);
+    }
+
+    public void clearCart() {
+        cartItems.clear();
+    }
+
+    public double calculateTotal() {
+        return cartItems.stream()
+                .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
+                .sum();
+    }
+}
