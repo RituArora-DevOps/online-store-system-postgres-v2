@@ -31,6 +31,4 @@ public class OrderHistory {
 
     @Column(name = "action_date")
     private LocalDateTime actionDate;
-
-
 }
