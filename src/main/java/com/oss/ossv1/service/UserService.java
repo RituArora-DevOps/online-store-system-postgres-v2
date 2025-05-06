@@ -4,7 +4,7 @@ import com.oss.ossv1.data.entity.User;
 import com.oss.ossv1.data.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import java.util.regex.Pattern;
 import java.util.Optional;
 
 @Service
@@ -21,6 +21,19 @@ public class UserService {
         if (userRepository.findByUsername(username).isPresent()) {
             throw new IllegalArgumentException("Username already exists");
         }
+
+        // Email validation
+        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        if (!Pattern.matches(emailRegex, email)) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+
+        // Password validation
+        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$";
+        if (!Pattern.matches(passwordRegex, rawPassword)) {
+            throw new IllegalArgumentException("Password must be at least 8 characters, include upper/lowercase and a number");
+        }
+
         String hashedPassword = passwordEncoder.encode(rawPassword);
         User newUser = new User(null, username, email, hashedPassword);
         userRepository.save(newUser);
