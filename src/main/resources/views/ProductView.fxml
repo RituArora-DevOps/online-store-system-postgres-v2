@@ -5,6 +5,14 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.oss.ossv1.gui.controller.ProductController" spacing="10" alignment="TOP_CENTER" padding="20">
     <Label text="Product Listing" style="-fx-font-size: 24px;" />
+    <HBox spacing="10">
+        <ComboBox fx:id="categoryCombo" promptText="Select Category"/>
+        <TextField fx:id="minPriceField" promptText="Min Price"/>
+        <TextField fx:id="maxPriceField" promptText="Max Price"/>
+        <Button fx:id="filterButton" text="Filter" onAction="#onFilterClicked"/>
+        <Button fx:id="clearButton" text="Clear" onAction="#onClearClicked"/>
+
+    </HBox>
     <TableView fx:id="productTable" prefHeight="400" prefWidth="600">
         <columns>
             <TableColumn fx:id="idColumn" text="ID" prefWidth="50" />
