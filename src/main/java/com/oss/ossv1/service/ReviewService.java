@@ -3,6 +3,8 @@ package com.oss.ossv1.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,12 +17,28 @@ import com.oss.ossv1.data.repository.ReviewRepository;
 @Service
 public class ReviewService {
     
+    private static final Logger logger = LoggerFactory.getLogger(ReviewService.class);
+    
     @Autowired
     private ReviewRepository reviewRepository;
     
     // Get all reviews
     public List<ProductReview> getAllReviews() {
-        return reviewRepository.findAll();
+        logger.info("Fetching all reviews");
+        List<ProductReview> reviews = reviewRepository.findAll();
+        logger.info("Found {} reviews", reviews.size());
+        if (reviews.isEmpty()) {
+            logger.warn("No reviews found in the database");
+        } else {
+            for (ProductReview review : reviews) {
+                logger.info("Review: id={}, productId={}, userId={}, rating={}", 
+                    review.getId(), 
+                    review.getProduct() != null ? review.getProduct().getId() : "null",
+                    review.getUser() != null ? review.getUser().getId() : "null",
+                    review.getRating());
+            }
+        }
+        return reviews;
     }
     
     // Get a review by ID
