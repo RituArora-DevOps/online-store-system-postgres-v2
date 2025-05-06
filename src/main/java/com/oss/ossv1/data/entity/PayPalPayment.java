@@ -3,6 +3,7 @@ package com.oss.ossv1.data.entity;
 import com.oss.ossv1.interfaces.Payment;
 import jakarta.persistence.*;
 import lombok.*;
+import jakarta.validation.constraints.*;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +17,8 @@ import java.time.LocalDateTime;
 public class PayPalPayment extends PaymentEntity implements Payment {
 
     @Column(name = "paypal_email", nullable = false, length = 100)
+    @NotBlank(message = "PayPal email is required")
+    @Email(message = "Invalid PayPal email format")
     private String paypalEmail;
 
     @Override

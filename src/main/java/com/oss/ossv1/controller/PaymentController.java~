@@ -5,11 +5,9 @@ import com.oss.ossv1.service.PaymentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@Validated // Enables validation for methods
 @RequestMapping("/payments")
 public class PaymentController {
 

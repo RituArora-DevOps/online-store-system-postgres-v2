@@ -3,6 +3,7 @@ package com.oss.ossv1.data.entity;
 import com.oss.ossv1.interfaces.Payment;
 import jakarta.persistence.*;
 import lombok.*;
+import jakarta.validation.constraints.*;
 
 import java.time.LocalDateTime;
 
@@ -16,13 +17,20 @@ import java.time.LocalDateTime;
 public class CreditCardPayment extends PaymentEntity implements Payment {
 
     @Column(name = "card_number", nullable = false, length = 16)
+    @NotBlank(message = "Card number is required")
+    @Pattern(regexp = "\\d{16}", message = "Card number must be 16 digits")
     private String cardNumber;
 
-    @Column(name = "expiration_date", nullable = false, length = 5) // MM/YY format
+    @Column(name = "expiration_date", nullable = false, length = 5)
+    @NotBlank(message = "Expiration date is required")
+    @Pattern(regexp = "(0[1-9]|1[0-2])\\/\\d{2}", message = "Expiration date must be in MM/YY format")
     private String expirationDate;
 
     @Column(name = "cvv", nullable = false, length = 4)
+    @NotBlank(message = "CVV is required")
+    @Pattern(regexp = "\\d{3,4}", message = "CVV must be 3 or 4 digits")
     private String cvv;
+
 
     @Override
     public boolean processPayment(double amount) {
