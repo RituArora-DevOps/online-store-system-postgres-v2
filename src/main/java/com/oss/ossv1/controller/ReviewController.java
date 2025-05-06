@@ -22,11 +22,6 @@ import com.oss.ossv1.service.ReviewService;
 
 import jakarta.validation.Valid;
 
-/**
- * The ReviewController is a Spring REST controller that handles HTTP requests related to product reviews.
- * It follows the same pattern as ProductController, delegating all business logic to the ReviewService
- * following the Service Layer Pattern.
- */
 @RestController
 @Validated
 @RequestMapping("/reviews")
