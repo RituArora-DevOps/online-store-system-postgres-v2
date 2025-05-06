@@ -26,7 +26,7 @@ class UserServiceTest {
     void testRegisterUser_successful() {
         String username = "newuser";
         String email = "user@example.com";
-        String password = "password123";
+        String password = "StrongPass1";
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
 
@@ -55,7 +55,7 @@ class UserServiceTest {
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(new User()));
 
         try {
-            userService.registerUser(username, "test@example.com", "password");
+            userService.registerUser(username, "test@example.com", "StrongPass1");
             System.out.println("Registration should have failed but didn't.");
             fail();
         } catch (IllegalArgumentException e) {
@@ -111,6 +111,42 @@ class UserServiceTest {
         } else {
             System.out.println("Login should have failed due to missing user.");
             fail();
+        }
+    }
+
+    @Test
+    void testRegisterUser_invalidEmailFormat() {
+        String badEmail = "not-an-email";
+        String username = "bademailuser";
+        String password = "StrongPass1";
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+
+        try {
+            userService.registerUser(username, badEmail, password);
+            System.out.println("Registration should have failed due to invalid email.");
+            fail();
+        } catch (IllegalArgumentException e) {
+            System.out.println("Correctly failed invalid email: " + e.getMessage());
+            assertEquals("Invalid email format", e.getMessage());
+        }
+    }
+
+    @Test
+    void testRegisterUser_weakPassword() {
+        String email = "user@example.com";
+        String username = "weakpassworduser";
+        String weakPassword = "abc";
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+
+        try {
+            userService.registerUser(username, email, weakPassword);
+            System.out.println("Registration should have failed due to weak password.");
+            fail();
+        } catch (IllegalArgumentException e) {
+            System.out.println("Correctly failed weak password: " + e.getMessage());
+            assertEquals("Password must be at least 8 characters, include upper/lowercase and a number", e.getMessage());
         }
     }
 }
