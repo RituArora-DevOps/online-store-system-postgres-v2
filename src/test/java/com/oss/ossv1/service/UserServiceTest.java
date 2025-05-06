@@ -37,7 +37,7 @@ class UserServiceTest {
             verify(userRepository).save(captor.capture());
             User saved = captor.getValue();
 
-            System.out.println("✅ Registration succeeded:");
+            System.out.println("Registration succeeded:");
             System.out.println("Username: " + saved.getUsername());
             System.out.println("Email: " + saved.getEmail());
             System.out.println("Hashed Password: " + saved.getPasswordHash());
@@ -96,6 +96,20 @@ class UserServiceTest {
             System.out.println("Login failed correctly for wrong password.");
         } else {
             System.out.println("Login should have failed, but succeeded.");
+            fail();
+        }
+    }
+
+    @Test
+    void testLoginUser_userNotFound() {
+        String username = "ghostUser";
+        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+
+        Optional<User> result = userService.loginUser(username, "anyPassword");
+        if (result.isEmpty()) {
+            System.out.println("Login failed correctly for non-existent username.");
+        } else {
+            System.out.println("Login should have failed due to missing user.");
             fail();
         }
     }
