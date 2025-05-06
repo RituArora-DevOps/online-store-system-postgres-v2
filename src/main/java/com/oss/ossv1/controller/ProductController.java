@@ -3,6 +3,7 @@ package com.oss.ossv1.controller;
 import com.oss.ossv1.data.entity.Product;
 import com.oss.ossv1.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,5 +50,17 @@ public class ProductController {
     @DeleteMapping
     public void deleteAllProducts() {
         productService.deleteAllProducts();
+    }
+
+    @GetMapping("/category/{category}") // URL: GET /products/category/electronics
+    public ResponseEntity<List<Product>> getByCategory(@PathVariable String category) { // @PathVariable: Binds {category} from the URL to the method parameter.
+        return ResponseEntity.ok(productService.getProductsByCategory(category)); // Use case: Filters products where category matches exactly.
+    }
+    @GetMapping("/price") // URL: GET /products/price?min=50&max=200
+    public ResponseEntity<List<Product>> getByPriceRange(
+            @RequestParam double min, // @RequestParam: Grabs query parameters min and max from the URL.
+            @RequestParam double max
+    ) {
+        return ResponseEntity.ok(productService.getProductsByPriceRange(min, max)); // Use case: Filters products within a price range.
     }
 }

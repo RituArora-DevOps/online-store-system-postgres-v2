@@ -5,6 +5,8 @@ import com.oss.ossv1.data.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 /**
  * Instead of calling the repository directly from the controller,
@@ -41,6 +43,12 @@ public class ProductService {
 
     public void deleteAllProducts() {
         productRepository.deleteAll();
+    }
+    public List<Product> getProductsByCategory(String category) {
+        return productRepository.findByCategory(category);
+    }
+    public List<Product> getProductsByPriceRange(double min, double max) {
+        return productRepository.findByPriceBetween(min, max);
     }
 }
 

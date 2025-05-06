@@ -9,6 +9,24 @@ import lombok.AllArgsConstructor;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+// JSON polymorphic handling via @JsonTypeInfo to support multiple product types.
+// Added to avoid Jackson deserialization failure for abstract classes
+// Jackson (the JSON parser used by Spring Boot) cannot instantiate abstract classes —
+// it needs to know the concrete subclass, like Clothing, Electronics, or Grocery.
+// If we want to send JSON to /products and we allow it to dynamically become a subclass
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Clothing.class, name = "clothing"),
+        @JsonSubTypes.Type(value = Electronics.class, name = "electronics"),
+        @JsonSubTypes.Type(value = Grocery.class, name = "grocery")
+})
 @Entity
 @Table(name = "Products") // match actual table name (case-insensitive for SQL Server)
 @Inheritance(strategy = InheritanceType.JOINED)
