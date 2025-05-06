@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Min;
 
 @Entity
 @Table(name = "Electronics")
@@ -19,7 +20,8 @@ import lombok.NoArgsConstructor;
 public class Electronics extends Product {
 
     @Column(name = "warranty_period")
-    private int warrantyPeriod; // e.g. 24 months
+    @Min(value = 0, message = "Warranty period must be a non-negative number")
+    private int warrantyPeriod;
 
     /**
      * Displays information about the electronic product.

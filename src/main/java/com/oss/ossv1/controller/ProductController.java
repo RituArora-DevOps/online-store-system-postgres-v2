@@ -2,8 +2,10 @@ package com.oss.ossv1.controller;
 
 import com.oss.ossv1.data.entity.Product;
 import com.oss.ossv1.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.List;
  * which keeps your controller clean and focused only on request/response handling.
  */
 @RestController // Tells Spring this class handles HTTP REST endpoints and returns JSON.
+@Validated // Enables validation for methods
 @RequestMapping("/products") // All endpoints will be prefixed with /products.
 public class ProductController {
 
@@ -32,7 +35,7 @@ public class ProductController {
     }
 
     @PostMapping // Handles POST /products
-    public Product createProduct(@RequestBody Product product) { // @RequestBody tells Spring to convert incoming JSON into a Product object.
+    public Product createProduct(@RequestBody @Valid Product product) { // @RequestBody tells Spring to convert incoming JSON into a Product object.
         return productService.createProduct(product); // Then it's passed to the service to be saved.
     }
 

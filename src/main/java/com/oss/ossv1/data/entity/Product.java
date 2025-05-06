@@ -1,7 +1,10 @@
 package com.oss.ossv1.data.entity;
 
 import com.oss.ossv1.interfaces.Discountable;
-import jakarta.persistence.*;  // Use Jakarta if using Spring Boot 3.x+, else javax.*
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*; // server-side validation using Jakarta Bean Validation annotations Hibernate Validator
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,14 +12,6 @@ import lombok.AllArgsConstructor;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
-// JSON polymorphic handling via @JsonTypeInfo to support multiple product types.
-// Added to avoid Jackson deserialization failure for abstract classes
-// Jackson (the JSON parser used by Spring Boot) cannot instantiate abstract classes —
-// it needs to know the concrete subclass, like Clothing, Electronics, or Grocery.
-// If we want to send JSON to /products and we allow it to dynamically become a subclass
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,
@@ -28,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = Grocery.class, name = "grocery")
 })
 @Entity
-@Table(name = "Products") // match actual table name (case-insensitive for SQL Server)
+@Table(name = "Products")
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @NoArgsConstructor
@@ -40,15 +35,21 @@ public abstract class Product implements Serializable, Discountable {
     @Column(name = "product_id", nullable = false)
     private Integer id;
 
-    @Column(name = "name", length = 100, nullable = false) // updated to 100 as per SQL
+    @NotBlank(message = "Product name is required")
+    @Size(max = 100, message = "Product name must be at most 100 characters")
+    @Column(name = "name", length = 100, nullable = false)
     private String name;
 
+    @Size(max = 255, message = "Description must be at most 255 characters")
     @Column(name = "description", length = 255)
     private String description;
 
+    @Min(value = 0, message = "Price must be non-negative")
     @Column(name = "price", nullable = false)
     private double price;
 
+    @NotBlank(message = "Category is required")
+    @Size(max = 50, message = "Category must be at most 50 characters")
     @Column(name = "category", nullable = false, length = 50)
     private String category;
 
@@ -61,5 +62,4 @@ public abstract class Product implements Serializable, Discountable {
     }
 
     public abstract String displayInfo();
-
 }

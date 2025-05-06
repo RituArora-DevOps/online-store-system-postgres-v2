@@ -6,6 +6,9 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotNull;
+
 @Entity
 @Table(name = "Grocery")
 @PrimaryKeyJoinColumn(name = "product_id")
@@ -16,6 +19,8 @@ import java.time.format.DateTimeFormatter;
 public class Grocery extends Product {
 
     @Column(name = "expiration_date")
+    @NotNull(message = "Expiration date is required")
+    @Future(message = "Expiration date must be in the future")
     private LocalDate expiryDate;
 
     /**
