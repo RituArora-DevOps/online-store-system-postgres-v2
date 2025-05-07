@@ -32,4 +32,15 @@ public class OrderItem {
     @PositiveOrZero(message = "Price must be 0 or more")
     @Column(nullable = false)
     private double priceAtOrder;
+
+    // --- GUI-specific getters ---
+
+    public String getProductName() {
+        return product != null ? product.getName() : "N/A";
+    }
+
+    public double getSubtotal() {
+        return quantity * priceAtOrder;
+    }
+
 }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx"
+            fx:controller="com.oss.ossv1.gui.controller.OrderHistoryController">
+    <VBox spacing="12" prefWidth="700.0" prefHeight="500.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"
+          AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" style="-fx-padding: 20;">
+
+        <Label text="Your Order History:" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+
+        <TableView fx:id="orderTable" prefHeight="400.0">
+            <columns>
+                <TableColumn fx:id="colOrderId" text="Order ID" prefWidth="100"/>
+                <TableColumn fx:id="colDate" text="Date" prefWidth="150"/>
+                <TableColumn fx:id="colAmount" text="Total Amount" prefWidth="120"/>
+                <TableColumn fx:id="colAction" text="Action" prefWidth="130"/>
+            </columns>
+        </TableView>
+
+        <Button text="Back to Dashboard" onAction="#handleBack"/>
+    </VBox>
+</AnchorPane>

@@ -34,4 +34,11 @@ public class Order {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "payment_id")
     private PaymentEntity payment;
+
+    // Added method for JavaFX table binding
+    public double getTotalAmount() {
+        return items != null
+                ? items.stream().mapToDouble(OrderItem::getSubtotal).sum()
+                : 0.0;
+    }
 }

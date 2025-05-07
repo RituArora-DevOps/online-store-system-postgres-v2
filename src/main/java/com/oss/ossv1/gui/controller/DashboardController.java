@@ -1,5 +1,7 @@
 package com.oss.ossv1.gui.controller;
 
+import com.oss.ossv1.LoginPage;
+import com.oss.ossv1.service.OrderService;
 import com.oss.ossv1.session.UserSession;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -59,8 +61,29 @@ public class DashboardController {
 
     @FXML
     public void navigateToOrders() {
-        showNotImplementedAlert("Orders functionality");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/OrderHistoryView.fxml"));
+            Parent root = loader.load();
+
+            // Inject Spring-managed OrderService
+            OrderHistoryController controller = loader.getController();
+            OrderService orderService = LoginPage.springContext.getBean(OrderService.class);
+            controller.setOrderService(orderService);
+
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
+
+            Stage stage = (Stage) rootPane.getScene().getWindow();
+            stage.setTitle("Your Orders");
+            stage.setScene(scene);
+            System.out.println("Successfully navigated to Order History view");
+        } catch (Exception e) {
+            System.err.println("Error loading OrderHistoryView.fxml: " + e.getMessage());
+            e.printStackTrace();
+            showError("Navigation Error", "Unable to load Order History view. Error: " + e.getMessage());
+        }
     }
+
 
     @FXML
     public void navigateToProfile() {
