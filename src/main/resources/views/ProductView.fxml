@@ -26,4 +26,7 @@
             <TableColumn fx:id="actionColumn" text="Action" prefWidth="100"/>
         </columns>
     </TableView>
+    <HBox alignment="CENTER" spacing="10">
+        <Button text="View Cart" onAction="#handleViewCart"/>
+    </HBox>
 </VBox>

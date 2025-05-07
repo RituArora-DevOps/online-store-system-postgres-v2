@@ -5,7 +5,10 @@
 <?import javafx.geometry.Insets?>
 
 <VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.oss.ossv1.gui.controller.CartController"
-      spacing="10" alignment="TOP_CENTER" padding="20">
+      spacing="10" alignment="TOP_CENTER">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
 
     <Label text="Your Shopping Cart" style="-fx-font-size: 24px;"/>
 
@@ -20,7 +23,7 @@
 
     <HBox spacing="10" alignment="CENTER_RIGHT">
         <Label text="Total: " style="-fx-font-size: 16px;"/>
-        <Label fx:id="totalLabel" text="$0.00" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+        <Label fx:id="totalLabel" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
     </HBox>
 
     <HBox spacing="10" alignment="CENTER">
@@ -28,5 +31,4 @@
         <Button fx:id="checkoutButton" text="Checkout"/>
         <Button fx:id="backButton" text="Continue Shopping"/>
     </HBox>
-
 </VBox>

@@ -1,5 +1,7 @@
 package com.oss.ossv1.gui.controller;
 
+import com.oss.ossv1.gui.controller.CartManager;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -15,8 +17,11 @@ import com.oss.ossv1.gui.model.Product;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 
 public class ProductController {
 
@@ -49,7 +54,7 @@ public class ProductController {
             {
                 addButton.setOnAction(e -> {
                     Product selectedProduct = getTableView().getItems().get(getIndex());
-                    CartManager.addToCart(selectedProduct);
+                    CartManager.getInstance().addToCart(selectedProduct);
                     System.out.println("Added to cart: " + selectedProduct.getName());
                 });
             }
@@ -151,25 +156,17 @@ public class ProductController {
         alert.showAndWait();
     }
 
-    public static class CartManager {
-        private static final List<CartItem> cartItems = new ArrayList<>();
-
-        public static void addToCart(Product product) {
-            for (CartItem item : cartItems) {
-                if (item.getProduct().getId() == product.getId()) {
-                    item.setQuantity(item.getQuantity() + 1);
-                    return;
-                }
-            }
-            cartItems.add(new CartItem(product, 1));
-        }
-
-        public static List<CartItem> getCartItems() {
-            return cartItems;
-        }
-
-        public static void clearCart() {
-            cartItems.clear();
+    @FXML
+    private void handleViewCart() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/CartView.fxml"));
+            Scene scene = new Scene(loader.load());
+            Stage stage = (Stage) productTable.getScene().getWindow();
+            stage.setScene(scene);
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Unable to load Cart view.");
         }
     }
+
 }

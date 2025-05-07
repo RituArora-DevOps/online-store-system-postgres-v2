@@ -11,8 +11,10 @@ public class ProductApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ProductView.fxml"));
         Scene scene = new Scene(loader.load(), 800, 600);
+        scene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
         primaryStage.setTitle("Online Store - Product Browser");
         primaryStage.setScene(scene);
         primaryStage.show();

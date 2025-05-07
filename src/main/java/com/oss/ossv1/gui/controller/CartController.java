@@ -4,7 +4,12 @@ import com.oss.ossv1.gui.model.CartItem;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class CartController {
 
@@ -44,8 +49,11 @@ public class CartController {
         quantityColumn.setCellValueFactory(data -> data.getValue().quantityProperty().asObject());
         totalColumn.setCellValueFactory(data -> data.getValue().totalPriceProperty().asObject());
 
-        cartItemList = FXCollections.observableArrayList(CartManager.getInstance().getCartItems());
+        cartItemList = CartManager.getInstance().getCartItems(); // use the live observable list
+
         cartTable.setItems(cartItemList);
+        System.out.println("Cart items: " + cartItemList.size());
+        cartItemList.forEach(item -> System.out.println(item.getProduct().getName() + " x " + item.getQuantity()));
 
         updateTotal();
 
@@ -79,11 +87,19 @@ public class CartController {
     }
 
     private void handleBack() {
-        // Navigate back to Product view (implement via scene switch)
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Back");
-        alert.setHeaderText(null);
-        alert.setContentText("Going back to product listing...");
-        alert.showAndWait();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ProductView.fxml"));
+            Scene productScene = new Scene(loader.load());
+            Stage stage = (Stage) cartTable.getScene().getWindow();
+            stage.setScene(productScene);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Navigation Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Unable to return to the product listing.");
+            alert.showAndWait();
+        }
     }
+
 }
