@@ -29,6 +29,7 @@
     <HBox spacing="10" alignment="CENTER">
         <Button fx:id="removeButton" text="Remove Selected"/>
         <Button fx:id="checkoutButton" text="Checkout"/>
+        <Button text="Back to Dashboard" onAction="#handleBackToDashboard"/>
         <Button fx:id="backButton" text="Continue Shopping"/>
     </HBox>
 </VBox>

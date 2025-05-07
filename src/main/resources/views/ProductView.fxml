@@ -28,5 +28,6 @@
     </TableView>
     <HBox alignment="CENTER" spacing="10">
         <Button text="View Cart" onAction="#handleViewCart"/>
+        <Button text="Back to Dashboard" onAction="#handleBackToDashboard"/>
     </HBox>
 </VBox>

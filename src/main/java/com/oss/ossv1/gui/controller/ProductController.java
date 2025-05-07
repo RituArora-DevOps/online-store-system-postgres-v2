@@ -169,4 +169,18 @@ public class ProductController {
         }
     }
 
+    @FXML
+    private void handleBackToDashboard() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/DashboardView.fxml"));
+            Scene scene = new Scene(loader.load());
+            Stage stage = (Stage) productTable.getScene().getWindow();
+            stage.setScene(scene);
+            stage.setTitle("Dashboard");
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load Dashboard view.");
+        }
+    }
+
 }
