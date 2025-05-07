@@ -35,3 +35,35 @@
     -fx-border-color: #ddd;
     -fx-padding: 5;
 }
+
+/* Dashboard Styles */
+.dashboard-tile {
+    -fx-background-color: white;
+    -fx-padding: 20;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 3);
+    -fx-min-width: 200;
+    -fx-min-height: 150;
+    -fx-alignment: center;
+    -fx-spacing: 10;
+    -fx-cursor: hand;
+}
+
+.dashboard-tile:hover {
+    -fx-background-color: #f8f9fa;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 15, 0, 0, 5);
+    -fx-translate-y: -2;
+}
+
+.tile-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.tile-description {
+    -fx-font-size: 14px;
+    -fx-text-fill: #7f8c8d;
+    -fx-text-alignment: center;
+    -fx-wrap-text: true;
+}
