@@ -19,42 +19,54 @@
 
             <!-- Logout Row -->
             <HBox spacing="20" alignment="CENTER_RIGHT">
-                <Button text="Logout" onAction="#handleLogout" />
+                <Button text="Logout" onAction="#handleLogout" styleClass="nav-button"/>
             </HBox>
         </VBox>
     </top>
 
+    <left>
+        <VBox styleClass="sidebar" spacing="10" style="-fx-background-color: #34495e; -fx-padding: 10;">
+            <Button text="Dashboard" onAction="#loadDashboard" styleClass="nav-button" maxWidth="Infinity"/>
+            <Button text="Products" onAction="#navigateToProducts" styleClass="nav-button" maxWidth="Infinity"/>
+            <Button text="Shopping Cart" onAction="#navigateToCart" styleClass="nav-button" maxWidth="Infinity"/>
+            <Button text="Orders" onAction="#navigateToOrders" styleClass="nav-button" maxWidth="Infinity"/>
+            <Button text="Profile" onAction="#navigateToProfile" styleClass="nav-button" maxWidth="Infinity"/>
+        </VBox>
+    </left>
     
     <center>
-        <GridPane alignment="CENTER" hgap="20" vgap="20">
-            <padding>
-                <Insets top="40" right="40" bottom="40" left="40"/>
-            </padding>
-            
-            <!-- Products Tile -->
-            <VBox styleClass="dashboard-tile" onMouseClicked="#navigateToProducts" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                <Label text="Products" styleClass="tile-title"/>
-                <Text text="Browse and manage products" styleClass="tile-description"/>
-            </VBox>
-            
-            <!-- Cart Tile -->
-            <VBox styleClass="dashboard-tile" onMouseClicked="#navigateToCart" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                <Label text="Shopping Cart" styleClass="tile-title"/>
-                <Text text="View and manage your cart" styleClass="tile-description"/>
-            </VBox>
-            
-            <!-- Orders Tile -->
-            <VBox styleClass="dashboard-tile" onMouseClicked="#navigateToOrders" GridPane.columnIndex="0" GridPane.rowIndex="1">
-                <Label text="Orders" styleClass="tile-title"/>
-                <Text text="Track your orders" styleClass="tile-description"/>
-            </VBox>
-            
-            <!-- Profile Tile -->
-            <VBox styleClass="dashboard-tile" onMouseClicked="#navigateToProfile" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                <Label text="Profile" styleClass="tile-title"/>
-                <Text text="Manage your account" styleClass="tile-description"/>
-            </VBox>
-        </GridPane>
+        <StackPane fx:id="contentArea">
+            <!-- Default Dashboard Content -->
+            <GridPane alignment="CENTER" hgap="20" vgap="20">
+                <padding>
+                    <Insets top="40" right="40" bottom="40" left="40"/>
+                </padding>
+                
+                <!-- Products Tile -->
+                <VBox styleClass="dashboard-tile" onMouseClicked="#navigateToProducts" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <Label text="Products" styleClass="tile-title"/>
+                    <Text text="Browse and manage products" styleClass="tile-description"/>
+                </VBox>
+                
+                <!-- Cart Tile -->
+                <VBox styleClass="dashboard-tile" onMouseClicked="#navigateToCart" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <Label text="Shopping Cart" styleClass="tile-title"/>
+                    <Text text="View and manage your cart" styleClass="tile-description"/>
+                </VBox>
+                
+                <!-- Orders Tile -->
+                <VBox styleClass="dashboard-tile" onMouseClicked="#navigateToOrders" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <Label text="Orders" styleClass="tile-title"/>
+                    <Text text="Track your orders" styleClass="tile-description"/>
+                </VBox>
+                
+                <!-- Profile Tile -->
+                <VBox styleClass="dashboard-tile" onMouseClicked="#navigateToProfile" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <Label text="Profile" styleClass="tile-title"/>
+                    <Text text="Manage your account" styleClass="tile-description"/>
+                </VBox>
+            </GridPane>
+        </StackPane>
     </center>
     
     <bottom>

@@ -34,7 +34,70 @@
 .combo-box, .text-field {
     -fx-background-radius: 5;
     -fx-border-color: #ddd;
+    -fx-border-radius: 5;
     -fx-padding: 5;
+    -fx-font-size: 14px;
+}
+
+.combo-box:hover, .text-field:hover {
+    -fx-border-color: #3498db;
+}
+
+.combo-box:focused, .text-field:focused {
+    -fx-border-color: #3498db;
+    -fx-border-width: 2;
+}
+
+.combo-box .list-cell {
+    -fx-padding: 8 12;
+    -fx-text-fill: #2c3e50;
+}
+
+.combo-box .list-view {
+    -fx-background-color: white;
+    -fx-background-radius: 5;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 5;
+    -fx-padding: 2;
+}
+
+.combo-box .list-view .list-cell {
+    -fx-padding: 8 12;
+    -fx-background-color: transparent;
+}
+
+.combo-box .list-view .list-cell:hover {
+    -fx-background-color: #f5f6fa;
+}
+
+.combo-box .list-view .list-cell:selected {
+    -fx-background-color: #ecf0f1;
+    -fx-text-fill: #2c3e50;
+}
+
+/* Navigation Styles */
+.sidebar {
+    -fx-min-width: 200px;
+    -fx-pref-width: 200px;
+    -fx-max-width: 200px;
+    -fx-background-color: #34495e;
+}
+
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 10 15;
+    -fx-cursor: hand;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.nav-button:hover {
+    -fx-background-color: #2c3e50;
+}
+
+.nav-button:pressed {
+    -fx-background-color: #2980b9;
 }
 
 /* Dashboard Styles */
