@@ -24,6 +24,7 @@
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-background-radius: 5px;
+    -fx-transition: background-color 0.3s ease;
 }
 
 .button:hover {
@@ -47,18 +48,26 @@
     -fx-alignment: center;
     -fx-spacing: 10;
     -fx-cursor: hand;
+    -fx-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .dashboard-tile:hover {
     -fx-background-color: #f8f9fa;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 15, 0, 0, 5);
-    -fx-translate-y: -2;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 20, 0, 0, 8);
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+    -fx-translate-y: -3;
 }
 
 .tile-title {
     -fx-font-size: 20px;
     -fx-font-weight: bold;
     -fx-text-fill: #2c3e50;
+    -fx-transition: all 0.3s ease;
+}
+
+.dashboard-tile:hover .tile-title {
+    -fx-text-fill: #2980b9;
 }
 
 .tile-description {
@@ -66,4 +75,9 @@
     -fx-text-fill: #7f8c8d;
     -fx-text-alignment: center;
     -fx-wrap-text: true;
+    -fx-transition: all 0.3s ease;
+}
+
+.dashboard-tile:hover .tile-description {
+    -fx-text-fill: #34495e;
 }
