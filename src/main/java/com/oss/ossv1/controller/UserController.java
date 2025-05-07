@@ -1,4 +1,7 @@
 package com.oss.ossv1.controller;
+import com.oss.ossv1.dto.UserDTO;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import com.oss.ossv1.data.entity.User;
 import com.oss.ossv1.service.UserService;
@@ -29,10 +32,15 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam String username,
-                        @RequestParam String password) {
+    public ResponseEntity<Object> login(@RequestParam String username,
+                                        @RequestParam String password) {
         Optional<User> userOpt = userService.loginUser(username, password);
-        return userOpt.map(user -> "Login successful: Welcome " + user.getUsername())
-                .orElse("Login failed: Invalid credentials.");
+
+        if (userOpt.isPresent()) {
+            return ResponseEntity.ok(new UserDTO(userOpt.get()));
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Login failed: Invalid credentials.");
+        }
     }
 }

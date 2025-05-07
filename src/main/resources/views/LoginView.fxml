@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.oss.ossv1.gui.controller.LoginController"
+            prefWidth="400" prefHeight="300">
+    <VBox alignment="CENTER" spacing="15" layoutX="50" layoutY="50" AnchorPane.leftAnchor="50" AnchorPane.rightAnchor="50" AnchorPane.topAnchor="50" AnchorPane.bottomAnchor="50">
+        <Label text="User Login" style="-fx-font-size: 20px;"/>
+        <TextField fx:id="usernameField" promptText="Username"/>
+        <PasswordField fx:id="passwordField" promptText="Password"/>
+        <Label fx:id="messageLabel" textFill="red"/>
+        <Button text="Login" onAction="#handleLogin"/>
+        <Hyperlink text="Register" onAction="#switchToRegister"/>
+    </VBox>
+</AnchorPane>

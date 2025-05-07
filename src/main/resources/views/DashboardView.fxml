@@ -7,14 +7,23 @@
 
 <BorderPane fx:id="rootPane" xmlns:fx="http://javafx.com/fxml" fx:controller="com.oss.ossv1.gui.controller.DashboardController">
     <top>
-        <VBox alignment="CENTER" spacing="20" style="-fx-background-color: #2c3e50;">
+        <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #2c3e50;">
             <padding>
-                <Insets top="20" right="20" bottom="20" left="20"/>
+                <Insets top="20" right="20" bottom="10" left="20"/>
             </padding>
-            <Label text="Online Store System" style="-fx-font-size: 28px; -fx-text-fill: white;"/>
-            <Label text="Welcome to your dashboard" style="-fx-font-size: 16px; -fx-text-fill: #ecf0f1;"/>
+
+            <!-- Title -->
+            <Label text="Online Store System" style="-fx-font-size: 28px; -fx-text-fill: white;" />
+            <Label fx:id="dashboardWelcomeLabel" style="-fx-font-size: 16px; -fx-text-fill: #ecf0f1;" />
+
+
+            <!-- Logout Row -->
+            <HBox spacing="20" alignment="CENTER_RIGHT">
+                <Button text="Logout" onAction="#handleLogout" />
+            </HBox>
         </VBox>
     </top>
+
     
     <center>
         <GridPane alignment="CENTER" hgap="20" vgap="20">
