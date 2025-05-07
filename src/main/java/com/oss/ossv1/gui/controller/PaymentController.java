@@ -1,6 +1,10 @@
 package com.oss.ossv1.gui.controller;
 
+import com.oss.ossv1.LoginPage;
+import com.oss.ossv1.data.entity.CreditCardPayment;
+import com.oss.ossv1.data.entity.PayPalPayment;
 import com.oss.ossv1.gui.model.PaymentModel;
+import com.oss.ossv1.service.PaymentService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -30,11 +34,13 @@ public class PaymentController {
 
     private final PaymentModel model = new PaymentModel();
 
+    // Spring service
+    private final PaymentService paymentService = LoginPage.springContext.getBean(PaymentService.class);
+
     @FXML
     public void initialize() {
         paymentMethodCombo.getItems().addAll("CreditCard", "PayPal");
 
-        // Bind visibility
         paymentMethodCombo.setOnAction(e -> {
             String selected = paymentMethodCombo.getValue();
             model.setPaymentMethod(selected);
@@ -68,7 +74,16 @@ public class PaymentController {
                 return;
             }
 
-            System.out.println("Processed Credit Card payment of $" + model.getAmount());
+            // Save to backend
+            CreditCardPayment payment = new CreditCardPayment(
+                    model.getCardNumber(),
+                    model.getExpirationDate(),
+                    model.getCvv()
+            );
+            payment.setAmount(model.getAmount());
+            payment.setPaymentDate(model.getPaymentDate());
+
+            paymentService.createCreditCardPayment(payment);
             success = true;
 
         } else if ("PayPal".equals(method)) {
@@ -79,7 +94,13 @@ public class PaymentController {
                 return;
             }
 
-            System.out.println("Processed PayPal payment of $" + model.getAmount());
+            // Save to backend
+            PayPalPayment payment = new PayPalPayment();
+            payment.setPaypalEmail(model.getPaypalEmail());
+            payment.setAmount(model.getAmount());
+            payment.setPaymentDate(model.getPaymentDate());
+
+            paymentService.createPayPalPayment(payment);
             success = true;
 
         } else {
@@ -88,13 +109,9 @@ public class PaymentController {
         }
 
         if (success) {
-            // 1. Clear the cart
             CartManager.getInstance().clearCart();
+            showAlert(Alert.AlertType.INFORMATION, "Success", "Payment processed and saved!");
 
-            // 2. Show success message
-            showAlert(Alert.AlertType.INFORMATION, "Success", "Payment processed successfully!");
-
-            // 3. Switch to product listing
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/PaymentSuccessView.fxml"));
                 Scene scene = new Scene(loader.load());
@@ -119,4 +136,33 @@ public class PaymentController {
     public void setAmount(double amount) {
         amountField.setText(String.format("%.2f", amount));
     }
+
+    @FXML
+    private void handleBackToProducts() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ProductView.fxml"));
+            Scene scene = new Scene(loader.load());
+            Stage stage = (Stage) payButton.getScene().getWindow();
+            stage.setScene(scene);
+            stage.setTitle("Product Listing");
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load Product view.");
+        }
+    }
+
+    @FXML
+    private void handleBackToDashboard() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/DashboardView.fxml"));
+            Scene scene = new Scene(loader.load());
+            Stage stage = (Stage) payButton.getScene().getWindow();
+            stage.setScene(scene);
+            stage.setTitle("Dashboard");
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load Dashboard view.");
+        }
+    }
+
 }

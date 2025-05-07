@@ -38,6 +38,10 @@
         <TextField fx:id="paypalEmailField" promptText="PayPal Email"/>
     </VBox>
 
-    <Button fx:id="payButton" text="Pay Now" styleClass="pay-button"/>
+    <HBox spacing="10" alignment="CENTER">
+        <Button fx:id="backToProductsButton" text="Back to Products" onAction="#handleBackToProducts"/>
+        <Button fx:id="backToDashboardButton" text="Back to Dashboard" onAction="#handleBackToDashboard"/>
+        <Button fx:id="payButton" text="Pay Now" styleClass="pay-button"/>
+    </HBox>
 
 </VBox>
