@@ -1,19 +1,37 @@
 package com.oss.ossv1.gui.controller;
 
-import java.io.IOException;
-
+import com.oss.ossv1.session.UserSession;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+
 public class DashboardController {
 
+    @FXML private BorderPane rootPane;
+    @FXML private Label dashboardWelcomeLabel;
+
     @FXML
-    private BorderPane rootPane;
+    public void initialize() {
+        try {
+            if (UserSession.getInstance().isLoggedIn()) {
+                String username = UserSession.getInstance().getUser().getUsername();
+                dashboardWelcomeLabel.setText("Welcome to your dashboard, " + username + ".");
+            } else {
+                dashboardWelcomeLabel.setText("Welcome to your dashboard.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            dashboardWelcomeLabel.setText("Welcome to your dashboard.");
+        }
+    }
+
 
     @FXML
     public void navigateToProducts() {
@@ -22,7 +40,7 @@ public class DashboardController {
             Parent root = loader.load();
             Scene scene = new Scene(root);
             scene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
-            
+
             Stage stage = (Stage) rootPane.getScene().getWindow();
             stage.setTitle("Products");
             stage.setScene(scene);
@@ -41,15 +59,38 @@ public class DashboardController {
 
     @FXML
     public void navigateToOrders() {
-        // TODO: Implement Orders view
         showNotImplementedAlert("Orders functionality");
     }
 
     @FXML
     public void navigateToProfile() {
-        // TODO: Implement Profile view
         showNotImplementedAlert("Profile functionality");
     }
+
+    @FXML
+    public void handleLogout() {
+        UserSession.getInstance().clear();
+
+        try {
+            Parent loginRoot = FXMLLoader.load(getClass().getResource("/views/LoginView.fxml"));
+            Scene loginScene = new Scene(loginRoot);
+
+            Stage stage = (Stage) rootPane.getScene().getWindow();
+            stage.setTitle("Login");
+            stage.setScene(loginScene);
+
+            // Force resize to match login view's preferred size
+            stage.setWidth(400);
+            stage.setHeight(300);
+            stage.setMinWidth(400);
+            stage.setMinHeight(300);
+            stage.centerOnScreen();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void loadView(String fxmlPath, String title) {
         try {
@@ -57,7 +98,7 @@ public class DashboardController {
             Parent root = loader.load();
             Scene scene = new Scene(root);
             scene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
-            
+
             Stage stage = (Stage) rootPane.getScene().getWindow();
             stage.setTitle(title);
             stage.setScene(scene);
@@ -82,4 +123,4 @@ public class DashboardController {
         alert.setContentText(message);
         alert.showAndWait();
     }
-} 
+}
