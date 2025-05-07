@@ -1,10 +1,16 @@
-/**
- *
-
 package com.oss.ossv1.data.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "CartItem")
@@ -17,16 +23,18 @@ public class CartItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    // Relationship with product
+    @Column(name = "quantity", nullable = false)
+    private int quantity;
+
+    @ManyToOne
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
+
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    private int quantity;
-
-    // Many cart items belong to one cart
-    @ManyToOne
-    @JoinColumn(name = "cart_id")
-    private Cart cart;
+    public double getTotalPrice() {
+        return product.getPrice() * quantity;
+    }
 }
- */
