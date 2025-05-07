@@ -118,4 +118,17 @@ public class CartController {
         }
     }
 
+    @FXML
+    private void handleBackToDashboard() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/DashboardView.fxml"));
+            Scene scene = new Scene(loader.load());
+            Stage stage = (Stage) cartTable.getScene().getWindow();
+            scene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
+            stage.setTitle("Dashboard");
+            stage.setScene(scene);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
