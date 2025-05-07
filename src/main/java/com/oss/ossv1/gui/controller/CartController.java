@@ -79,11 +79,27 @@ public class CartController {
     }
 
     private void handleCheckout() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Checkout");
-        alert.setHeaderText("Payment Process");
-        alert.setContentText("Checkout feature not implemented yet.");
-        alert.showAndWait();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/PaymentView.fxml"));
+            Scene scene = new Scene(loader.load());
+
+            // Get controller and pass the amount
+            PaymentController controller = loader.getController();
+            double total = CartManager.getInstance().calculateTotal();
+            controller.setAmount(total);
+
+            Stage stage = (Stage) cartTable.getScene().getWindow();
+            stage.setScene(scene);
+            stage.setTitle("Payment");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Unable to load payment screen");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        }
     }
 
     private void handleBack() {

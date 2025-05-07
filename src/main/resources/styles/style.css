@@ -81,3 +81,30 @@
 .dashboard-tile:hover .tile-description {
     -fx-text-fill: #34495e;
 }
+
+.payment-root {
+    -fx-background-color: linear-gradient(to bottom, #f9f9f9, #e8ecf1);
+    -fx-padding: 20;
+    -fx-font-size: 14px;
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+.heading {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.section-label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #34495e;
+}
+
+.pay-button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 5;
+}

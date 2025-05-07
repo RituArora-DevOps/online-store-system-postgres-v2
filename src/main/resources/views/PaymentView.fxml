@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.oss.ossv1.gui.controller.PaymentController"
+      spacing="15" alignment="TOP_CENTER" styleClass="payment-root">
+
+    <padding>
+        <Insets top="20" right="30" bottom="20" left="30"/>
+    </padding>
+
+    <Label text="Checkout Payment" styleClass="heading"/>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Amount:"/>
+        <TextField fx:id="amountField" promptText="Enter total amount"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Payment Method:"/>
+        <ComboBox fx:id="paymentMethodCombo" promptText="Choose Method"/>
+    </HBox>
+
+    <!-- Credit Card Fields -->
+    <VBox fx:id="creditCardBox" spacing="10" visible="false">
+        <Label text="Credit Card Information" styleClass="section-label"/>
+        <TextField fx:id="cardNumberField" promptText="Card Number (16 digits)"/>
+        <TextField fx:id="expirationField" promptText="Expiration Date (MM/YY)"/>
+        <TextField fx:id="cvvField" promptText="CVV (3 or 4 digits)"/>
+    </VBox>
+
+    <!-- PayPal Fields -->
+    <VBox fx:id="paypalBox" spacing="10" visible="false">
+        <Label text="PayPal Information" styleClass="section-label"/>
+        <TextField fx:id="paypalEmailField" promptText="PayPal Email"/>
+    </VBox>
+
+    <Button fx:id="payButton" text="Pay Now" styleClass="pay-button"/>
+
+</VBox>
