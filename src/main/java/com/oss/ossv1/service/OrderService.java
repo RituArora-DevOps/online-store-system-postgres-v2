@@ -71,7 +71,13 @@ public class OrderService {
     }
 
     public List<Order> getOrdersByUserId(Long userId) {
-        return orderRepository.findByUserId(userId);
+        return orderRepository.findWithItemsByUserId(userId);
+    }
+
+    public List<OrderItem> getOrderItemsByOrderId(Long orderId) {
+        return orderRepository.findWithItemsById(orderId)
+                .map(Order::getItems)
+                .orElse(new ArrayList<>());
     }
 
 }
