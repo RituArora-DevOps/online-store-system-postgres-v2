@@ -104,17 +104,13 @@ public class CartController {
 
     private void handleBack() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ProductView.fxml"));
-            Scene productScene = new Scene(loader.load());
-            Stage stage = (Stage) cartTable.getScene().getWindow();
-            stage.setScene(productScene);
-        } catch (IOException e) {
+            // Get the dashboard controller from the scene
+            Scene scene = cartTable.getScene();
+            DashboardController dashboard = (DashboardController) scene.getRoot().getUserData();
+            dashboard.navigateToProducts();
+        } catch (Exception e) {
             e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Navigation Error");
-            alert.setHeaderText(null);
-            alert.setContentText("Unable to return to the product listing.");
-            alert.showAndWait();
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Unable to return to the product listing.");
         }
     }
 
@@ -130,5 +126,13 @@ public class CartController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

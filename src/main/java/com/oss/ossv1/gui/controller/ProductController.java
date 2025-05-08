@@ -1,17 +1,13 @@
 package com.oss.ossv1.gui.controller;
 
-import com.oss.ossv1.gui.controller.CartManager;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.oss.ossv1.gui.model.CartItem;
 import com.oss.ossv1.gui.model.Product;
 
 import javafx.collections.FXCollections;
@@ -19,7 +15,13 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
@@ -159,11 +161,11 @@ public class ProductController {
     @FXML
     private void handleViewCart() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/CartView.fxml"));
-            Scene scene = new Scene(loader.load());
-            Stage stage = (Stage) productTable.getScene().getWindow();
-            stage.setScene(scene);
-        } catch (IOException e) {
+            // Get the dashboard controller from the scene
+            Scene scene = productTable.getScene();
+            DashboardController dashboard = (DashboardController) scene.getRoot().getUserData();
+            dashboard.navigateToCart();
+        } catch (Exception e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Navigation Error", "Unable to load Cart view.");
         }
