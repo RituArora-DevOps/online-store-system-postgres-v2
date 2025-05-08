@@ -21,11 +21,23 @@ public class PayPalPayment extends PaymentEntity implements Payment {
     @Email(message = "Invalid PayPal email format")
     private String paypalEmail;
 
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
+
     @Override
     public boolean processPayment(double amount) {
         this.setAmount(amount);
         this.setPaymentDate(LocalDateTime.now());
         System.out.println("Processed PayPal payment of $" + amount + " from " + paypalEmail);
         return true;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
+    public Order getOrder() {
+        return order;
     }
 }
