@@ -40,14 +40,30 @@ public class ProductController {
     @FXML private TextField maxPriceField;
     @FXML private Button filterButton;
     @FXML private Button clearButton;
+    @FXML private String lastSelectedCategory;
+    @FXML private String lastMinPrice;
+    @FXML private String lastMaxPrice;
+    @FXML private TableColumn<Product, Double> originalPriceColumn;
+
 
     @FXML
     public void initialize() {
+        // Reset filters every time this view is loaded fresh
+        lastSelectedCategory = null;
+        lastMinPrice = "";
+        lastMaxPrice = "";
+
+        originalPriceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+
         // Table column bindings
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
-        priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+        priceColumn.setCellValueFactory(cellData -> {
+            Product product = cellData.getValue();
+            double discounted = product.getDiscountedPrice(10); // 10% discount
+            return new javafx.beans.property.SimpleDoubleProperty(discounted).asObject();
+        });
         categoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
 
         actionColumn.setCellFactory(col -> new TableCell<>() {
@@ -56,7 +72,18 @@ public class ProductController {
             {
                 addButton.setOnAction(e -> {
                     Product selectedProduct = getTableView().getItems().get(getIndex());
-                    CartManager.getInstance().addToCart(selectedProduct);
+                    // Clone the product and apply 10% discount before adding to cart
+                    Product discountedProduct = new Product(
+                            selectedProduct.getId(),
+                            selectedProduct.getName(),
+                            selectedProduct.getDescription(),
+                            selectedProduct.getDiscountedPrice(10), // 10% discount applied
+                            selectedProduct.getCategory()
+                    );
+
+                    CartManager.getInstance().addToCart(discountedProduct);
+                    System.out.println("Added to cart with discount: " + discountedProduct.getName() + " - $" + discountedProduct.getPrice());
+
                     System.out.println("Added to cart: " + selectedProduct.getName());
                 });
             }
@@ -115,26 +142,15 @@ public class ProductController {
 
     @FXML
     public void onFilterClicked() {
-        String category = categoryCombo.getValue();
-        String minPriceText = minPriceField.getText();
-        String maxPriceText = maxPriceField.getText();
-
-        // Validate price fields if entered
-        if (!minPriceText.isEmpty() && !maxPriceText.isEmpty()) {
-            try {
-                Double.parseDouble(minPriceText);
-                Double.parseDouble(maxPriceText);
-            } catch (NumberFormatException e) {
-                showAlert(Alert.AlertType.ERROR, "Invalid Price", "Please enter valid numbers for price.");
-                return;
-            }
-        }
+        lastSelectedCategory = categoryCombo.getValue();
+        lastMinPrice = minPriceField.getText();
+        lastMaxPrice = maxPriceField.getText();
 
         String url;
-        if (category != null && !category.isEmpty()) {
-            url = "http://localhost:8080/products/category/" + category;
-        } else if (!minPriceText.isEmpty() && !maxPriceText.isEmpty()) {
-            url = "http://localhost:8080/products/price?min=" + minPriceText + "&max=" + maxPriceText;
+        if (lastSelectedCategory != null && !lastSelectedCategory.isEmpty()) {
+            url = "http://localhost:8080/products/category/" + lastSelectedCategory;
+        } else if (!lastMinPrice.isEmpty() && !lastMaxPrice.isEmpty()) {
+            url = "http://localhost:8080/products/price?min=" + lastMinPrice + "&max=" + lastMaxPrice;
         } else {
             url = "http://localhost:8080/products";
         }
@@ -142,11 +158,13 @@ public class ProductController {
         fetchProductsFromUrl(url);
     }
 
+
     @FXML
     public void onClearClicked() {
-        categoryCombo.setValue(null);
-        minPriceField.clear();
-        maxPriceField.clear();
+        categoryCombo.setValue(lastSelectedCategory);
+        minPriceField.setText(lastMinPrice);
+        maxPriceField.setText(lastMaxPrice);
+
         fetchProductsFromUrl("http://localhost:8080/products");
     }
 

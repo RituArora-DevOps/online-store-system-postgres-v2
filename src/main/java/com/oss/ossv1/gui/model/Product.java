@@ -40,4 +40,10 @@ public class Product {
     public String getCategory() { return category.get(); }
     public void setCategory(String category) { this.category.set(category); }
     public StringProperty categoryProperty() { return category; }
+
+    public double getDiscountedPrice(double percent) {
+        double priceValue = this.price.get();
+        if (percent < 0 || percent > 100) return priceValue;
+        return priceValue - (priceValue * (percent / 100.0));
+    }
 }

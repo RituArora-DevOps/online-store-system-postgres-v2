@@ -5,4 +5,5 @@ package com.oss.ossv1.interfaces;
  */
 public interface Discountable {
     void applyDiscount(double percent);
+    double getDiscountedPrice(double percent); // new
 }

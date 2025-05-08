@@ -61,5 +61,13 @@ public abstract class Product implements Serializable, Discountable {
         this.price = this.price - (this.price * (percent / 100.0));
     }
 
+    @Override
+    public double getDiscountedPrice(double percent) {
+        if (percent < 0 || percent > 100) {
+            throw new IllegalArgumentException("Discount must be between 0 and 100.");
+        }
+        return this.price - (this.price * (percent / 100.0));
+    }
+
     public abstract String displayInfo();
 }

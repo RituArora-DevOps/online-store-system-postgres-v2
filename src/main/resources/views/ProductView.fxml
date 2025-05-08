@@ -21,7 +21,8 @@
             <TableColumn fx:id="idColumn" text="ID" prefWidth="50" />
             <TableColumn fx:id="nameColumn" text="Name" prefWidth="150" />
             <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="200" />
-            <TableColumn fx:id="priceColumn" text="Price" prefWidth="100" />
+            <TableColumn fx:id="originalPriceColumn" text="Original Price" prefWidth="100" />
+            <TableColumn fx:id="priceColumn" text="Discounted Price" prefWidth="100"/>
             <TableColumn fx:id="categoryColumn" text="Category" prefWidth="100" />
             <TableColumn fx:id="actionColumn" text="Action" prefWidth="100"/>
         </columns>

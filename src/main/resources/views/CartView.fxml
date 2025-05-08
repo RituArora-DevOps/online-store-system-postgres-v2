@@ -12,12 +12,14 @@
 
     <Label text="Your Shopping Cart" style="-fx-font-size: 24px;"/>
 
-    <TableView fx:id="cartTable" prefHeight="400" prefWidth="600">
+    <TableView fx:id="cartTable" prefWidth="700" prefHeight="400">
         <columns>
-            <TableColumn fx:id="nameColumn" text="Product" prefWidth="200"/>
-            <TableColumn fx:id="priceColumn" text="Price" prefWidth="100"/>
-            <TableColumn fx:id="quantityColumn" text="Quantity" prefWidth="100"/>
-            <TableColumn fx:id="totalColumn" text="Total" prefWidth="100"/>
+            <TableColumn fx:id="nameColumn" text="Product Name" prefWidth="150"/>
+            <TableColumn fx:id="categoryColumn" text="Category" prefWidth="100"/>
+            <TableColumn fx:id="originalPriceColumn" text="Original Price" prefWidth="100"/>
+            <TableColumn fx:id="discountedPriceColumn" text="Discounted Price" prefWidth="120"/>
+            <TableColumn fx:id="quantityColumn" text="Qty" prefWidth="60"/>
+            <TableColumn fx:id="removeColumn" text="Remove" prefWidth="80"/>
         </columns>
     </TableView>
 

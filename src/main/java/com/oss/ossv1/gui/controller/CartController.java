@@ -19,15 +19,12 @@ public class CartController {
 
     @FXML
     private TableColumn<CartItem, String> nameColumn;
+    @FXML private TableColumn<CartItem, String> categoryColumn;
+    @FXML private TableColumn<CartItem, Double> originalPriceColumn;
+    @FXML private TableColumn<CartItem, Double> discountedPriceColumn;
+    @FXML private TableColumn<CartItem, Integer> quantityColumn;
 
-    @FXML
-    private TableColumn<CartItem, Double> priceColumn;
-
-    @FXML
-    private TableColumn<CartItem, Integer> quantityColumn;
-
-    @FXML
-    private TableColumn<CartItem, Double> totalColumn;
+    @FXML private TableColumn<CartItem, Void> removeColumn;
 
     @FXML
     private Label totalLabel;
@@ -45,10 +42,32 @@ public class CartController {
 
     @FXML
     public void initialize() {
-        nameColumn.setCellValueFactory(data -> data.getValue().getProduct().nameProperty());
-        priceColumn.setCellValueFactory(data -> data.getValue().getProduct().priceProperty().asObject());
+        nameColumn.setCellValueFactory(data -> data.getValue().getProduct().nameProperty());categoryColumn.setCellValueFactory(data -> data.getValue().getProduct().categoryProperty());
+        originalPriceColumn.setCellValueFactory(data -> data.getValue().getProduct().priceProperty().asObject());
+        discountedPriceColumn.setCellValueFactory(data -> {
+            double discounted = data.getValue().getProduct().getDiscountedPrice(10); // Example: 10%
+            return new javafx.beans.property.SimpleDoubleProperty(discounted).asObject();
+        });
         quantityColumn.setCellValueFactory(data -> data.getValue().quantityProperty().asObject());
-        totalColumn.setCellValueFactory(data -> data.getValue().totalPriceProperty().asObject());
+
+        removeColumn.setCellFactory(col -> new TableCell<>() {
+            private final Button removeBtn = new Button("X");
+            {
+                removeBtn.setOnAction(e -> {
+                    CartItem item = getTableView().getItems().get(getIndex());
+                    CartManager.getInstance().removeItem(item);
+                    cartItemList.remove(item);
+                    updateTotal();
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : removeBtn);
+            }
+        });
+
 
         cartItemList = CartManager.getInstance().getCartItems(); // use the live observable list
 
