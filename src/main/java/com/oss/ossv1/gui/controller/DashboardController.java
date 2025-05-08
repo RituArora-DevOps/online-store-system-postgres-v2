@@ -134,6 +134,19 @@ public class DashboardController {
         }
     }
 
+    @FXML
+    private void navigateToProductReviews() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ProductReviewView.fxml"));
+            Parent reviewView = loader.load();
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(reviewView);
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Error", "Navigation Failed", "Could not load product reviews view");
+        }
+    }
+
     public void loadView(String fxml) {
         try {
             Parent view = FXMLLoader.load(getClass().getResource(fxml));
@@ -162,6 +175,14 @@ public class DashboardController {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showError(String title, String header, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
         alert.setContentText(message);
         alert.showAndWait();
     }
