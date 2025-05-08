@@ -91,9 +91,4 @@ public class ReviewService {
     public List<ProductReview> getReviewsByUser(User user) {
         return reviewRepository.findByUser(user);
     }
-    
-    // Get reviews with minimum rating
-    public List<ProductReview> getReviewsByMinRating(int rating) {
-        return reviewRepository.findByRatingGreaterThanEqual(rating);
-    }
 }

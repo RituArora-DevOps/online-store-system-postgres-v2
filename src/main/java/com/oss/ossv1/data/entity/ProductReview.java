@@ -15,6 +15,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Entity class representing a product review in the online store system.
+ * This is the ProductReview table in the database and contains the
+ * information about reviews submitted by users for products they have purchased.
+ */
 @Entity
 @Table(name = "ProductReview", schema = "dbo")
 @Data

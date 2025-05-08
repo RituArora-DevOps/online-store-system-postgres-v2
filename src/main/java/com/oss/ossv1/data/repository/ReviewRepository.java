@@ -28,11 +28,4 @@ public interface ReviewRepository extends JpaRepository<ProductReview, Integer> 
      * @return list of reviews by the user
      */
     List<ProductReview> findByUser(User user);
-    
-    /**
-     * Find reviews with rating greater than or equal to a value
-     * @param rating the minimum rating
-     * @return list of reviews with rating >= the specified value
-     */
-    List<ProductReview> findByRatingGreaterThanEqual(int rating);
 }
