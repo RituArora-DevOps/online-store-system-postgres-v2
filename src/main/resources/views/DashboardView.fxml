@@ -7,25 +7,24 @@
 
 <BorderPane fx:id="rootPane" xmlns:fx="http://javafx.com/fxml" fx:controller="com.oss.ossv1.gui.controller.DashboardController">
     <top>
-        <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #2c3e50;">
+        <HBox alignment="CENTER" spacing="20" style="-fx-background-color: #1E2749;">
             <padding>
-                <Insets top="20" right="20" bottom="10" left="20"/>
+                <Insets top="20" right="20" bottom="20" left="20"/>
             </padding>
 
-            <!-- Title -->
-            <Label text="Online Store System" style="-fx-font-size: 28px; -fx-text-fill: white;" />
-            <Label fx:id="dashboardWelcomeLabel" style="-fx-font-size: 16px; -fx-text-fill: #ecf0f1;" />
+            <!-- Left side with title and welcome -->
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Online Store System" style="-fx-font-size: 28px; -fx-text-fill: white;" />
+                <Label fx:id="dashboardWelcomeLabel" style="-fx-font-size: 16px; -fx-text-fill: #B8BED9;" />
+            </VBox>
 
-
-            <!-- Logout Row -->
-            <HBox spacing="20" alignment="CENTER_RIGHT">
-                <Button text="Logout" onAction="#handleLogout" styleClass="nav-button"/>
-            </HBox>
-        </VBox>
+            <!-- Right side with logout -->
+            <Button text="Logout" onAction="#handleLogout" styleClass="nav-button, logout-button"/>
+        </HBox>
     </top>
 
     <left>
-        <VBox styleClass="sidebar" spacing="10" style="-fx-background-color: #34495e; -fx-padding: 10;">
+        <VBox styleClass="sidebar" spacing="10" style="-fx-background-color: #1E2749; -fx-padding: 10;">
             <Button text="Dashboard" onAction="#loadDashboard" styleClass="nav-button" maxWidth="Infinity"/>
             <Button text="Products" onAction="#navigateToProducts" styleClass="nav-button" maxWidth="Infinity"/>
             <Button text="Shopping Cart" onAction="#navigateToCart" styleClass="nav-button" maxWidth="Infinity"/>
@@ -44,24 +43,36 @@
                 
                 <!-- Products Tile -->
                 <VBox styleClass="dashboard-tile" onMouseClicked="#navigateToProducts" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
                     <Label text="Products" styleClass="tile-title"/>
                     <Text text="Browse and manage products" styleClass="tile-description"/>
                 </VBox>
                 
                 <!-- Cart Tile -->
                 <VBox styleClass="dashboard-tile" onMouseClicked="#navigateToCart" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
                     <Label text="Shopping Cart" styleClass="tile-title"/>
                     <Text text="View and manage your cart" styleClass="tile-description"/>
                 </VBox>
                 
                 <!-- Orders Tile -->
                 <VBox styleClass="dashboard-tile" onMouseClicked="#navigateToOrders" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
                     <Label text="Orders" styleClass="tile-title"/>
                     <Text text="Track your orders" styleClass="tile-description"/>
                 </VBox>
                 
                 <!-- Profile Tile -->
                 <VBox styleClass="dashboard-tile" onMouseClicked="#navigateToProfile" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
                     <Label text="Profile" styleClass="tile-title"/>
                     <Text text="Manage your account" styleClass="tile-description"/>
                 </VBox>
@@ -70,11 +81,11 @@
     </center>
     
     <bottom>
-        <HBox alignment="CENTER" spacing="10" style="-fx-background-color: #34495e;">
+        <HBox alignment="CENTER" spacing="10" style="-fx-background-color: #1E2749;">
             <padding>
                 <Insets top="10" right="10" bottom="10" left="10"/>
             </padding>
-            <Label text="© 2024 Online Store System" style="-fx-text-fill: white;"/>
+            <Label text="© 2024 Online Store System" style="-fx-text-fill: #B8BED9;"/>
         </HBox>
     </bottom>
 </BorderPane> 
