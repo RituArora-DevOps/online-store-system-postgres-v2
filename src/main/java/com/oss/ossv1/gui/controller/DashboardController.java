@@ -1,6 +1,8 @@
 package com.oss.ossv1.gui.controller;
 
 import com.oss.ossv1.service.OrderService;
+import com.oss.ossv1.service.ProductService;
+import com.oss.ossv1.service.ReviewService;
 import com.oss.ossv1.session.UserSession;
 import com.oss.ossv1.LoginPage;
 import javafx.fxml.FXML;
@@ -139,6 +141,13 @@ public class DashboardController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ProductReviewView.fxml"));
             Parent reviewView = loader.load();
+
+            // Get the controller and inject services
+            ProductReviewController controller = loader.getController();
+            controller.setReviewService(LoginPage.springContext.getBean(ReviewService.class));
+            controller.setProductService(LoginPage.springContext.getBean(ProductService.class));
+            controller.setOrderService(LoginPage.springContext.getBean(OrderService.class));
+
             contentArea.getChildren().clear();
             contentArea.getChildren().add(reviewView);
         } catch (IOException e) {
