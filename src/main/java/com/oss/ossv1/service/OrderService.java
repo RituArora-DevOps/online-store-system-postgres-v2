@@ -50,6 +50,12 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
+    @Transactional
+    public void saveOrder(Order order) {
+        orderRepository.save(order);
+    }
+
+
     private PaymentEntity buildPayment(PaymentRequestDTO dto) {
         if ("creditcard".equalsIgnoreCase(dto.getType())) {
             CreditCardPayment cc = new CreditCardPayment();

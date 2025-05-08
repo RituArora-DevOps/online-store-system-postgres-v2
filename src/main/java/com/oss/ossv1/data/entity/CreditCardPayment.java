@@ -31,6 +31,9 @@ public class CreditCardPayment extends PaymentEntity implements Payment {
     @Pattern(regexp = "\\d{3,4}", message = "CVV must be 3 or 4 digits")
     private String cvv;
 
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
 
     @Override
     public boolean processPayment(double amount) {
@@ -38,5 +41,13 @@ public class CreditCardPayment extends PaymentEntity implements Payment {
         this.setPaymentDate(LocalDateTime.now());
         System.out.println("Processing credit card payment of $" + amount);
         return true; // simulate success
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
+    public Order getOrder() {
+        return order;
     }
 }
