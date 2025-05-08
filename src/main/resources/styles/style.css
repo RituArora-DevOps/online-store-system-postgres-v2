@@ -81,27 +81,39 @@
     -fx-pref-width: 200px;
     -fx-max-width: 200px;
     -fx-background-color: #1E2749;
+    -fx-padding: 10;
 }
 
 .nav-button {
-    -fx-background-color: transparent;
+    -fx-background-color: rgba(255, 255, 255, 0.05);
     -fx-text-fill: white;
     -fx-font-size: 14px;
     -fx-cursor: hand;
-    -fx-padding: 10 20;
+    -fx-padding: 12 20;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 4, 0, 0, 0);
+    -fx-transition: all 0.3s ease;
 }
 
 .nav-button:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 8, 0, 0, 0);
+    -fx-translate-x: 2;
 }
 
 /* Logout button specific style */
 .nav-button.logout-button {
     -fx-background-color: #2A365C;
+    -fx-border-color: rgba(255, 255, 255, 0.1);
 }
 
 .nav-button.logout-button:hover {
     -fx-background-color: #364775;
+    -fx-border-color: rgba(255, 255, 255, 0.3);
 }
 
 /* Dashboard Styles */
