@@ -94,6 +94,21 @@ public class ProductReviewController implements Initializable {
     private void setupRatingComboBox() {
         ObservableList<Integer> ratings = FXCollections.observableArrayList(1, 2, 3, 4, 5);
         ratingComboBox.setItems(ratings);
+        
+        // Set cell factory to display rating values
+        ratingComboBox.setCellFactory(lv -> new ListCell<Integer>() {
+            @Override
+            protected void updateItem(Integer rating, boolean empty) {
+                super.updateItem(rating, empty);
+                setText(empty || rating == null ? "" : rating.toString());
+            }
+        });
+        
+        // Set button cell to display selected value
+        ratingComboBox.setButtonCell(ratingComboBox.getCellFactory().call(null));
+        
+        // Add prompt text
+        ratingComboBox.setPromptText("1-5");
     }
 
     private void loadPurchasedProducts() {

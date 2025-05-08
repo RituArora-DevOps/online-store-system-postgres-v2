@@ -49,7 +49,9 @@
                 
                 <!-- Rating Selection -->
                 <Label text="Rating:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                <ComboBox fx:id="ratingComboBox" maxWidth="60" promptText="1-5" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <ComboBox fx:id="ratingComboBox" minWidth="100" maxWidth="100" 
+                         style="-fx-font-size: 14px;" 
+                         GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                 
                 <!-- Comment -->
                 <Label text="Comment:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
