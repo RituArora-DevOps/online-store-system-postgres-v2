@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -80,25 +81,28 @@ public class CartController {
 
     private void handleCheckout() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/PaymentView.fxml"));
-            Scene scene = new Scene(loader.load());
-
-            // Get controller and pass the amount
-            PaymentController controller = loader.getController();
-            double total = CartManager.getInstance().calculateTotal();
-            controller.setAmount(total);
-
-            Stage stage = (Stage) cartTable.getScene().getWindow();
-            stage.setScene(scene);
-            stage.setTitle("Payment");
-
-        } catch (IOException e) {
+            // Get the dashboard controller
+            Scene scene = cartTable.getScene();
+            DashboardController dashboard = (DashboardController) scene.getRoot().getUserData();
+            
+            if (dashboard != null) {
+                // Load the payment view
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/PaymentView.fxml"));
+                Parent paymentView = loader.load(); // Load and store as Parent
+                
+                // Get controller and pass the amount
+                PaymentController controller = loader.getController();
+                double total = CartManager.getInstance().calculateTotal();
+                controller.setAmount(total);
+                
+                // Add the view to the dashboard
+                dashboard.setContent(paymentView); // Use setContent instead of loadView
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Navigation Error", "Unable to find dashboard controller.");
+            }
+        } catch (Exception e) {
             e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Unable to load payment screen");
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+            showAlert(Alert.AlertType.ERROR, "Error", "Unable to load payment screen");
         }
     }
 

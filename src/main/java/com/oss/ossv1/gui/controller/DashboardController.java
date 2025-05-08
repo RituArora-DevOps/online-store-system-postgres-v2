@@ -129,7 +129,7 @@ public class DashboardController {
         }
     }
 
-    private void loadView(String fxml) {
+    public void loadView(String fxml) {
         try {
             Parent view = FXMLLoader.load(getClass().getResource(fxml));
             contentArea.getChildren().clear();
@@ -138,6 +138,11 @@ public class DashboardController {
             e.printStackTrace();
             showError("Navigation Error", "Unable to load view.");
         }
+    }
+
+    public void setContent(Parent view) {
+        contentArea.getChildren().clear();
+        contentArea.getChildren().add(view);
     }
 
     private void showNotImplementedAlert(String feature) {
