@@ -23,6 +23,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
+/**
+ * Represents the OrderHistoryController class.
+ */
 public class OrderHistoryController {
 
     @FXML private TableView<Order> orderTable;
@@ -33,12 +36,18 @@ public class OrderHistoryController {
 
     private OrderService orderService;
 
+/**
+ * setOrderService method.
+ */
     public void setOrderService(OrderService service) {
         this.orderService = service;
         loadOrders(); // load after service is injected
     }
 
     @FXML
+/**
+ * initialize method.
+ */
     public void initialize() {
         colOrderId.setCellValueFactory(new PropertyValueFactory<>("orderId"));
         colDate.setCellValueFactory(new PropertyValueFactory<>("orderDate"));
@@ -47,6 +56,9 @@ public class OrderHistoryController {
     }
 
     // 👇 Needs to be public so other controllers can call it
+/**
+ * loadOrders method.
+ */
     public void loadOrders() {
         if (orderService == null) return;
 
@@ -60,6 +72,9 @@ public class OrderHistoryController {
         addViewDetailsButton();
     }
 
+/**
+ * addViewDetailsButton method.
+ */
     private void addViewDetailsButton() {
         colAction.setCellFactory(col -> new TableCell<>() {
             private final Button btn = new Button("View Details");
@@ -72,6 +87,9 @@ public class OrderHistoryController {
             }
 
             @Override
+/**
+ * updateItem method.
+ */
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
                 setGraphic(empty ? null : btn);
@@ -79,6 +97,9 @@ public class OrderHistoryController {
         });
     }
 
+/**
+ * openOrderDetails method.
+ */
     private void openOrderDetails(int orderId) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/OrderDetailsView.fxml"));
@@ -104,6 +125,9 @@ public class OrderHistoryController {
         }
     }
 
+/**
+ * showAlert method.
+ */
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -113,6 +137,9 @@ public class OrderHistoryController {
     }
 
     @FXML
+/**
+ * handleBack method.
+ */
     private void handleBack() {
         try {
             URL fxmlUrl = getClass().getResource("/views/DashboardView.fxml");

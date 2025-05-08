@@ -13,6 +13,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Represents the RegisterController class.
+ */
 public class RegisterController {
 
     @FXML private TextField usernameField;
@@ -21,6 +24,9 @@ public class RegisterController {
     @FXML private Label messageLabel;
 
     @FXML
+/**
+ * handleRegister method.
+ */
     private void handleRegister(ActionEvent event) {
         String username = usernameField.getText();
         String email = emailField.getText();
@@ -58,6 +64,9 @@ public class RegisterController {
     }
 
     @FXML
+/**
+ * switchToLogin method.
+ */
     private void switchToLogin(ActionEvent event) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/views/LoginView.fxml"));

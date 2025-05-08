@@ -11,15 +11,24 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
+/**
+ * Represents the UserController class.
+ */
 public class UserController {
 
     private final UserService userService;
 
+/**
+ * UserController method.
+ */
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @PostMapping("/register")
+/**
+ * register method.
+ */
     public String register(@RequestParam String username,
                            @RequestParam String email,
                            @RequestParam String password) {
@@ -32,6 +41,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
+/**
+ * login method.
+ */
     public ResponseEntity<Object> login(@RequestParam String username,
                                         @RequestParam String password) {
         Optional<User> userOpt = userService.loginUser(username, password);

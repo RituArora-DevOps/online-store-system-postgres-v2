@@ -18,6 +18,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+/**
+ * Represents the OrderDetailsController class.
+ */
 public class OrderDetailsController {
 
     @FXML private Label orderTitle;
@@ -30,15 +33,24 @@ public class OrderDetailsController {
     private OrderService orderService;
     private Long orderId;
 
+/**
+ * setOrderService method.
+ */
     public void setOrderService(OrderService orderService) {
         this.orderService = orderService;
     }
 
+/**
+ * setOrderId method.
+ */
     public void setOrderId(int orderId) {
         this.orderId = (long) orderId;
         orderTitle.setText("Order #" + orderId + " Details");
     }
 
+/**
+ * loadOrderItems method.
+ */
     public void loadOrderItems() {
         if (orderService == null || orderId == null) {
             System.err.println("❌ OrderService or Order ID is null");
@@ -51,6 +63,9 @@ public class OrderDetailsController {
     }
 
     @FXML
+/**
+ * initialize method.
+ */
     public void initialize() {
         colItemName.setCellValueFactory(new PropertyValueFactory<>("productName"));
         colQuantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
@@ -59,6 +74,9 @@ public class OrderDetailsController {
     }
 
     @FXML
+/**
+ * handleBack method.
+ */
     private void handleBack() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/OrderHistoryView.fxml"));
@@ -81,6 +99,9 @@ public class OrderDetailsController {
         }
     }
 
+/**
+ * showAlert method.
+ */
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);

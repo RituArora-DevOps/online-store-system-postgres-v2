@@ -11,6 +11,9 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Represents the { class.
+ */
 class UserServiceTest {
 
     private UserRepository userRepository;

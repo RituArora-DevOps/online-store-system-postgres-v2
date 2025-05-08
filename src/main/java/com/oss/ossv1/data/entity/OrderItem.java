@@ -9,6 +9,9 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Represents the OrderItem class.
+ */
 public class OrderItem {
 
     @Id
@@ -35,10 +38,16 @@ public class OrderItem {
 
     // --- GUI-specific getters ---
 
+/**
+ * getProductName method.
+ */
     public String getProductName() {
         return product != null ? product.getName() : "N/A";
     }
 
+/**
+ * getSubtotal method.
+ */
     public double getSubtotal() {
         return quantity * priceAtOrder;
     }

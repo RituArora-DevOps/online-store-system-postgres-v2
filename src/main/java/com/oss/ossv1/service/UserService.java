@@ -8,15 +8,24 @@ import java.util.regex.Pattern;
 import java.util.Optional;
 
 @Service
+/**
+ * Represents the UserService class.
+ */
 public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+/**
+ * UserService method.
+ */
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
+/**
+ * registerUser method.
+ */
     public void registerUser(String username, String email, String rawPassword) {
         if (userRepository.findByUsername(username).isPresent()) {
             throw new IllegalArgumentException("Username already exists");
@@ -39,6 +48,9 @@ public class UserService {
         userRepository.save(newUser);
     }
 
+/**
+ * loginUser method.
+ */
     public Optional<User> loginUser(String username, String rawPassword) {
         Optional<User> userOpt = userRepository.findByUsername(username);
         if (userOpt.isPresent()) {

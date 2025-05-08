@@ -16,12 +16,18 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+/**
+ * Represents the OrderService class.
+ */
 public class OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
 
     @Transactional
+/**
+ * placeOrder method.
+ */
     public Order placeOrder(OrderRequestDTO dto) {
         Order order = new Order();
         order.setUserId(dto.getUserId());
@@ -51,11 +57,17 @@ public class OrderService {
     }
 
     @Transactional
+/**
+ * saveOrder method.
+ */
     public void saveOrder(Order order) {
         orderRepository.save(order);
     }
 
 
+/**
+ * buildPayment method.
+ */
     private PaymentEntity buildPayment(PaymentRequestDTO dto) {
         if ("creditcard".equalsIgnoreCase(dto.getType())) {
             CreditCardPayment cc = new CreditCardPayment();
@@ -76,10 +88,16 @@ public class OrderService {
         }
     }
 
+/**
+ * getOrdersByUserId method.
+ */
     public List<Order> getOrdersByUserId(Long userId) {
         return orderRepository.findWithItemsByUserId(userId);
     }
 
+/**
+ * getOrderItemsByOrderId method.
+ */
     public List<OrderItem> getOrderItemsByOrderId(Long orderId) {
         return orderRepository.findWithItemsById(orderId)
                 .map(Order::getItems)

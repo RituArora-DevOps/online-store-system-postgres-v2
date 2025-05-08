@@ -12,6 +12,9 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Represents the Order class.
+ */
 public class Order {
 
     @Id
@@ -36,6 +39,9 @@ public class Order {
     private PaymentEntity payment;
 
     // Added method for JavaFX table binding
+/**
+ * getTotalAmount method.
+ */
     public double getTotalAmount() {
         return items != null
                 ? items.stream().mapToDouble(OrderItem::getSubtotal).sum()

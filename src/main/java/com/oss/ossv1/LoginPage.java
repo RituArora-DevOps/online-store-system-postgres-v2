@@ -8,11 +8,17 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+/**
+ * Represents the LoginPage class.
+ */
 public class LoginPage extends Application {
 
     public static ApplicationContext springContext;
 
     @Override
+/**
+ * start method.
+ */
     public void start(Stage primaryStage) throws Exception {
 
         // Debug check
@@ -40,6 +46,9 @@ public class LoginPage extends Application {
         primaryStage.show();
     }
 
+/**
+ * main method.
+ */
     public static void main(String[] args) {
         launch(args);
     }

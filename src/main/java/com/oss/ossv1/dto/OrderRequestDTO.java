@@ -5,6 +5,9 @@ import jakarta.validation.constraints.*;
 import java.util.List;
 
 @Data
+/**
+ * Represents the OrderRequestDTO class.
+ */
 public class OrderRequestDTO {
 
     @NotNull

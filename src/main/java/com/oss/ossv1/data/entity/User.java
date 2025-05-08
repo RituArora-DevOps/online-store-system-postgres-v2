@@ -8,6 +8,9 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Represents the User class.
+ */
 public class User {
 
     @Id
