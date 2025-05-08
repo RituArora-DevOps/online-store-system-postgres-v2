@@ -31,6 +31,7 @@
             <Button text="Dashboard" onAction="#loadDashboard" styleClass="nav-button" maxWidth="Infinity"/>
             <Button text="Products" onAction="#navigateToProducts" styleClass="nav-button" maxWidth="Infinity"/>
             <Button text="Shopping Cart" onAction="#navigateToCart" styleClass="nav-button" maxWidth="Infinity"/>
+            <Button text="Product Reviews" onAction="#navigateToProductReviews" styleClass="nav-button" maxWidth="Infinity"/>
             <Button text="Orders" onAction="#navigateToOrders" styleClass="nav-button" maxWidth="Infinity"/>
             <Button text="Profile" onAction="#navigateToProfile" styleClass="nav-button" maxWidth="Infinity"/>
         </VBox>
@@ -62,22 +63,22 @@
                     <Text text="View and manage your cart" styleClass="tile-description"/>
                 </VBox>
                 
+                <!-- Product Reviews Tile -->
+                <VBox styleClass="dashboard-tile" onMouseClicked="#navigateToProductReviews" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    <Label text="Product Reviews" styleClass="tile-title"/>
+                    <Text text="View and write product reviews" styleClass="tile-description"/>
+                </VBox>
+                
                 <!-- Orders Tile -->
-                <VBox styleClass="dashboard-tile" onMouseClicked="#navigateToOrders" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                <VBox styleClass="dashboard-tile" onMouseClicked="#navigateToOrders" GridPane.columnIndex="1" GridPane.rowIndex="1">
                     <padding>
                         <Insets top="20" right="20" bottom="20" left="20"/>
                     </padding>
                     <Label text="Orders" styleClass="tile-title"/>
                     <Text text="Track your orders" styleClass="tile-description"/>
-                </VBox>
-                
-                <!-- Profile Tile -->
-                <VBox styleClass="dashboard-tile" onMouseClicked="#navigateToProfile" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                    <padding>
-                        <Insets top="20" right="20" bottom="20" left="20"/>
-                    </padding>
-                    <Label text="Profile" styleClass="tile-title"/>
-                    <Text text="Manage your account" styleClass="tile-description"/>
                 </VBox>
             </GridPane>
         </StackPane>
