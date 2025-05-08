@@ -1,19 +1,22 @@
 package com.oss.ossv1.gui.controller;
 
+import java.io.IOException;
+import java.util.List;
+
 import com.oss.ossv1.data.entity.OrderItem;
 import com.oss.ossv1.service.OrderService;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.util.List;
 
 public class OrderDetailsController {
 
@@ -62,12 +65,27 @@ public class OrderDetailsController {
             Parent root = loader.load();
 
             OrderHistoryController controller = loader.getController();
-            controller.setOrderService(orderService); // Reinject
-            Stage stage = (Stage) itemTable.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Your Order History");
+            controller.setOrderService(orderService); // Reinject service
+
+            // Get the dashboard controller and use its content area
+            Scene scene = itemTable.getScene();
+            DashboardController dashboard = (DashboardController) scene.getRoot().getUserData();
+            if (dashboard != null) {
+                dashboard.setContent(root);
+            } else {
+                throw new RuntimeException("Dashboard controller not found");
+            }
         } catch (IOException e) {
             e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Could not return to order history.");
         }
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

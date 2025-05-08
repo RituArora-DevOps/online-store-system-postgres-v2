@@ -24,36 +24,36 @@
             <Label text="All Reviews" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
             <TableView fx:id="reviewsTable" VBox.vgrow="ALWAYS">
                 <columns>
-                    <TableColumn fx:id="productColumn" text="Product" prefWidth="150"/>
+                    <TableColumn fx:id="productColumn" text="Product" prefWidth="200"/>
                     <TableColumn fx:id="ratingColumn" text="Rating" prefWidth="80"/>
-                    <TableColumn fx:id="commentColumn" text="Comment" prefWidth="300"/>
-                    <TableColumn fx:id="dateColumn" text="Date" prefWidth="150"/>
+                    <TableColumn fx:id="commentColumn" text="Comment" prefWidth="350"/>
+                    <TableColumn fx:id="dateColumn" text="Date" prefWidth="120"/>
                     <TableColumn fx:id="userColumn" text="User" prefWidth="100"/>
                 </columns>
             </TableView>
         </VBox>
 
         <!-- Review Form -->
-        <VBox spacing="10" style="-fx-padding: 10;">
+        <VBox spacing="8" style="-fx-padding: 10;">
             <Label text="Write a Review" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
             
-            <GridPane hgap="10" vgap="5">
+            <GridPane hgap="8" vgap="6">
                 <columnConstraints>
-                    <ColumnConstraints minWidth="60" prefWidth="60"/>
-                    <ColumnConstraints hgrow="ALWAYS"/>
+                    <ColumnConstraints minWidth="70" prefWidth="70"/>
+                    <ColumnConstraints hgrow="SOMETIMES"/>
                 </columnConstraints>
                 
                 <!-- Product Selection -->
                 <Label text="Product:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                <ComboBox fx:id="productComboBox" maxWidth="250" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                <ComboBox fx:id="productComboBox" maxWidth="200" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                 
                 <!-- Rating Selection -->
                 <Label text="Rating:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                <ComboBox fx:id="ratingComboBox" maxWidth="80" promptText="1-5" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <ComboBox fx:id="ratingComboBox" maxWidth="60" promptText="1-5" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                 
                 <!-- Comment -->
                 <Label text="Comment:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                <TextArea fx:id="commentTextArea" prefRowCount="2" wrapText="true" 
+                <TextArea fx:id="commentTextArea" prefRowCount="2" maxHeight="60" wrapText="true" 
                          promptText="Write your review here..." 
                          GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                 

@@ -1,22 +1,27 @@
 package com.oss.ossv1.gui.controller;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.Comparator;
+import java.util.List;
+
 import com.oss.ossv1.data.entity.Order;
 import com.oss.ossv1.service.OrderService;
 import com.oss.ossv1.session.UserSession;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.Comparator;
-import java.util.List;
 
 public class OrderHistoryController {
 
@@ -84,13 +89,27 @@ public class OrderHistoryController {
             controller.setOrderId(orderId);
             controller.loadOrderItems();
 
-            Stage stage = (Stage) orderTable.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Order Details");
+            // Get the dashboard controller and use its content area
+            Scene scene = orderTable.getScene();
+            DashboardController dashboard = (DashboardController) scene.getRoot().getUserData();
+            if (dashboard != null) {
+                dashboard.setContent(root);
+            } else {
+                throw new RuntimeException("Dashboard controller not found");
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Could not load order details.");
         }
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     @FXML
