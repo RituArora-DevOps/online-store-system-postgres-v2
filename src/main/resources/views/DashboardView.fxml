@@ -24,7 +24,10 @@
     </top>
 
     <left>
-        <VBox styleClass="sidebar" spacing="10" style="-fx-background-color: #1E2749; -fx-padding: 10;">
+        <VBox styleClass="sidebar" spacing="15">
+            <padding>
+                <Insets top="20" right="15" bottom="20" left="15"/>
+            </padding>
             <Button text="Dashboard" onAction="#loadDashboard" styleClass="nav-button" maxWidth="Infinity"/>
             <Button text="Products" onAction="#navigateToProducts" styleClass="nav-button" maxWidth="Infinity"/>
             <Button text="Shopping Cart" onAction="#navigateToCart" styleClass="nav-button" maxWidth="Infinity"/>
