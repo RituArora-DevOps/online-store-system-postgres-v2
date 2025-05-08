@@ -113,14 +113,17 @@ public class PaymentController {
             showAlert(Alert.AlertType.INFORMATION, "Success", "Payment processed and saved!");
 
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/PaymentSuccessView.fxml"));
-                Scene scene = new Scene(loader.load());
-                Stage stage = (Stage) payButton.getScene().getWindow();
-                stage.setScene(scene);
-                stage.setTitle("Online Store");
-            } catch (IOException e) {
+                // Get the dashboard controller and navigate to success view
+                Scene scene = payButton.getScene();
+                DashboardController dashboard = (DashboardController) scene.getRoot().getUserData();
+                if (dashboard != null) {
+                    dashboard.loadView("/views/PaymentSuccessView.fxml");
+                } else {
+                    showAlert(Alert.AlertType.ERROR, "Navigation Error", "Unable to find dashboard controller.");
+                }
+            } catch (Exception e) {
                 e.printStackTrace();
-                showAlert(Alert.AlertType.ERROR, "Navigation Error", "Unable to return to product view.");
+                showAlert(Alert.AlertType.ERROR, "Navigation Error", "Unable to show payment success view.");
             }
         }
     }
@@ -140,12 +143,14 @@ public class PaymentController {
     @FXML
     private void handleBackToProducts() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ProductView.fxml"));
-            Scene scene = new Scene(loader.load());
-            Stage stage = (Stage) payButton.getScene().getWindow();
-            stage.setScene(scene);
-            stage.setTitle("Product Listing");
-        } catch (IOException e) {
+            Scene scene = payButton.getScene();
+            DashboardController dashboard = (DashboardController) scene.getRoot().getUserData();
+            if (dashboard != null) {
+                dashboard.navigateToProducts();
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Navigation Error", "Unable to find dashboard controller.");
+            }
+        } catch (Exception e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load Product view.");
         }
@@ -154,12 +159,14 @@ public class PaymentController {
     @FXML
     private void handleBackToDashboard() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/DashboardView.fxml"));
-            Scene scene = new Scene(loader.load());
-            Stage stage = (Stage) payButton.getScene().getWindow();
-            stage.setScene(scene);
-            stage.setTitle("Dashboard");
-        } catch (IOException e) {
+            Scene scene = payButton.getScene();
+            DashboardController dashboard = (DashboardController) scene.getRoot().getUserData();
+            if (dashboard != null) {
+                dashboard.loadDashboard();
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Navigation Error", "Unable to find dashboard controller.");
+            }
+        } catch (Exception e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load Dashboard view.");
         }

@@ -1,28 +1,36 @@
 package com.oss.ossv1.gui.controller;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.stage.Stage;
-
-import java.io.IOException;
 
 public class PaymentSuccessController {
+    
+    @FXML
+    private Button continueButton;
 
     @FXML
-    private Button continueButton; // Add fx:id="continueButton" in FXML
-
-    @FXML
-    private void goToProductView() {
+    public void goToProductView() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ProductView.fxml"));
-            Scene scene = new Scene(loader.load());
-            Stage stage = (Stage) continueButton.getScene().getWindow(); // Use reference node
-            stage.setScene(scene);
-            stage.setTitle("Online Store - Product Listing");
-        } catch (IOException e) {
+            Scene scene = continueButton.getScene();
+            DashboardController dashboard = (DashboardController) scene.getRoot().getUserData();
+            if (dashboard != null) {
+                dashboard.navigateToProducts();
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Navigation Error", "Unable to find dashboard controller.");
+            }
+        } catch (Exception e) {
             e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not return to products.");
         }
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
