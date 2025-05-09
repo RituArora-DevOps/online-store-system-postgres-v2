@@ -85,7 +85,7 @@ public class DashboardController {
             contentArea.getChildren().add(dashboardGrid);
         } catch (Exception e) {
             e.printStackTrace();
-            showError("Navigation Error", "Unable to load dashboard.");
+            showError("Dashboard Error", null, "Unable to load dashboard.");
         }
     }
 
@@ -137,7 +137,7 @@ public class DashboardController {
             contentArea.getChildren().add(root);
         } catch (IOException e) {
             e.printStackTrace();
-            showError("Navigation Error", "Unable to load Order History.");
+            showError("Navigation Error", null, "Unable to load Order History.");
         }
     }
 
@@ -160,7 +160,7 @@ public class DashboardController {
             stage.setScene(loginScene);
         } catch (IOException e) {
             e.printStackTrace();
-            showError("Logout Error", "Unable to return to login screen.");
+            showError("Logout Error", null, "Unable to return to login screen.");
         }
     }
 
@@ -180,7 +180,7 @@ public class DashboardController {
             contentArea.getChildren().add(reviewView);
         } catch (IOException e) {
             e.printStackTrace();
-            showError("Error", "Navigation Failed", "Could not load product reviews view");
+            showError("Navigation Error", "Could not load product reviews view", "Failed to load the product reviews screen.");
         }
     }
 
@@ -194,7 +194,7 @@ public class DashboardController {
             contentArea.getChildren().add(view);
         } catch (IOException e) {
             e.printStackTrace();
-            showError("Navigation Error", "Unable to load view.");
+            showError("Navigation Error", null, "Unable to load view.");
         }
     }
 
@@ -215,14 +215,9 @@ public class DashboardController {
         alert.showAndWait();
     }
 
-    private void showError(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
+    /**
+     * Shows an error message to the user
+     */
     private void showError(String title, String header, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);

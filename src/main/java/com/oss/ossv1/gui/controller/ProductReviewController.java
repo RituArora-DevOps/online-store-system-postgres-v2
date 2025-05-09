@@ -158,7 +158,7 @@ public class ProductReviewController implements Initializable {
             });
             
         } catch (Exception e) {
-            showMessage("Error loading your products: " + e.getMessage(), Alert.AlertType.ERROR);
+            showError("Error loading your products", null, "Error: " + e.getMessage());
         }
     }
 
@@ -188,7 +188,7 @@ public class ProductReviewController implements Initializable {
 
         // Basic validation
         if (selectedProduct == null || rating == null || comment.isEmpty()) {
-            showMessage("Please fill in all fields!", Alert.AlertType.ERROR);
+            showError("Error submitting review", null, "Please fill in all fields!");
             return;
         }
 
@@ -210,7 +210,7 @@ public class ProductReviewController implements Initializable {
             showMessage("Review submitted successfully!", Alert.AlertType.INFORMATION);
             
         } catch (Exception e) {
-            showMessage("Error submitting review: " + e.getMessage(), Alert.AlertType.ERROR);
+            showError("Error submitting review", null, "Error: " + e.getMessage());
         }
     }
 
@@ -221,6 +221,20 @@ public class ProductReviewController implements Initializable {
         Alert alert = new Alert(type);
         alert.setTitle(type.toString());
         alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    /**
+     * Shows an error message to the user
+     * @param title The error window title
+     * @param header The header text (can be null)
+     * @param message The error message
+     */
+    private void showError(String title, String header, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
         alert.setContentText(message);
         alert.showAndWait();
     }
