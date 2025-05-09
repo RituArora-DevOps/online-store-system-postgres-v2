@@ -194,6 +194,7 @@ public class ProductController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/DashboardView.fxml"));
             Scene scene = new Scene(loader.load());
+            scene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
             Stage stage = (Stage) productTable.getScene().getWindow();
             stage.setScene(scene);
             stage.setTitle("Dashboard");
