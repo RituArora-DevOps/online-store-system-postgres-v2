@@ -11,14 +11,29 @@ import com.oss.ossv1.data.entity.Product;
 import com.oss.ossv1.data.repository.CartRepository;
 import com.oss.ossv1.data.repository.ProductRepository;
 
-import lombok.RequiredArgsConstructor;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
+/**
+ * Service for managing the shopping cart functionality.
+ * Handles operations like adding/removing items, updating quantities,
+ * and calculating totals.
+ */
 @Service
-@RequiredArgsConstructor
 public class CartService {
 
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
+    private ObservableList<CartItem> cartItems;
+
+    /**
+     * Initializes a new cart service with an empty observable list of items
+     */
+    public CartService(CartRepository cartRepository, ProductRepository productRepository) {
+        this.cartRepository = cartRepository;
+        this.productRepository = productRepository;
+        this.cartItems = FXCollections.observableArrayList();
+    }
 
     @Transactional
     public Cart getOrCreateCart(Integer userId) {
@@ -39,6 +54,10 @@ public class CartService {
         return cartRepository.findByUserId(userId);
     }
 
+    /**
+     * Adds a product to the cart
+     * If the product already exists, increase the quantity
+     */
     @Transactional
     public Cart addToCart(Integer userId, Integer productId, int quantity) {
         Cart cart = getOrCreateCart(userId);
@@ -64,6 +83,9 @@ public class CartService {
         return cartRepository.save(cart);
     }
 
+    /**
+     * Removes an item from the cart
+     */
     @Transactional
     public Cart removeFromCart(Integer userId, Integer productId) {
         Cart cart = getOrCreateCart(userId);
@@ -71,6 +93,9 @@ public class CartService {
         return cartRepository.save(cart);
     }
 
+    /**
+     * Updates the quantity of an item in the cart
+     */
     @Transactional
     public Cart updateCartItemQuantity(Integer userId, Integer productId, int quantity) {
         Cart cart = getOrCreateCart(userId);
@@ -81,6 +106,9 @@ public class CartService {
         return cartRepository.save(cart);
     }
 
+    /**
+     * Clears all items from the cart
+     */
     @Transactional
     public void clearCart(Integer userId) {
         Cart cart = getOrCreateCart(userId);
@@ -88,8 +116,21 @@ public class CartService {
         cartRepository.save(cart);
     }
 
+    /**
+     * Calculates the total price of all items in cart
+     */
     public double getCartTotal(Integer userId) {
         Cart cart = getCart(userId);
         return cart != null ? cart.getTotalPrice() : 0.0;
+    }
+
+    /**
+     * Finds a cart item by product
+     */
+    private CartItem findCartItem(Product product) {
+        return cartItems.stream()
+                .filter(item -> item.getProduct().equals(product))
+                .findFirst()
+                .orElse(null);
     }
 }

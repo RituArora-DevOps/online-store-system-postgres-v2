@@ -19,25 +19,41 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import java.io.IOException;
 
+/**
+ * Controls the main dashboard view of the online store.
+ * Manages the navigation bar
+ */
 public class DashboardController {
+    // Main layout components
     @FXML private BorderPane rootPane;
     @FXML private StackPane contentArea;
     @FXML private Label dashboardWelcomeLabel;
 
+    /**
+     * Initializes the dashboard view.
+     * Sets up the welcome message based on user login status.
+     */
     @FXML
     public void initialize() {
         rootPane.setUserData(this);
+        updateWelcomeMessage();
+        loadDashboard();
+    }
 
+    // Helper method to update welcome message
+    private void updateWelcomeMessage() {
         if (UserSession.getInstance().isLoggedIn()) {
             String username = UserSession.getInstance().getUser().getUsername();
             dashboardWelcomeLabel.setText("Welcome, " + username);
         } else {
             dashboardWelcomeLabel.setText("Welcome to Online Store System");
         }
-
-        loadDashboard();
     }
 
+    /**
+     * Loads the main dashboard grid with navigation tiles.
+     * Creates clickable tiles for Products, Cart, Orders, and Profile.
+     */
     @FXML
     public void loadDashboard() {
         try {
@@ -73,6 +89,9 @@ public class DashboardController {
         }
     }
 
+    /**
+     * Creates a styled tile for dashboard navigation.
+     */
     private VBox createDashboardTile(String title, String description) {
         VBox tile = new VBox(10);
         tile.getStyleClass().add("dashboard-tile");
@@ -89,6 +108,7 @@ public class DashboardController {
         return tile;
     }
 
+    // Navigation methods
     @FXML
     public void navigateToProducts() {
         loadView("/views/ProductView.fxml");
@@ -99,6 +119,10 @@ public class DashboardController {
         loadView("/views/CartView.fxml");
     }
 
+    /**
+     * Loads the order history view and injects necessary services.
+     * Ensures order data is properly loaded before display.
+     */
     @FXML
     public void navigateToOrders() {
         try {
@@ -122,6 +146,10 @@ public class DashboardController {
         showNotImplementedAlert("Profile functionality");
     }
 
+    /**
+     * Handles user logout.
+     * Clears the session and returns to login screen.
+     */
     @FXML
     public void handleLogout() {
         UserSession.getInstance().clear();
@@ -156,6 +184,9 @@ public class DashboardController {
         }
     }
 
+    /**
+     * Loads a view into the dashboard's content area.
+     */
     public void loadView(String fxml) {
         try {
             Parent view = FXMLLoader.load(getClass().getResource(fxml));
@@ -167,6 +198,10 @@ public class DashboardController {
         }
     }
 
+    /**
+     * Sets content directly in the dashboard's content area.
+     * Used by child controllers to update the main view.
+     */
     public void setContent(Parent view) {
         contentArea.getChildren().clear();
         contentArea.getChildren().add(view);

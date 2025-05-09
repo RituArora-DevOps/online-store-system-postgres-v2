@@ -29,8 +29,13 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+/**
+ * Controls the product review functionality.
+ * Allows users to view all reviews and submit new reviews for purchased products.
+ */
 public class ProductReviewController implements Initializable {
 
+    // Table columns for displaying reviews
     @FXML private TableView<ProductReview> reviewsTable;
     @FXML private TableColumn<ProductReview, String> productColumn;
     @FXML private TableColumn<ProductReview, Integer> ratingColumn;
@@ -38,17 +43,22 @@ public class ProductReviewController implements Initializable {
     @FXML private TableColumn<ProductReview, String> dateColumn;
     @FXML private TableColumn<ProductReview, String> userColumn;
     
+    // Form controls for submitting reviews
     @FXML private ComboBox<Product> productComboBox;
     @FXML private ComboBox<Integer> ratingComboBox;
     @FXML private TextArea commentTextArea;
     @FXML private Button clearButton;
     @FXML private Button submitButton;
 
+    // Services
     private ReviewService reviewService;
     private ProductService productService;
     private OrderService orderService;
     private ObservableList<ProductReview> reviews;
 
+    /**
+     * Sets up the table columns and form controls.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         reviews = FXCollections.observableArrayList();
@@ -59,20 +69,9 @@ public class ProductReviewController implements Initializable {
         setupButtonHandlers();
     }
 
-    public void setReviewService(ReviewService reviewService) {
-        this.reviewService = reviewService;
-        loadReviews();
-    }
-
-    public void setProductService(ProductService productService) {
-        this.productService = productService;
-    }
-
-    public void setOrderService(OrderService orderService) {
-        this.orderService = orderService;
-        loadPurchasedProducts();
-    }
-
+    /**
+     * Sets up the table columns to display review information.
+     */
     private void setupTableColumns() {
         productColumn.setCellValueFactory(cellData -> 
             new SimpleStringProperty(cellData.getValue().getProduct().getName()));
@@ -91,6 +90,9 @@ public class ProductReviewController implements Initializable {
             new SimpleStringProperty(cellData.getValue().getUser().getUsername()));
     }
 
+    /**
+     * Configures the rating dropdown with values 1-5.
+     */
     private void setupRatingComboBox() {
         ObservableList<Integer> ratings = FXCollections.observableArrayList(1, 2, 3, 4, 5);
         ratingComboBox.setItems(ratings);
@@ -103,14 +105,16 @@ public class ProductReviewController implements Initializable {
                 setText(empty || rating == null ? "" : rating.toString());
             }
         });
-        
-        // Set button cell to display selected value
+
         ratingComboBox.setButtonCell(ratingComboBox.getCellFactory().call(null));
-        
-        // Add prompt text
+
         ratingComboBox.setPromptText("1-5");
     }
 
+    /**
+     * Loads the products that the current user has purchased.
+     * Users can only review products they have bought.
+     */
     private void loadPurchasedProducts() {
         if (!UserSession.getInstance().isLoggedIn()) {
             showAlert(Alert.AlertType.WARNING, "Not Logged In", "Please log in to write reviews.");
@@ -152,7 +156,6 @@ public class ProductReviewController implements Initializable {
             });
             productComboBox.setButtonCell(productComboBox.getCellFactory().call(null));
 
-            // Add prompt text
             productComboBox.setPromptText("Select a purchased product");
 
         } catch (Exception e) {
@@ -180,6 +183,10 @@ public class ProductReviewController implements Initializable {
         commentTextArea.clear();
     }
 
+    /**
+     * Handles the review submission process.
+     * Validates input and creates a new review in the database.
+     */
     private void submitReview() {
         if (!UserSession.getInstance().isLoggedIn()) {
             showAlert(Alert.AlertType.WARNING, "Not Logged In", "Please log in to write reviews.");
@@ -219,5 +226,20 @@ public class ProductReviewController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    // Service setters
+    public void setReviewService(ReviewService reviewService) {
+        this.reviewService = reviewService;
+        loadReviews();
+    }
+
+    public void setProductService(ProductService productService) {
+        this.productService = productService;
+    }
+
+    public void setOrderService(OrderService orderService) {
+        this.orderService = orderService;
+        loadPurchasedProducts();
     }
 } 

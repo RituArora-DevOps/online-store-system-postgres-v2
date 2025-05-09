@@ -13,7 +13,9 @@ import com.oss.ossv1.data.entity.ProductReview;
 import com.oss.ossv1.data.entity.User;
 import com.oss.ossv1.data.repository.ReviewRepository;
 
-// Service for managing product reviews - business logic layer
+/**
+ * Service for managing product reviews in the online store
+ */
 @Service
 public class ReviewService {
     
@@ -22,7 +24,9 @@ public class ReviewService {
     @Autowired
     private ReviewRepository reviewRepository;
     
-    // Get all reviews
+    /**
+     * Gets all reviews from the database
+     */
     public List<ProductReview> getAllReviews() {
         logger.info("Fetching all reviews");
         List<ProductReview> reviews = reviewRepository.findAll();
@@ -41,12 +45,16 @@ public class ReviewService {
         return reviews;
     }
     
-    // Get a review by ID
+    /**
+     * Gets a specific review by ID
+     */
     public ProductReview getReview(Integer id) {
         return reviewRepository.findById(id).orElse(null);
     }
     
-    // Create a new product review
+    /**
+     * Creates a new review with the provided review object
+     */
     public ProductReview createReview(ProductReview review) {
         // Set the current time if not already set
         if (review.getReviewDate() == null) {
@@ -55,7 +63,9 @@ public class ReviewService {
         return reviewRepository.save(review);
     }
     
-    // Create a review with individual fields
+    /**
+     * Creates a new review with individual fields
+     */
     public ProductReview createReview(Product product, User user, int rating, String comment) {
         // Validate rating
         if (rating < 1 || rating > 5) {
@@ -72,22 +82,30 @@ public class ReviewService {
         return reviewRepository.save(review);
     }
     
-    // Update an existing review
+    /**
+     * Updates an existing review
+     */
     public ProductReview updateReview(ProductReview review) {
         return reviewRepository.save(review);
     }
     
-    // Delete a review
+    /**
+     * Deletes a review by ID
+     */
     public void deleteReview(Integer id) {
         reviewRepository.deleteById(id);
     }
     
-    // Find reviews by product
+    /**
+     * Gets all reviews for a specific product
+     */
     public List<ProductReview> getReviewsByProduct(Product product) {
         return reviewRepository.findByProduct(product);
     }
     
-    // Find reviews by user
+    /**
+     * Gets all reviews by a specific user
+     */
     public List<ProductReview> getReviewsByUser(User user) {
         return reviewRepository.findByUser(user);
     }
