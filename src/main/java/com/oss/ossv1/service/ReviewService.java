@@ -21,11 +21,13 @@ public class ReviewService {
     
     private static final Logger logger = LoggerFactory.getLogger(ReviewService.class);
     
+    // Database connection for reviews
     @Autowired
     private ReviewRepository reviewRepository;
     
     /**
      * Gets all reviews from the database
+     * @return List of all reviews
      */
     public List<ProductReview> getAllReviews() {
         logger.info("Fetching all reviews");
@@ -46,17 +48,21 @@ public class ReviewService {
     }
     
     /**
-     * Gets a specific review by ID
+     * Gets a specific review using its ID
+     * @param id The ID of the review to find
+     * @return The review if found, null if not found
      */
     public ProductReview getReview(Integer id) {
         return reviewRepository.findById(id).orElse(null);
     }
     
     /**
-     * Creates a new review with the provided review object
+     * Creates a new review in the database
+     * @param review The review to save
+     * @return The saved review with its new ID
      */
     public ProductReview createReview(ProductReview review) {
-        // Set the current time if not already set
+        // Make sure we set the current time for new reviews
         if (review.getReviewDate() == null) {
             review.setReviewDate(LocalDateTime.now());
         }
@@ -65,13 +71,19 @@ public class ReviewService {
     
     /**
      * Creates a new review with individual fields
+     * @param product The product being reviewed
+     * @param user The user writing the review
+     * @param rating The rating (1-5)
+     * @param comment The review comment
+     * @return The saved review
      */
     public ProductReview createReview(Product product, User user, int rating, String comment) {
-        // Validate rating
+        // Check that rating is between 1 and 5
         if (rating < 1 || rating > 5) {
             throw new IllegalArgumentException("Rating must be between 1 and 5");
         }
         
+        // Create a new review
         ProductReview review = new ProductReview();
         review.setProduct(product);
         review.setUser(user);
@@ -79,18 +91,22 @@ public class ReviewService {
         review.setComment(comment);
         review.setReviewDate(LocalDateTime.now());
         
+        // Save it to database
         return reviewRepository.save(review);
     }
     
     /**
      * Updates an existing review
+     * @param review The review with updated information
+     * @return The updated review
      */
     public ProductReview updateReview(ProductReview review) {
         return reviewRepository.save(review);
     }
     
     /**
-     * Deletes a review by ID
+     * Deletes a review from the database
+     * @param id The ID of the review to delete
      */
     public void deleteReview(Integer id) {
         reviewRepository.deleteById(id);
@@ -98,13 +114,17 @@ public class ReviewService {
     
     /**
      * Gets all reviews for a specific product
+     * @param product The product to find reviews for
+     * @return List of reviews for that product
      */
     public List<ProductReview> getReviewsByProduct(Product product) {
         return reviewRepository.findByProduct(product);
     }
     
     /**
-     * Gets all reviews by a specific user
+     * Gets all reviews written by a specific user
+     * @param user The user to find reviews for
+     * @return List of reviews by that user
      */
     public List<ProductReview> getReviewsByUser(User user) {
         return reviewRepository.findByUser(user);

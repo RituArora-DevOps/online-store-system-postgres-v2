@@ -2,6 +2,7 @@ package com.oss.ossv1.service;
 
 import java.util.ArrayList;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,45 +12,50 @@ import com.oss.ossv1.data.entity.Product;
 import com.oss.ossv1.data.repository.CartRepository;
 import com.oss.ossv1.data.repository.ProductRepository;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
 /**
- * Service for managing the shopping cart functionality.
- * Handles operations like adding/removing items, updating quantities,
- * and calculating totals.
+ * Service for managing the shopping cart functionality
  */
 @Service
 public class CartService {
 
-    private final CartRepository cartRepository;
-    private final ProductRepository productRepository;
-    private ObservableList<CartItem> cartItems;
+    // Database connections we need
+    @Autowired
+    private CartRepository cartRepository;
+    
+    @Autowired
+    private ProductRepository productRepository;
 
     /**
-     * Initializes a new cart service with an empty observable list of items
+     * Gets a user's shopping cart. Creates a new one if it doesn't exist.
+     * @param userId The ID of the user
+     * @return The user's shopping cart
      */
-    public CartService(CartRepository cartRepository, ProductRepository productRepository) {
-        this.cartRepository = cartRepository;
-        this.productRepository = productRepository;
-        this.cartItems = FXCollections.observableArrayList();
-    }
-
     @Transactional
     public Cart getOrCreateCart(Integer userId) {
+        // Try to find existing cart
         Cart cart = cartRepository.findByUserId(userId);
+        
+        // If no cart exists, create a new one
         if (cart == null) {
             cart = new Cart();
             cart.setUserId(userId);
             cart.setItems(new ArrayList<>());
             cart = cartRepository.save(cart);
-        } else if (cart.getItems() == null) {
+        }
+        // Make sure cart has an items list
+        else if (cart.getItems() == null) {
             cart.setItems(new ArrayList<>());
             cart = cartRepository.save(cart);
         }
+        
         return cart;
     }
 
+    /**
+     * Gets a user's shopping cart without creating a new one
+     * @param userId The ID of the user
+     * @return The user's cart, or null if none exists
+     */
     public Cart getCart(Integer userId) {
         return cartRepository.findByUserId(userId);
     }
@@ -60,19 +66,20 @@ public class CartService {
      */
     @Transactional
     public Cart addToCart(Integer userId, Integer productId, int quantity) {
+        // Get the cart and product
         Cart cart = getOrCreateCart(userId);
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        // Check if product already exists in cart
-        CartItem existingItem = cart.getItems().stream()
-                .filter(item -> item.getProduct().getId().equals(productId))
-                .findFirst()
-                .orElse(null);
+        // Check if product is already in cart
+        CartItem existingItem = findCartItem(cart, productId);
 
+        // If found, update quantity
         if (existingItem != null) {
             existingItem.setQuantity(existingItem.getQuantity() + quantity);
-        } else {
+        }
+        // If not found, add new item
+        else {
             CartItem newItem = new CartItem();
             newItem.setProduct(product);
             newItem.setQuantity(quantity);
@@ -99,11 +106,15 @@ public class CartService {
     @Transactional
     public Cart updateCartItemQuantity(Integer userId, Integer productId, int quantity) {
         Cart cart = getOrCreateCart(userId);
-        cart.getItems().stream()
-                .filter(item -> item.getProduct().getId().equals(productId))
-                .findFirst()
-                .ifPresent(item -> item.setQuantity(quantity));
-        return cartRepository.save(cart);
+        
+        // Find the item and update its quantity
+        CartItem item = findCartItem(cart, productId);
+        if (item != null) {
+            item.setQuantity(quantity);
+            return cartRepository.save(cart);
+        }
+        
+        return cart;
     }
 
     /**
@@ -121,15 +132,21 @@ public class CartService {
      */
     public double getCartTotal(Integer userId) {
         Cart cart = getCart(userId);
-        return cart != null ? cart.getTotalPrice() : 0.0;
+        if (cart == null) return 0.0;
+        
+        double total = 0.0;
+        for (CartItem item : cart.getItems()) {
+            total += item.getProduct().getPrice() * item.getQuantity();
+        }
+        return total;
     }
 
     /**
      * Finds a cart item by product
      */
-    private CartItem findCartItem(Product product) {
-        return cartItems.stream()
-                .filter(item -> item.getProduct().equals(product))
+    private CartItem findCartItem(Cart cart, Integer productId) {
+        return cart.getItems().stream()
+                .filter(item -> item.getProduct().getId().equals(productId))
                 .findFirst()
                 .orElse(null);
     }
