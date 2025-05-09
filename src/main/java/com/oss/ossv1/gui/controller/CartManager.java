@@ -25,14 +25,17 @@ public class CartManager {
     }
 
     public void addToCart(Product product) {
+        Integer newProductId = product.getId();
         for (CartItem item : cartItems) {
-            if (item.getProduct().getId() == product.getId()) {
+            Integer existingProductId = item.getProduct().getId();
+            if (newProductId != null && newProductId.equals(existingProductId)) {
                 item.setQuantity(item.getQuantity() + 1);
                 return;
             }
         }
         cartItems.add(new CartItem(product, 1));
     }
+
 
     public void removeFromCart(CartItem item) {
         cartItems.remove(item);

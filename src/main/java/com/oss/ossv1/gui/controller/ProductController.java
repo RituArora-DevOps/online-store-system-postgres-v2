@@ -10,6 +10,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oss.ossv1.gui.model.Product;
 
+import com.oss.ossv1.gui.util.ProductCache;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -24,6 +26,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+
+import static com.oss.ossv1.gui.util.TableCellUtils.createCurrencyCell;
 
 public class ProductController {
 
@@ -53,17 +57,21 @@ public class ProductController {
         lastMinPrice = "";
         lastMaxPrice = "";
 
-        originalPriceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
-
         // Table column bindings
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
+        originalPriceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+
         priceColumn.setCellValueFactory(cellData -> {
             Product product = cellData.getValue();
             double discounted = product.getDiscountedPrice(10); // 10% discount
-            return new javafx.beans.property.SimpleDoubleProperty(discounted).asObject();
+            return new SimpleDoubleProperty(discounted).asObject();
         });
+
+        // Apply formatting
+        originalPriceColumn.setCellFactory(col -> createCurrencyCell());
+        priceColumn.setCellFactory(col -> createCurrencyCell());
         categoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
 
         actionColumn.setCellFactory(col -> new TableCell<>() {
@@ -72,38 +80,28 @@ public class ProductController {
             {
                 addButton.setOnAction(e -> {
                     Product selectedProduct = getTableView().getItems().get(getIndex());
-                    // Clone the product and apply 10% discount before adding to cart
-                    Product discountedProduct = new Product(
-                            selectedProduct.getId(),
-                            selectedProduct.getName(),
-                            selectedProduct.getDescription(),
-                            selectedProduct.getDiscountedPrice(10), // 10% discount applied
-                            selectedProduct.getCategory()
-                    );
 
-                    CartManager.getInstance().addToCart(discountedProduct);
-                    System.out.println("Added to cart with discount: " + discountedProduct.getName() + " - $" + discountedProduct.getPrice());
+                    CartManager.getInstance().addToCart(selectedProduct);
 
-                    System.out.println("Added to cart: " + selectedProduct.getName());
+                    System.out.println("Added to cart: " + selectedProduct.getName() + " - $" + selectedProduct.getPrice());
                 });
             }
 
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    setGraphic(addButton);
-                }
+                setGraphic(empty ? null : addButton);
             }
         });
 
         // Category dropdown options
         categoryCombo.getItems().addAll("clothing", "electronics", "grocery");
 
-        // Load all products initially
-        fetchProductsFromUrl("http://localhost:8080/products");
+        if (ProductCache.isEmpty()) {
+            fetchProductsFromUrl("http://localhost:8080/products");
+        } else {
+            productTable.setItems(ProductCache.getProducts());
+        }
     }
 
     private void fetchProductsFromUrl(String urlString) {
@@ -124,6 +122,7 @@ public class ProductController {
                 ObjectMapper mapper = new ObjectMapper();
                 List<Product> productList = mapper.readValue(json.toString(), new TypeReference<>() {});
                 ObservableList<Product> observableList = FXCollections.observableArrayList(productList);
+                ProductCache.setProducts(observableList); //  cache it
                 productTable.setItems(observableList);
                 if (observableList.isEmpty()) {
                     showAlert(Alert.AlertType.INFORMATION, "No Results", "No products found for the selected criteria.");

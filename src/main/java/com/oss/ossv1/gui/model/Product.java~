@@ -52,7 +52,7 @@ public class Product {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         com.oss.ossv1.data.entity.Product other = (com.oss.ossv1.data.entity.Product) obj;
-        return id != null && id.equals(other.getId());
+        return id != null && id.equals(other.id);
     }
 
     @Override

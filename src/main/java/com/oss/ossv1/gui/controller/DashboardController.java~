@@ -1,6 +1,5 @@
 package com.oss.ossv1.gui.controller;
 
-import com.oss.ossv1.gui.util.ProductCache;
 import com.oss.ossv1.service.OrderService;
 import com.oss.ossv1.service.ProductService;
 import com.oss.ossv1.service.ReviewService;
@@ -154,8 +153,6 @@ public class DashboardController {
     @FXML
     public void handleLogout() {
         UserSession.getInstance().clear();
-        ProductCache.clear();
-
         try {
             Parent loginRoot = FXMLLoader.load(getClass().getResource("/views/LoginView.fxml"));
             Scene loginScene = new Scene(loginRoot);

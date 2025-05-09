@@ -12,6 +12,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+import static com.oss.ossv1.gui.util.TableCellUtils.createCurrencyCell;
+
 public class CartController {
 
     @FXML
@@ -48,6 +50,9 @@ public class CartController {
             double discounted = data.getValue().getProduct().getDiscountedPrice(10); // Example: 10%
             return new javafx.beans.property.SimpleDoubleProperty(discounted).asObject();
         });
+        originalPriceColumn.setCellFactory(col -> createCurrencyCell());
+        discountedPriceColumn.setCellFactory(col -> createCurrencyCell());
+
         quantityColumn.setCellValueFactory(data -> data.getValue().quantityProperty().asObject());
 
         removeColumn.setCellFactory(col -> new TableCell<>() {

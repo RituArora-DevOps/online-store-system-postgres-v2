@@ -23,6 +23,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
+import static com.oss.ossv1.gui.util.TableCellUtils.createCurrencyCell;
+
 /**
  * Represents the OrderHistoryController class.
  */
@@ -52,6 +54,8 @@ public class OrderHistoryController {
         colOrderId.setCellValueFactory(new PropertyValueFactory<>("orderId"));
         colDate.setCellValueFactory(new PropertyValueFactory<>("orderDate"));
         colAmount.setCellValueFactory(new PropertyValueFactory<>("totalAmount"));
+        colAmount.setCellFactory(col -> createCurrencyCell());
+
         // Do NOT call loadOrders() here
     }
 

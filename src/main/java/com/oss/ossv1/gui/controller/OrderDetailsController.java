@@ -18,6 +18,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import static com.oss.ossv1.gui.util.TableCellUtils.createCurrencyCell;
+
 /**
  * Represents the OrderDetailsController class.
  */
@@ -71,6 +73,9 @@ public class OrderDetailsController {
         colQuantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
         colPrice.setCellValueFactory(new PropertyValueFactory<>("priceAtOrder"));
         colSubtotal.setCellValueFactory(new PropertyValueFactory<>("subtotal"));
+        colPrice.setCellFactory(col -> createCurrencyCell());
+        colSubtotal.setCellFactory(col -> createCurrencyCell());
+
     }
 
     @FXML

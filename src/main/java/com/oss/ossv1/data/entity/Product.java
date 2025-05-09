@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -66,7 +68,12 @@ public abstract class Product implements Serializable, Discountable {
         if (percent < 0 || percent > 100) {
             throw new IllegalArgumentException("Discount must be between 0 and 100.");
         }
-        return this.price - (this.price * (percent / 100.0));
+        double discounted = this.price - (this.price * (percent / 100.0));
+        // Use BigDecimal to round to 2 decimal places
+        BigDecimal bd = BigDecimal.valueOf(discounted);
+        bd = bd.setScale(2, RoundingMode.HALF_UP);
+
+        return bd.doubleValue();
     }
 
     public abstract String displayInfo();
