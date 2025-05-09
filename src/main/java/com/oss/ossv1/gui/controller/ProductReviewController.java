@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import com.oss.ossv1.data.entity.Order;
-import com.oss.ossv1.data.entity.OrderItem;
 import com.oss.ossv1.data.entity.Product;
 import com.oss.ossv1.data.entity.ProductReview;
 import com.oss.ossv1.service.OrderService;
@@ -35,7 +34,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
  */
 public class ProductReviewController implements Initializable {
 
-    // Table columns for displaying reviews
+    // Table to show all reviews
     @FXML private TableView<ProductReview> reviewsTable;
     @FXML private TableColumn<ProductReview, String> productColumn;
     @FXML private TableColumn<ProductReview, Integer> ratingColumn;
@@ -43,140 +42,129 @@ public class ProductReviewController implements Initializable {
     @FXML private TableColumn<ProductReview, String> dateColumn;
     @FXML private TableColumn<ProductReview, String> userColumn;
     
-    // Form controls for submitting reviews
-    @FXML private ComboBox<Product> productComboBox;
-    @FXML private ComboBox<Integer> ratingComboBox;
-    @FXML private TextArea commentTextArea;
-    @FXML private Button clearButton;
-    @FXML private Button submitButton;
+    // Form for writing new reviews
+    @FXML private ComboBox<Product> productComboBox;        // Dropdown to select product
+    @FXML private ComboBox<Integer> ratingComboBox;         // Dropdown for rating (1-5)
+    @FXML private TextArea commentTextArea;                 // Text box for review comment
+    @FXML private Button clearButton;                       // Clear form button
+    @FXML private Button submitButton;                      // Submit review button
 
-    // Services
+    // List to hold all reviews
+    private ObservableList<ProductReview> allReviews;
+    
+    // Services we need
     private ReviewService reviewService;
     private ProductService productService;
     private OrderService orderService;
-    private ObservableList<ProductReview> reviews;
 
     /**
      * Sets up the table columns and form controls.
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        reviews = FXCollections.observableArrayList();
-        reviewsTable.setItems(reviews);
+        // Create a list to hold the reviews
+        allReviews = FXCollections.observableArrayList();
+        reviewsTable.setItems(allReviews);
         
-        setupTableColumns();
-        setupRatingComboBox();
-        setupButtonHandlers();
+        // Set up the table columns
+        setupTable();
+        
+        // Set up the rating dropdown (1-5)
+        setupRatingDropdown();
+        
+        // Set up button actions
+        clearButton.setOnAction(e -> clearForm());
+        submitButton.setOnAction(e -> submitNewReview());
     }
 
     /**
-     * Sets up the table columns to display review information.
+     * Sets up the table columns to show review information
      */
-    private void setupTableColumns() {
-        productColumn.setCellValueFactory(cellData -> 
-            new SimpleStringProperty(cellData.getValue().getProduct().getName()));
-            
-        ratingColumn.setCellValueFactory(new PropertyValueFactory<>("rating"));
-            
-        commentColumn.setCellValueFactory(new PropertyValueFactory<>("comment"));
-            
-        dateColumn.setCellValueFactory(cellData -> {
-            LocalDateTime date = cellData.getValue().getReviewDate();
+    private void setupTable() {
+        // Show product name in first column
+        productColumn.setCellValueFactory(cell -> 
+            new SimpleStringProperty(cell.getValue().getProduct().getName()));
+        
+        // Show rating number in second column
+        ratingColumn.setCellValueFactory(
+            new PropertyValueFactory<>("rating"));
+        
+        // Show review comment in third column    
+        commentColumn.setCellValueFactory(
+            new PropertyValueFactory<>("comment"));
+        
+        // Show formatted date in fourth column
+        dateColumn.setCellValueFactory(cell -> {
+            LocalDateTime date = cell.getValue().getReviewDate();
             String formattedDate = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
             return new SimpleStringProperty(formattedDate);
         });
         
-        userColumn.setCellValueFactory(cellData -> 
-            new SimpleStringProperty(cellData.getValue().getUser().getUsername()));
+        // Show username in fifth column
+        userColumn.setCellValueFactory(cell -> 
+            new SimpleStringProperty(cell.getValue().getUser().getUsername()));
     }
 
     /**
-     * Configures the rating dropdown with values 1-5.
+     * Sets up the rating dropdown with numbers 1-5
      */
-    private void setupRatingComboBox() {
-        ObservableList<Integer> ratings = FXCollections.observableArrayList(1, 2, 3, 4, 5);
-        ratingComboBox.setItems(ratings);
-        
-        // Set cell factory to display rating values
-        ratingComboBox.setCellFactory(lv -> new ListCell<Integer>() {
-            @Override
-            protected void updateItem(Integer rating, boolean empty) {
-                super.updateItem(rating, empty);
-                setText(empty || rating == null ? "" : rating.toString());
-            }
-        });
-
-        ratingComboBox.setButtonCell(ratingComboBox.getCellFactory().call(null));
-
-        ratingComboBox.setPromptText("1-5");
+    private void setupRatingDropdown() {
+        // Add numbers 1-5 to the rating dropdown
+        ratingComboBox.setItems(FXCollections.observableArrayList(1, 2, 3, 4, 5));
+        ratingComboBox.setPromptText("Select 1-5");
     }
 
     /**
-     * Loads the products that the current user has purchased.
-     * Users can only review products they have bought.
+     * Loads the products that the current user has bought
      */
-    private void loadPurchasedProducts() {
+    private void loadUserProducts() {
+        // Check if user is logged in
         if (!UserSession.getInstance().isLoggedIn()) {
-            showAlert(Alert.AlertType.WARNING, "Not Logged In", "Please log in to write reviews.");
+            showMessage("Please log in first!", Alert.AlertType.WARNING);
             return;
         }
 
         try {
-            List<Order> userOrders = orderService.getOrdersByUserId(
-                UserSession.getInstance().getUser().getId().longValue()
-            );
+            // Get the current user's ID
+            Integer userId = UserSession.getInstance().getUser().getId();
+            
+            // Get all orders for this user
+            List<Order> userOrders = orderService.getOrdersByUserId(userId.longValue());
 
             if (userOrders.isEmpty()) {
-                showAlert(Alert.AlertType.INFORMATION, "No Purchases", 
-                    "You haven't purchased any products yet. Make a purchase to write a review.");
+                showMessage("You haven't bought any products yet!", Alert.AlertType.INFORMATION);
                 return;
             }
 
-            List<Product> purchasedProducts = userOrders.stream()
+            // Get all products from the orders
+            List<Product> boughtProducts = userOrders.stream()
                 .flatMap(order -> order.getItems().stream())
-                .map(OrderItem::getProduct)
+                .map(item -> item.getProduct())
                 .distinct()
-                .sorted((p1, p2) -> p1.getName().compareToIgnoreCase(p2.getName()))
+                .sorted((p1, p2) -> p1.getName().compareTo(p2.getName()))
                 .toList();
 
-            if (purchasedProducts.isEmpty()) {
-                showAlert(Alert.AlertType.INFORMATION, "No Products", 
-                    "No products found in your order history.");
-                return;
-            }
-
-            productComboBox.setItems(FXCollections.observableArrayList(purchasedProducts));
+            // Add products to the dropdown
+            productComboBox.setItems(FXCollections.observableArrayList(boughtProducts));
+            productComboBox.setPromptText("Choose a product");
             
-            productComboBox.setCellFactory(lv -> new ListCell<>() {
+            // Make products show their names in the dropdown
+            productComboBox.setCellFactory(cb -> new ListCell<Product>() {
                 @Override
                 protected void updateItem(Product product, boolean empty) {
                     super.updateItem(product, empty);
                     setText(empty || product == null ? "" : product.getName());
                 }
             });
-            productComboBox.setButtonCell(productComboBox.getCellFactory().call(null));
-
-            productComboBox.setPromptText("Select a purchased product");
-
+            
         } catch (Exception e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error", 
-                "Failed to load purchased products: " + e.getMessage());
+            showMessage("Error loading your products: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
-    private void setupButtonHandlers() {
-        clearButton.setOnAction(e -> clearForm());
-        submitButton.setOnAction(e -> submitReview());
-    }
-
-    private void loadReviews() {
-        if (reviewService != null) {
-            reviews.clear();
-            reviews.addAll(reviewService.getAllReviews());
-        }
-    }
-
+    /**
+     * Clears all the form fields
+     */
     private void clearForm() {
         productComboBox.setValue(null);
         ratingComboBox.setValue(null);
@@ -184,54 +172,73 @@ public class ProductReviewController implements Initializable {
     }
 
     /**
-     * Handles the review submission process.
-     * Validates input and creates a new review in the database.
+     * Submits a new review
      */
-    private void submitReview() {
+    private void submitNewReview() {
+        // Check if user is logged in
         if (!UserSession.getInstance().isLoggedIn()) {
-            showAlert(Alert.AlertType.WARNING, "Not Logged In", "Please log in to write reviews.");
+            showMessage("Please log in first!", Alert.AlertType.WARNING);
             return;
         }
 
-        Product product = productComboBox.getValue();
+        // Get values from form
+        Product selectedProduct = productComboBox.getValue();
         Integer rating = ratingComboBox.getValue();
         String comment = commentTextArea.getText().trim();
 
-        if (product == null || rating == null || comment.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Please fill in all fields");
+        // Check if all fields are filled
+        if (selectedProduct == null || rating == null || comment.isEmpty()) {
+            showMessage("Please fill in all fields!", Alert.AlertType.ERROR);
             return;
         }
 
         try {
-            ProductReview review = new ProductReview();
-            review.setProduct(product);
-            review.setRating(rating);
-            review.setComment(comment);
-            review.setReviewDate(LocalDateTime.now());
-            review.setUser(UserSession.getInstance().getUser());
+            // Create new review
+            ProductReview newReview = new ProductReview();
+            newReview.setProduct(selectedProduct);
+            newReview.setRating(rating);
+            newReview.setComment(comment);
+            newReview.setReviewDate(LocalDateTime.now());
+            newReview.setUser(UserSession.getInstance().getUser());
             
-            reviewService.createReview(review);
+            // Save review
+            reviewService.createReview(newReview);
             
+            // Clear form and reload reviews
             clearForm();
-            loadReviews();
-            showAlert(Alert.AlertType.INFORMATION, "Success", "Review submitted successfully");
+            loadAllReviews();
+            showMessage("Review submitted successfully!", Alert.AlertType.INFORMATION);
+            
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to submit review: " + e.getMessage());
+            showMessage("Error submitting review: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
-    private void showAlert(Alert.AlertType type, String title, String content) {
+    /**
+     * Shows a message popup to the user
+     */
+    private void showMessage(String message, Alert.AlertType type) {
         Alert alert = new Alert(type);
-        alert.setTitle(title);
+        alert.setTitle(type.toString());
         alert.setHeaderText(null);
-        alert.setContentText(content);
+        alert.setContentText(message);
         alert.showAndWait();
     }
 
-    // Service setters
+    /**
+     * Loads all reviews into the table
+     */
+    private void loadAllReviews() {
+        if (reviewService != null) {
+            allReviews.clear();
+            allReviews.addAll(reviewService.getAllReviews());
+        }
+    }
+
+    // Methods to set up our services
     public void setReviewService(ReviewService reviewService) {
         this.reviewService = reviewService;
-        loadReviews();
+        loadAllReviews();
     }
 
     public void setProductService(ProductService productService) {
@@ -240,6 +247,6 @@ public class ProductReviewController implements Initializable {
 
     public void setOrderService(OrderService orderService) {
         this.orderService = orderService;
-        loadPurchasedProducts();
+        loadUserProducts();
     }
 } 
