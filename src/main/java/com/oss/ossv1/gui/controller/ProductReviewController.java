@@ -81,26 +81,26 @@ public class ProductReviewController implements Initializable {
      * Sets up the table columns to show review information
      */
     private void setupTable() {
-        // Show product name in first column
+        // Show product name
         productColumn.setCellValueFactory(cell -> 
             new SimpleStringProperty(cell.getValue().getProduct().getName()));
         
-        // Show rating number in second column
+        // Show rating number
         ratingColumn.setCellValueFactory(
             new PropertyValueFactory<>("rating"));
         
-        // Show review comment in third column    
+        // Show review comment
         commentColumn.setCellValueFactory(
             new PropertyValueFactory<>("comment"));
         
-        // Show formatted date in fourth column
+        // Show formatted date
         dateColumn.setCellValueFactory(cell -> {
             LocalDateTime date = cell.getValue().getReviewDate();
             String formattedDate = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
             return new SimpleStringProperty(formattedDate);
         });
         
-        // Show username in fifth column
+        // Show username
         userColumn.setCellValueFactory(cell -> 
             new SimpleStringProperty(cell.getValue().getUser().getUsername()));
     }
@@ -186,7 +186,7 @@ public class ProductReviewController implements Initializable {
         Integer rating = ratingComboBox.getValue();
         String comment = commentTextArea.getText().trim();
 
-        // Check if all fields are filled
+        // Basic validation
         if (selectedProduct == null || rating == null || comment.isEmpty()) {
             showMessage("Please fill in all fields!", Alert.AlertType.ERROR);
             return;

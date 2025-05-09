@@ -49,41 +49,47 @@ public class ReviewService {
     
     /**
      * Gets a specific review using its ID
-     * @param id The ID of the review to find
-     * @return The review if found, null if not found
      */
     public ProductReview getReview(Integer id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Review ID cannot be null");
+        }
         return reviewRepository.findById(id).orElse(null);
     }
     
     /**
      * Creates a new review in the database
-     * @param review The review to save
-     * @return The saved review with its new ID
      */
     public ProductReview createReview(ProductReview review) {
-        // Make sure we set the current time for new reviews
+        if (review == null) {
+            throw new IllegalArgumentException("Review cannot be null");
+        }
+        if (review.getProduct() == null || review.getUser() == null) {
+            throw new IllegalArgumentException("Product and User must be specified");
+        }
+        if (review.getRating() < 1 || review.getRating() > 5) {
+            throw new IllegalArgumentException("Rating must be between 1 and 5");
+        }
+        
+        // Set current time if not set
         if (review.getReviewDate() == null) {
             review.setReviewDate(LocalDateTime.now());
         }
+        
         return reviewRepository.save(review);
     }
     
     /**
      * Creates a new review with individual fields
-     * @param product The product being reviewed
-     * @param user The user writing the review
-     * @param rating The rating (1-5)
-     * @param comment The review comment
-     * @return The saved review
      */
     public ProductReview createReview(Product product, User user, int rating, String comment) {
-        // Check that rating is between 1 and 5
+        if (product == null || user == null) {
+            throw new IllegalArgumentException("Product and User must be specified");
+        }
         if (rating < 1 || rating > 5) {
             throw new IllegalArgumentException("Rating must be between 1 and 5");
         }
         
-        // Create a new review
         ProductReview review = new ProductReview();
         review.setProduct(product);
         review.setUser(user);
@@ -91,42 +97,46 @@ public class ReviewService {
         review.setComment(comment);
         review.setReviewDate(LocalDateTime.now());
         
-        // Save it to database
         return reviewRepository.save(review);
     }
     
     /**
      * Updates an existing review
-     * @param review The review with updated information
-     * @return The updated review
      */
     public ProductReview updateReview(ProductReview review) {
+        if (review == null || review.getId() == null) {
+            throw new IllegalArgumentException("Review and Review ID must be specified");
+        }
         return reviewRepository.save(review);
     }
     
     /**
      * Deletes a review from the database
-     * @param id The ID of the review to delete
      */
     public void deleteReview(Integer id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Review ID cannot be null");
+        }
         reviewRepository.deleteById(id);
     }
     
     /**
      * Gets all reviews for a specific product
-     * @param product The product to find reviews for
-     * @return List of reviews for that product
      */
     public List<ProductReview> getReviewsByProduct(Product product) {
+        if (product == null) {
+            throw new IllegalArgumentException("Product cannot be null");
+        }
         return reviewRepository.findByProduct(product);
     }
     
     /**
      * Gets all reviews written by a specific user
-     * @param user The user to find reviews for
-     * @return List of reviews by that user
      */
     public List<ProductReview> getReviewsByUser(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
         return reviewRepository.findByUser(user);
     }
 }
