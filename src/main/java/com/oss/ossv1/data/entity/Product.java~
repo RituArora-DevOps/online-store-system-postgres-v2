@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*; // server-side validation using Jakarta Bean Validation annotations Hibernate Validator
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
@@ -30,6 +29,7 @@ import java.math.RoundingMode;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class Product implements Serializable, Discountable {

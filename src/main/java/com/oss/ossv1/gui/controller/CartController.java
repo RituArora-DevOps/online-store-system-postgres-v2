@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -56,12 +57,24 @@ public class CartController {
         quantityColumn.setCellValueFactory(data -> data.getValue().quantityProperty().asObject());
 
         removeColumn.setCellFactory(col -> new TableCell<>() {
+            private final Button minusBtn = new Button("-");
             private final Button removeBtn = new Button("X");
+            private final HBox buttonBox = new HBox(5, minusBtn, removeBtn); // spacing between buttons
+
             {
+                minusBtn.setOnAction(e -> {
+                    CartItem item = getTableView().getItems().get(getIndex());
+                    if (item.getQuantity() > 1) {
+                        item.setQuantity(item.getQuantity() - 1);
+                    } else {
+                        CartManager.getInstance().removeItem(item);
+                    }
+                    updateTotal();
+                });
+
                 removeBtn.setOnAction(e -> {
                     CartItem item = getTableView().getItems().get(getIndex());
                     CartManager.getInstance().removeItem(item);
-                    cartItemList.remove(item);
                     updateTotal();
                 });
             }
@@ -69,10 +82,9 @@ public class CartController {
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : removeBtn);
+                setGraphic(empty ? null : buttonBox);
             }
         });
-
 
         cartItemList = CartManager.getInstance().getCartItems(); // use the live observable list
 
@@ -88,10 +100,10 @@ public class CartController {
     }
 
     private void removeSelectedItem() {
+
         CartItem selected = cartTable.getSelectionModel().getSelectedItem();
         if (selected != null) {
             CartManager.getInstance().removeItem(selected);
-            cartItemList.remove(selected);
             updateTotal();
         }
     }

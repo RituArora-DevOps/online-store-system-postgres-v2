@@ -2,6 +2,8 @@ package com.oss.ossv1.gui.model;
 
 import javafx.beans.property.*;
 
+import java.util.Objects;
+
 public class CartItem {
     private final ObjectProperty<Product> product;
     private final IntegerProperty quantity;
@@ -42,4 +44,18 @@ public class CartItem {
     public ReadOnlyDoubleProperty totalPriceProperty() {
         return new SimpleDoubleProperty(getTotalPrice());
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CartItem that = (CartItem) o;
+        return Objects.equals(getProduct().getId(), that.getProduct().getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getProduct().getId());
+    }
+
 }

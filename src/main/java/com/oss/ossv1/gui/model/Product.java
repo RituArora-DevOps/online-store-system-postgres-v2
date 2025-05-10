@@ -51,12 +51,12 @@ public class Product {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        com.oss.ossv1.data.entity.Product other = (com.oss.ossv1.data.entity.Product) obj;
-        return id != null && id.equals(other.getId());
+        Product other = (Product) obj;
+        return getId() == other.getId();
     }
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        return Integer.hashCode(getId());
     }
 }

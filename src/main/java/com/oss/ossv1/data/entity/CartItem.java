@@ -37,4 +37,18 @@ public class CartItem {
     public double getTotalPrice() {
         return product.getPrice() * quantity;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CartItem other = (CartItem) o;
+        return this.getProduct().getId() == other.getProduct().getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(getProduct().getId());
+    }
+
 }

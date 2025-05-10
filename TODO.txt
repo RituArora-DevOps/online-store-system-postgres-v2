@@ -5,3 +5,5 @@ In the product listing, there should be separate tabs for different categories.
 
 Default discount is applied to all products currently, which is not a realistic scenario.
 
+A user does not need to login at first usage, the user must be able to see the products without login
+there can be offered to apply additional discount once logged in

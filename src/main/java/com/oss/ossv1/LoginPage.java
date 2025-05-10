@@ -35,6 +35,9 @@ public class LoginPage extends Application {
                 .headless(false) // Important for JavaFX GUI apps
                 .run();
 
+        // Clear product registry once at application startup -- please do not remove
+        com.oss.ossv1.gui.util.ProductRegistry.clear();
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/LoginView.fxml"));
         Scene scene = new Scene(loader.load());
         scene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());

@@ -1,6 +1,5 @@
 package com.oss.ossv1.gui.controller;
 
-import com.oss.ossv1.gui.util.ProductCache;
 import com.oss.ossv1.service.OrderService;
 import com.oss.ossv1.service.ProductService;
 import com.oss.ossv1.service.ReviewService;
@@ -19,6 +18,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * Controls the main dashboard view of the online store.
@@ -29,6 +31,7 @@ public class DashboardController {
     @FXML private BorderPane rootPane;
     @FXML private StackPane contentArea;
     @FXML private Label dashboardWelcomeLabel;
+    @FXML private final Map<String, Parent> viewCache = new HashMap<>();
 
     /**
      * Initializes the dashboard view.
@@ -154,7 +157,6 @@ public class DashboardController {
     @FXML
     public void handleLogout() {
         UserSession.getInstance().clear();
-        ProductCache.clear();
 
         try {
             Parent loginRoot = FXMLLoader.load(getClass().getResource("/views/LoginView.fxml"));
@@ -189,10 +191,56 @@ public class DashboardController {
 
     /**
      * Loads a view into the dashboard's content area.
-     */
+
     public void loadView(String fxml) {
         try {
             Parent view = FXMLLoader.load(getClass().getResource(fxml));
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(view);
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Navigation Error", null, "Unable to load view.");
+        }
+    }
+
+    // updated to debug wierd quantity increment and decrement
+    public void loadView(String fxml) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
+            Parent view = loader.load();
+
+            if (fxml.contains("ProductView")) {
+                ProductController pc = loader.getController();
+                System.out.println("Loaded ProductController once: " + pc);
+            }
+
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(view);
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Navigation Error", null, "Unable to load view.");
+        }
+    }
+     */
+
+    // Added by RA- to cache views/controllers in DashboardController so they’re only loaded once.
+
+    public void loadView(String fxml) {
+        try {
+            Parent view;
+            if (viewCache.containsKey(fxml)) {
+                view = viewCache.get(fxml);
+            } else {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
+                view = loader.load();
+                viewCache.put(fxml, view);
+
+                if (fxml.contains("ProductView")) {
+                    ProductController pc = loader.getController();
+                    System.out.println("Loaded ProductController once: " + pc);
+                }
+            }
+
             contentArea.getChildren().clear();
             contentArea.getChildren().add(view);
         } catch (IOException e) {

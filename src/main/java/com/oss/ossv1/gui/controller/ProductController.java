@@ -9,8 +9,8 @@ import java.util.Scanner;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oss.ossv1.gui.model.Product;
+import com.oss.ossv1.gui.util.ProductRegistry;
 
-import com.oss.ossv1.gui.util.ProductCache;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -49,15 +49,17 @@ public class ProductController {
     @FXML private String lastMaxPrice;
     @FXML private TableColumn<Product, Double> originalPriceColumn;
 
+    private boolean actionColumnInitialized = false;
 
     @FXML
     public void initialize() {
-        // Reset filters every time this view is loaded fresh
+        System.out.println("🌀 ProductController initialized: " + this + " | Hash: " + this.hashCode());
+
+        ProductRegistry.clear();
         lastSelectedCategory = null;
         lastMinPrice = "";
         lastMaxPrice = "";
 
-        // Table column bindings
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
@@ -65,76 +67,78 @@ public class ProductController {
 
         priceColumn.setCellValueFactory(cellData -> {
             Product product = cellData.getValue();
-            double discounted = product.getDiscountedPrice(10); // 10% discount
+            double discounted = product.getDiscountedPrice(10);
             return new SimpleDoubleProperty(discounted).asObject();
         });
 
-        // Apply formatting
         originalPriceColumn.setCellFactory(col -> createCurrencyCell());
         priceColumn.setCellFactory(col -> createCurrencyCell());
         categoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
 
-        actionColumn.setCellFactory(col -> new TableCell<>() {
-            private final Button addButton = new Button("Add to Cart");
+        if (!actionColumnInitialized) {
+            actionColumn.setCellFactory(col -> new TableCell<>() {
+                private final Button addButton = new Button("Add to Cart");
 
-            {
-                addButton.setOnAction(e -> {
-                    Product selectedProduct = getTableView().getItems().get(getIndex());
+                @Override
+                protected void updateItem(Void item, boolean empty) {
+                    super.updateItem(item, empty);
 
-                    CartManager.getInstance().addToCart(selectedProduct);
+                    int row = getIndex();
+                    if (empty || row < 0 || row >= getTableView().getItems().size()) {
+                        setGraphic(null);
+                    } else {
+                        Product product = getTableView().getItems().get(row);
+                        System.out.println("🛠️ Add button created for product ID: " + product.getId());
 
-                    System.out.println("Added to cart: " + selectedProduct.getName() + " - $" + selectedProduct.getPrice());
-                });
-            }
+                        addButton.setOnAction(e -> {
+                            System.out.println("🛒 [CLICK] Add to Cart for: " + product.getName() + " | ID: " + product.getId());
+                            System.out.println("🔁 addToCart called");
+                            CartManager.getInstance().addToCart(product);
+                        });
 
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : addButton);
-            }
-        });
-
-        // Category dropdown options
-        categoryCombo.getItems().addAll("clothing", "electronics", "grocery");
-
-        if (ProductCache.isEmpty()) {
-            fetchProductsFromUrl("http://localhost:8080/products");
-        } else {
-            productTable.setItems(ProductCache.getProducts());
+                        setGraphic(addButton);
+                    }
+                }
+            });
+            actionColumnInitialized = true;
         }
+
+
+        categoryCombo.getItems().addAll("clothing", "electronics", "grocery");
+        fetchProductsFromUrl("http://localhost:8080/products");
     }
+
+
 
     private void fetchProductsFromUrl(String urlString) {
         try {
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-            connection.setConnectTimeout(5000); // 5 second timeout
+            connection.setConnectTimeout(5000);
 
-            try {
-                Scanner scanner = new Scanner(connection.getInputStream());
+            try (Scanner scanner = new Scanner(connection.getInputStream())) {
                 StringBuilder json = new StringBuilder();
                 while (scanner.hasNext()) {
                     json.append(scanner.nextLine());
                 }
-                scanner.close();
 
                 ObjectMapper mapper = new ObjectMapper();
                 List<Product> productList = mapper.readValue(json.toString(), new TypeReference<>() {});
-                ObservableList<Product> observableList = FXCollections.observableArrayList(productList);
-                ProductCache.setProducts(observableList); //  cache it
+                ObservableList<Product> observableList = FXCollections.observableArrayList();
+                for (Product p : productList) {
+                    ProductRegistry.register(p); // Store if not present
+                    observableList.add(ProductRegistry.get(p.getId())); // Always use same instance
+                }
+
                 productTable.setItems(observableList);
+
                 if (observableList.isEmpty()) {
                     showAlert(Alert.AlertType.INFORMATION, "No Results", "No products found for the selected criteria.");
                 }
-            } catch (IOException e) {
-                showAlert(Alert.AlertType.ERROR, "Connection Error", 
-                    "Could not read data from server. Make sure the Spring Boot application is running on port 8080.");
-                e.printStackTrace();
             }
-        } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Connection Error", 
-                "Could not connect to server. Make sure the Spring Boot application is running on port 8080.");
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Connection Error", "Could not read or connect to the server.");
             e.printStackTrace();
         }
     }
@@ -157,7 +161,6 @@ public class ProductController {
         fetchProductsFromUrl(url);
     }
 
-
     @FXML
     public void onClearClicked() {
         categoryCombo.setValue(lastSelectedCategory);
@@ -178,7 +181,6 @@ public class ProductController {
     @FXML
     private void handleViewCart() {
         try {
-            // Get the dashboard controller from the scene
             Scene scene = productTable.getScene();
             DashboardController dashboard = (DashboardController) scene.getRoot().getUserData();
             dashboard.navigateToCart();
@@ -202,5 +204,4 @@ public class ProductController {
             showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load Dashboard view.");
         }
     }
-
 }
