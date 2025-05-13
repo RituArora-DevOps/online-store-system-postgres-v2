@@ -75,34 +75,37 @@ public class ProductController {
         priceColumn.setCellFactory(col -> createCurrencyCell());
         categoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
 
-        if (!actionColumnInitialized) {
-            actionColumn.setCellFactory(col -> new TableCell<>() {
-                private final Button addButton = new Button("Add to Cart");
+        actionColumn.setCellFactory(col -> new TableCell<>() {
+            private final Button addButton = new Button("Add to Cart");
+            private Product boundProduct;
 
-                @Override
-                protected void updateItem(Void item, boolean empty) {
-                    super.updateItem(item, empty);
+            {
+                addButton.getStyleClass().add("add-to-cart-button");
 
-                    int row = getIndex();
-                    if (empty || row < 0 || row >= getTableView().getItems().size()) {
-                        setGraphic(null);
-                    } else {
-                        Product product = getTableView().getItems().get(row);
-                        System.out.println("🛠️ Add button created for product ID: " + product.getId());
-
-                        addButton.setOnAction(e -> {
-                            System.out.println("🛒 [CLICK] Add to Cart for: " + product.getName() + " | ID: " + product.getId());
-                            System.out.println("🔁 addToCart called");
-                            CartManager.getInstance().addToCart(product);
-                        });
-
-                        setGraphic(addButton);
+                // This handler never changes — just uses the latest bound product
+                addButton.setOnAction(e -> {
+                    if (boundProduct != null) {
+                        System.out.println("🛒 [CLICK] Add to Cart for: " + boundProduct.getName() + " | ID: " + boundProduct.getId());
+                        CartManager.getInstance().addToCart(boundProduct);
+                        e.consume();
                     }
-                }
-            });
-            actionColumnInitialized = true;
-        }
+                });
+            }
 
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+
+                int index = getIndex();
+                if (empty || index < 0 || index >= getTableView().getItems().size()) {
+                    boundProduct = null;
+                    setGraphic(null);
+                } else {
+                    boundProduct = getTableView().getItems().get(index);
+                    setGraphic(addButton);
+                }
+            }
+        });
 
         categoryCombo.getItems().addAll("clothing", "electronics", "grocery");
         fetchProductsFromUrl("http://localhost:8080/products");

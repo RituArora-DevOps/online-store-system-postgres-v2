@@ -28,33 +28,25 @@ public class CartManager {
         return cartItems;
     }
 
-    public void addToCart(Product product) {
-        System.out.println("🔁 addToCart called");
-        Product canonical = ProductRegistry.get(product.getId());
-        if (canonical == null) {
-            System.out.println("[WARN] Product not in registry: " + product.getId());
-            canonical = product;
-            ProductRegistry.register(product);
-        }
-
-        System.out.println(">>> ADD TO CART: " + canonical.getName() + " | ID: " + canonical.getId());
+    public synchronized void addToCart(Product product) {
+        // Defensive copy to break shared reference
+        Product copy = new Product(product.getId(), product.getName(), product.getDescription(), product.getPrice(), product.getCategory() );
 
         for (CartItem item : cartItems) {
-            System.out.println("... comparing to: " + item.getProduct().getName() + " | ID: " + item.getProduct().getId());
-            if (Objects.equals(item.getProduct().getId(), canonical.getId())) {
-                System.out.println("Before increment: Qty = " + item.getQuantity());
-                item.setQuantity(item.getQuantity() + 1);
+            if (item.getProduct().getId() == copy.getId())  {
+                System.out.println("... comparing to: " + copy.getName() + " | ID: " + copy.getId());
+                int qty = item.getQuantity();
+                System.out.println("Before increment: Qty = " + qty);
+                item.setQuantity(qty + 1);
                 System.out.println("After increment: Qty = " + item.getQuantity());
-                printCartState();
                 return;
             }
         }
 
-        CartItem newItem = new CartItem(canonical, 1);
-        cartItems.add(newItem);
-        System.out.println("NEW item added to cart: " + canonical.getName());
-        printCartState();
+        cartItems.add(new CartItem(copy, 1));
+        System.out.println("NEW item added to cart: " + copy.getName());
     }
+
 
     private void printCartState() {
         System.out.println("🧾 === CURRENT CART STATE ===");
