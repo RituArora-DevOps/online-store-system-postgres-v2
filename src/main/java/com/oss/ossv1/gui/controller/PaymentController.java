@@ -12,11 +12,13 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class PaymentController {
 
     @FXML private ComboBox<String> paymentMethodCombo;
@@ -103,7 +105,11 @@ public class PaymentController {
         List<OrderItem> orderItems = new ArrayList<>();
 
         Order order = new Order();
-        order.setUserId(Long.valueOf(UserSession.getInstance().getUser().getId()));
+        //order.setUserId(Long.valueOf(UserSession.getInstance().getUser().getId()));
+        User user = new User();
+        user.setId(UserSession.getInstance().getUser().getId());
+        order.setUser(user);
+
         order.setOrderDate(LocalDateTime.now());
 
         for (CartItem guiItem : cartItems) {
@@ -139,7 +145,9 @@ public class PaymentController {
 
             payment.setAmount(model.getAmount());
             payment.setPaymentDate(model.getPaymentDate());
-            payment.setOrder(order);
+            //payment.setOrder(order);
+            // Not needed any more, since we have removed the reverse mapping from Payment to Order.
+            // Reverse mapping was not needed as Order entity has a one-to-one relationship with Payment entity.
             order.setPayment(payment);
 
             orderService.saveOrder(order);
@@ -158,7 +166,7 @@ public class PaymentController {
             payment.setPaypalEmail(model.getPaypalEmail());
             payment.setAmount(model.getAmount());
             payment.setPaymentDate(model.getPaymentDate());
-            payment.setOrder(order);
+            //payment.setOrder(order); The method does not exist now. This have been removed from PayPalPayment entity
             order.setPayment(payment);
 
             orderService.saveOrder(order);

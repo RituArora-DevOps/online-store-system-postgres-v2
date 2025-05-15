@@ -2,6 +2,7 @@ package com.oss.ossv1.service;
 
 import java.util.ArrayList;
 
+import com.oss.ossv1.data.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +43,9 @@ public class CartService {
         // If no cart exists, create a new one
         if (cart == null) {
             cart = new Cart();
-            cart.setUserId(userId);
+            User user = new User();
+            user.setId(userId);
+            cart.setUser(user);
             cart.setItems(new ArrayList<>());
             cart = cartRepository.save(cart);
         }

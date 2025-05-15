@@ -8,7 +8,7 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "CreditCardPayment")
+@Table(name = "credit_card_payment")
 @PrimaryKeyJoinColumn(name = "id") // FK to payment table
 @Data
 @NoArgsConstructor
@@ -31,9 +31,10 @@ public class CreditCardPayment extends PaymentEntity implements Payment {
     @Pattern(regexp = "\\d{3,4}", message = "CVV must be 3 or 4 digits")
     private String cvv;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
+    // check PayPalPayment class for explanation
+    //    @ManyToOne
+//    @JoinColumn(name = "order_id")
+//    private Order order;
 
     @Override
     public boolean processPayment(double amount) {
@@ -43,11 +44,12 @@ public class CreditCardPayment extends PaymentEntity implements Payment {
         return true; // simulate success
     }
 
-    public void setOrder(Order order) {
-        this.order = order;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
+    // check PayPalPayment class for explanation
+//    public void setOrder(Order order) {
+//        this.order = order;
+//    }
+//
+//    public Order getOrder() {
+//        return order;
+//    }
 }

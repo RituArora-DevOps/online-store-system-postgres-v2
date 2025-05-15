@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "users") // matches your table name exactly
+@Table(name = "Users") // matches your table name exactly
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

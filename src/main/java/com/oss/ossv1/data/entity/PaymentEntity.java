@@ -6,7 +6,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Payment")
+@Table(name = "payment")
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @NoArgsConstructor

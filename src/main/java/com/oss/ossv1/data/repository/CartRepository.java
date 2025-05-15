@@ -9,4 +9,4 @@ import com.oss.ossv1.data.entity.Cart;
 public interface CartRepository extends JpaRepository<Cart, Integer> {
     // Find cart by user ID
     Cart findByUserId(Integer userId);
-} 
+}

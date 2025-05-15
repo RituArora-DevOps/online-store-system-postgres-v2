@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
  * information about the reviews done by the users for the products they have purchased.
  */
 @Entity
-@Table(name = "ProductReview", schema = "dbo")
+@Table(name = "product_review")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

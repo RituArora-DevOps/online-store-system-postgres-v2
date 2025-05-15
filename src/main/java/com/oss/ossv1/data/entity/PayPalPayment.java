@@ -8,7 +8,7 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "PayPalPayment")
+@Table(name = "pay_pal_payment")
 @PrimaryKeyJoinColumn(name = "id") // FK to PaymentEntity
 @Data
 @NoArgsConstructor
@@ -21,9 +21,13 @@ public class PayPalPayment extends PaymentEntity implements Payment {
     @Email(message = "Invalid PayPal email format")
     private String paypalEmail;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
+    // Avoid Reverse Mapping
+    // Unnecessary unless you're accessing the Order from the payment side
+    // Creates extra columns and connections that may confuse your DB diagram
+
+//    @ManyToOne
+//    @JoinColumn(name = "order_id")
+//    private Order order;
 
     @Override
     public boolean processPayment(double amount) {
@@ -33,11 +37,12 @@ public class PayPalPayment extends PaymentEntity implements Payment {
         return true;
     }
 
-    public void setOrder(Order order) {
-        this.order = order;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
+    // removed to leave Order -> PaymentEntity mapping as the only direction, which is cleaner and accurate. Otherwise, it was bidirectional.
+//    public void setOrder(Order order) {
+//        this.order = order;
+//    }
+//
+//    public Order getOrder() {
+//        return order;
+//    }
 }

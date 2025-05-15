@@ -7,15 +7,11 @@ import java.sql.SQLException;
 public class DBConnectionTest {
 
     public static void main(String[] args) {
-        String url = "jdbc:sqlserver://online-store-project.database.windows.net:1433;" +
-                "database=OnlineStoreDB;" +
-                "user=sqladmin@online-store-project;" +
-                "password=mQ_//}66M49b;" +
-                "encrypt=true;" +
-                "trustServerCertificate=false;" +
-                "loginTimeout=30;";
+        String url = "jdbc:mysql://69.16.227.64:3306/cp5114_team4_oss?useSSL=false&serverTimezone=UTC";
+        String username = "cp5114_team4_oss";
+        String password = "Vj!9r)VSVIpP";
 
-        try (Connection connection = DriverManager.getConnection(url)) {
+        try (Connection connection = DriverManager.getConnection(url, username, password)) {
             System.out.println("✅ Connection successful!");
         } catch (SQLException e) {
             System.err.println("❌ Connection failed:");

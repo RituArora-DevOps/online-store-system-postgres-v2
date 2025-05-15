@@ -26,7 +26,7 @@ import java.math.RoundingMode;
         @JsonSubTypes.Type(value = Grocery.class, name = "grocery")
 })
 @Entity
-@Table(name = "Products")
+@Table(name = "products")
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)

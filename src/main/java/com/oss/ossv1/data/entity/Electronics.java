@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import jakarta.validation.constraints.Min;
 
 @Entity
-@Table(name = "Electronics")
+@Table(name = "electronics")
 @PrimaryKeyJoinColumn(name = "product_id") // maps inheritance to Product ID
 @Data
 @NoArgsConstructor

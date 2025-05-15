@@ -30,7 +30,13 @@ public class OrderService {
  */
     public Order placeOrder(OrderRequestDTO dto) {
         Order order = new Order();
-        order.setUserId(dto.getUserId());
+
+        //order.setUserId(dto.getUserId());
+        // This wraps the userId in a User object. JPA will handle the foreign key association.
+        User user = new User();
+        user.setId(Math.toIntExact(dto.getUserId()));
+        order.setUser(user);
+
         order.setOrderDate(LocalDateTime.now());
 
         List<OrderItem> items = new ArrayList<>();

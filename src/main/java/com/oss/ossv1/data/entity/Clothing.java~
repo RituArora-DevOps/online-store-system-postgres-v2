@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Size;
 // such as when creating/updating via REST controller with @RequestBody.
 
 @Entity
-@Table(name = "clothing")
+@Table(name = "Clothing")
 @PrimaryKeyJoinColumn(name = "product_id")
 @Data
 @NoArgsConstructor

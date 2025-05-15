@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "Grocery")
+@Table(name = "grocery")
 @PrimaryKeyJoinColumn(name = "product_id")
 @Data
 @NoArgsConstructor

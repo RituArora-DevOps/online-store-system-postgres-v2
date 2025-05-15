@@ -11,10 +11,8 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     List<Order> findByUserId(Long userId);
 
     // Custom query to fetch items eagerly
-    @Query("SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.items WHERE o.user.id = :userId")
-
     //@Query("SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.items WHERE o.userId = :userId")
-
+    
     List<Order> findWithItemsByUserId(@Param("userId") Long userId);
 
     // For Order Details page
