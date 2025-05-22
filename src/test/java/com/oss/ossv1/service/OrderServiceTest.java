@@ -65,12 +65,38 @@ class OrderServiceTest {
 
         when(productRepository.findById(101)).thenReturn(Optional.of(electronics));
         when(productRepository.findById(102)).thenReturn(Optional.of(grocery));
-        when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
 
+        //  MOCK SAVE BEFORE calling placeOrder()
+        User user = new User();
+        user.setId(7);
+        Order mockOrder = new Order();
+        mockOrder.setOrderId(777L);
+        mockOrder.setUser(user);
+        OrderItem itemA = new OrderItem();
+        itemA.setProduct(electronics);
+        itemA.setQuantity(1);
+        itemA.setPriceAtOrder(59.99);
+        itemA.setOrder(mockOrder);
+
+        OrderItem itemB = new OrderItem();
+        itemB.setProduct(grocery);
+        itemB.setQuantity(3);
+        itemB.setPriceAtOrder(2.99);
+        itemB.setOrder(mockOrder);
+
+        mockOrder.setItems(List.of(itemA, itemB));
+
+
+        mockOrder.setPayment(new PayPalPayment());
+
+        when(orderRepository.save(any(Order.class))).thenReturn(mockOrder);
+
+        //  Now this will use the mock properly
         Order savedOrder = orderService.placeOrder(request);
 
         assertNotNull(savedOrder);
-        assertEquals(7L, savedOrder.getUserId());
+        // Changed: userID=d check now goes through user.getId()
+        assertEquals(7, savedOrder.getUser().getId());
         assertEquals(2, savedOrder.getItems().size());
         assertTrue(savedOrder.getItems().stream().anyMatch(i -> i.getProduct() instanceof Electronics));
         assertTrue(savedOrder.getItems().stream().anyMatch(i -> i.getProduct() instanceof Grocery));
@@ -106,19 +132,23 @@ class OrderServiceTest {
 
     @Test
     void testGetOrdersByUserId_returnsList() {
+        User user = new User(); // Added: Create a User object
+        user.setId(1);
+
         Order order1 = new Order();
         order1.setOrderId(1L);
-        order1.setUserId(1L);
+        order1.setUser(user); // changed from setUserId()
         Order order2 = new Order();
         order2.setOrderId(2L);
-        order2.setUserId(1L);
+        order2.setUser(user); // changed from setUserId()
 
-        when(orderRepository.findByUserId(1L)).thenReturn(List.of(order1, order2));
+    // Added Mock call
+        when(orderRepository.findByUser_Id(1L)).thenReturn(List.of(order1, order2)); //  Mock call
 
         List<Order> orders = orderService.getOrdersByUserId(1L);
 
         assertEquals(2, orders.size());
-        assertEquals(1L, orders.get(0).getUserId());
+        assertEquals(1, orders.get(0).getUser().getId()); // changed from getUserId()
 
         // Print order IDs
         System.out.println("Fetched Orders for userId=1:");

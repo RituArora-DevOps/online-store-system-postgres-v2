@@ -27,6 +27,7 @@ import java.math.RoundingMode;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Getter
 @Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class Product implements Serializable, Discountable {

@@ -2,6 +2,7 @@ package com.oss.ossv1.gui.controller;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Scanner;
@@ -115,7 +116,7 @@ public class ProductController {
 
     private void fetchProductsFromUrl(String urlString) {
         try {
-            URL url = new URL(urlString);
+            URL url = URI.create(urlString).toURL();
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setConnectTimeout(5000);

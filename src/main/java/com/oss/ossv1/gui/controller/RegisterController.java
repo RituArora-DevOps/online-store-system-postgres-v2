@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
@@ -33,7 +34,7 @@ public class RegisterController {
         String password = passwordField.getText();
 
         try {
-            URL url = new URL("http://localhost:8080/api/users/register");
+            URL url = URI.create("http://localhost:8080/api/users/register").toURL();
             String postData = "username=" + username +
                     "&email=" + email +
                     "&password=" + password;

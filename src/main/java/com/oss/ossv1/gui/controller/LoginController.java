@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
@@ -35,7 +36,7 @@ public class LoginController {
         String password = passwordField.getText();
 
         try {
-            URL url = new URL("http://localhost:8080/api/users/login");
+            URL url = URI.create("http://localhost:8080/api/users/login").toURL();
             String postData = "username=" + username + "&password=" + password;
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();

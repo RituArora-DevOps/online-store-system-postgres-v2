@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 public interface OrderRepository extends JpaRepository<Order, Integer> {
 
-    List<Order> findByUserId(Long userId);
+    List<Order> findByUser_Id(Long userId);
 
     // Custom query to fetch items eagerly
     @Query("SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.items WHERE o.user.id = :userId")
