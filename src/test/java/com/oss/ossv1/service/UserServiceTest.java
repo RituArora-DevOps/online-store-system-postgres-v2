@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Represents the { class.
+ * Unit tests for UserService
  */
 class UserServiceTest {
 

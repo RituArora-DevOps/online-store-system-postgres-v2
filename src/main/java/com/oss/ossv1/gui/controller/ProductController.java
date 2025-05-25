@@ -10,6 +10,7 @@ import java.util.Scanner;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oss.ossv1.gui.model.Product;
+import com.oss.ossv1.creational.SingletonStore;
 import com.oss.ossv1.gui.util.ProductRegistry;
 
 import javafx.beans.property.SimpleDoubleProperty;
@@ -54,7 +55,7 @@ public class ProductController {
 
     @FXML
     public void initialize() {
-        System.out.println("🌀 ProductController initialized: " + this + " | Hash: " + this.hashCode());
+        System.out.println(" ProductController initialized: " + this + " | Hash: " + this.hashCode());
 
         ProductRegistry.clear();
         lastSelectedCategory = null;
@@ -86,7 +87,7 @@ public class ProductController {
                 // This handler never changes — just uses the latest bound product
                 addButton.setOnAction(e -> {
                     if (boundProduct != null) {
-                        System.out.println("🛒 [CLICK] Add to Cart for: " + boundProduct.getName() + " | ID: " + boundProduct.getId());
+                        System.out.println(" [CLICK] Add to Cart for: " + boundProduct.getName() + " | ID: " + boundProduct.getId());
                         CartManager.getInstance().addToCart(boundProduct);
                         e.consume();
                     }
@@ -109,10 +110,23 @@ public class ProductController {
         });
 
         categoryCombo.getItems().addAll("clothing", "electronics", "grocery");
-        fetchProductsFromUrl("http://localhost:8080/products");
+
+        // If cache is empty, fetch from server once. Else use cached.
+            if (SingletonStore.getInstance().getProducts().isEmpty()) {
+                fetchProductsFromUrl("http://localhost:8080/products");
+            } else {
+                setProductsToTable(SingletonStore.getInstance().getProducts());
+            }
     }
 
-
+    private void setProductsToTable(List<Product> products) {
+        ObservableList<Product> observable = FXCollections.observableArrayList();
+        for (Product p : products) {
+            ProductRegistry.register(p);
+            observable.add(ProductRegistry.get(p.getId()));
+        }
+        productTable.setItems(observable);
+    }
 
     private void fetchProductsFromUrl(String urlString) {
         try {
@@ -128,7 +142,7 @@ public class ProductController {
                 }
 
                 ObjectMapper mapper = new ObjectMapper();
-                List<Product> productList = mapper.readValue(json.toString(), new TypeReference<>() {});
+                List<Product> productList = mapper.readValue(json.toString(), new TypeReference<List<Product>>() {});
                 ObservableList<Product> observableList = FXCollections.observableArrayList();
                 for (Product p : productList) {
                     ProductRegistry.register(p); // Store if not present
