@@ -64,3 +64,15 @@ public class ProductService {
 // without writing any SQL or JPQL yourself.
 // public interface ProductRepository extends JpaRepository<Product, Integer> {
 //}
+
+/**
+| Principle   | Status | Notes                                                                                                                           |
+| ----------- | ------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| **S (SRP)** | ✅      | The controller does one thing: handle HTTP requests and responses. It delegates all business logic to `ProductService`.         |
+| **O (OCP)** | ✅      | You can add new endpoints (e.g., `/products/rating`, `/products/in-stock`) without modifying existing code.                     |
+| **L (LSP)** | ✅      | Not directly relevant in controller logic, but still compatible with returning subclassed `Product` types.                      |
+| **I (ISP)** | ✅      | Only exposes minimal methods required by each endpoint. You’re not implementing any bloated interfaces here.                    |
+| **D (DIP)** | ✅      | Depends on `ProductService` interface/abstraction (not its implementation), injected via Spring — clear separation of concerns. |
+
+*/
+
