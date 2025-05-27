@@ -109,11 +109,10 @@ public class CartController {
     }
 
     private void updateTotal() {
-        double total = cartItemList.stream()
-                .mapToDouble(CartItem::getTotalPrice)
-                .sum();
-        totalLabel.setText(String.format("$%.2f", total));
+        double total = CartManager.getInstance().calculateDiscountedTotal();
+        totalLabel.setText(String.format("Total: $%.2f", total));
     }
+
 
     private void handleCheckout() {
         try {
@@ -128,7 +127,7 @@ public class CartController {
                 
                 // Get controller and pass the amount
                 PaymentController controller = loader.getController();
-                double total = CartManager.getInstance().calculateTotal();
+                double total = CartManager.getInstance().calculateDiscountedTotal();
                 controller.setAmount(total);
                 
                 // Add the view to the dashboard

@@ -14,9 +14,14 @@
 
     <Label text="Checkout Payment" styleClass="heading"/>
 
-    <HBox spacing="10" alignment="CENTER_LEFT">
-        <Label text="Amount:"/>
-        <TextField fx:id="amountField" promptText="Enter total amount"/>
+    <HBox spacing="10">
+        <Label text="Original Total:" />
+        <Label fx:id="originalTotalLabel" />
+    </HBox>
+
+    <HBox spacing="10">
+        <Label text="Discounted Amount:" />
+        <Label fx:id="amountField" />
     </HBox>
 
     <HBox spacing="10" alignment="CENTER_LEFT">
