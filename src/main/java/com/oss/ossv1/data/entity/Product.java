@@ -12,6 +12,10 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+// SRP (Single Responsibility Principle)
+// This class only represents the core attributes and shared behavior of a product.
+// It does NOT handle persistence, UI, or business logic beyond basic discounting.
+// Good separation of concerns.
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,
