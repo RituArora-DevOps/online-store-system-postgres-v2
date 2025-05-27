@@ -8,12 +8,19 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.oss.ossv1.gui.model.Clothing;
+import com.oss.ossv1.gui.model.Electronics;
+import com.oss.ossv1.gui.model.Grocery;
 import com.oss.ossv1.gui.model.Product;
 import com.oss.ossv1.creational.SingletonStore;
 import com.oss.ossv1.gui.util.ProductRegistry;
+import com.oss.ossv1.creational.ProductFactory; // Added: For creating correct product subclass
+import com.oss.ossv1.creational.ProductFactoryProvider; // Added: Central registry for factories
 
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -142,18 +149,36 @@ public class ProductController {
                 }
 
                 ObjectMapper mapper = new ObjectMapper();
-                List<Product> productList = mapper.readValue(json.toString(), new TypeReference<List<Product>>() {});
-                ObservableList<Product> observableList = FXCollections.observableArrayList();
-                for (Product p : productList) {
-                    ProductRegistry.register(p); // Store if not present
-                    observableList.add(ProductRegistry.get(p.getId())); // Always use same instance
+                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // Ignore unknown or extra fields
+                // We configure Jackson to ignore extra JSON fields so parsing doesn't break even if the backend sends more fields.
+                List<Product> rawList = mapper.readValue(json.toString(), new TypeReference<>() {}); //  Base list
+                // JSON response is parsed into a list of base Product objects, but these only contain common fields like name, price, id, etc.
+
+                ObservableList<Product> enrichedList = FXCollections.observableArrayList();
+                for (Product base : rawList) {
+                    // Create the correct subclass instance using Factory pattern
+                    ProductFactory factory = ProductFactoryProvider.getFactory(base.getCategory()); //  Get correct factory
+                    Product full = factory.createProduct(); //  Create correct subclass (Clothing, Electronics, etc.)
+
+                    // Copy the shared fields from the raw base product into the correct subclass instance.
+                    full.setId(base.getId());
+                    full.setName(base.getName());
+                    full.setDescription(base.getDescription());
+                    full.setPrice(base.getPrice());
+                    full.setCategory(base.getCategory());
+
+                    ProductRegistry.register(full); // Cache each object using a registry to avoid duplicates.
+                    enrichedList.add(ProductRegistry.get(full.getId())); // Then add the correct subclass into the observable list.
                 }
 
-                productTable.setItems(observableList);
-
-                if (observableList.isEmpty()) {
-                    showAlert(Alert.AlertType.INFORMATION, "No Results", "No products found for the selected criteria.");
+                SingletonStore.getInstance().setProducts(enrichedList); // Store it into a singleton in-memory cache for reuse.
+                productTable.setItems(enrichedList); //  Populate table with subclass-rich Product objects.
+                productTable.setItems(enrichedList); //  Display products
+                if (!enrichedList.isEmpty()) {
+                    updateDynamicColumns(enrichedList.get(0).getCategory()); // Adjust columns
+                    // Dynamically switch UI columns based on the type of product
                 }
+
             }
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Connection Error", "Could not read or connect to the server.");
@@ -222,4 +247,57 @@ public class ProductController {
             showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load Dashboard view.");
         }
     }
+
+    private void updateDynamicColumns(String category) {
+        // Remove previously added dynamic columns
+        productTable.getColumns().removeIf(col -> "dynamic".equals(col.getUserData()));
+
+        // Add Size and Color columns only for clothing using JavaFX Property.
+        if ("clothing".equalsIgnoreCase(category)) {
+            TableColumn<Product, String> sizeCol = new TableColumn<>("Size");
+            sizeCol.setCellValueFactory(cellData -> {
+                if (cellData.getValue() instanceof Clothing clothing) {
+                    return clothing.sizeProperty();
+                }
+                return null;
+            });
+            sizeCol.setUserData("dynamic");
+
+            TableColumn<Product, String> colorCol = new TableColumn<>("Color");
+            colorCol.setCellValueFactory(cellData -> {
+                if (cellData.getValue() instanceof Clothing clothing) {
+                    return clothing.colorProperty();
+                }
+                return null;
+            });
+            colorCol.setUserData("dynamic");
+
+            productTable.getColumns().addAll(sizeCol, colorCol);
+
+        } else if ("electronics".equalsIgnoreCase(category)) { // Adds Warranty column only if the product is an electronic item.
+            TableColumn<Product, Number> warrantyCol = new TableColumn<>("Warranty (months)");
+            warrantyCol.setCellValueFactory(cellData -> {
+                if (cellData.getValue() instanceof Electronics e) {
+                    return e.warrantyPeriodProperty();
+                }
+                return null;
+            });
+            warrantyCol.setUserData("dynamic");
+            productTable.getColumns().add(warrantyCol);
+
+        } else if ("grocery".equalsIgnoreCase(category)) { // Adds Expiry Date column, converted to String for display.
+            TableColumn<Product, String> expiryCol = new TableColumn<>("Expiry Date");
+            expiryCol.setCellValueFactory(cellData -> {
+                if (cellData.getValue() instanceof Grocery g) {
+                    return new SimpleStringProperty(
+                            g.getExpiryDate() != null ? g.getExpiryDate().toString() : "N/A" // safely handle null expiry date
+                    );
+                }
+                return null;
+            });
+            expiryCol.setUserData("dynamic");
+            productTable.getColumns().add(expiryCol);
+        }
+    }
+
 }
