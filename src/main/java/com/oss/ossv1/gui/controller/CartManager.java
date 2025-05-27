@@ -77,4 +77,12 @@ public class CartManager {
                 .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
                 .sum();
     }
+
+    public double calculateDiscountedTotal(){
+        return cartItems.stream().mapToDouble(item -> {
+                    double discountedPrice = item.getProduct().getDiscountedPrice(10); // 10% or use strategy
+                    return discountedPrice * item.getQuantity();
+                })
+                .sum();
+    }
 }

@@ -22,7 +22,8 @@ import java.util.List;
 public class PaymentController {
 
     @FXML private ComboBox<String> paymentMethodCombo;
-    @FXML private TextField amountField;
+    @FXML private Label amountField;
+    @FXML private Label originalTotalLabel;
 
     @FXML private VBox creditCardBox;
     @FXML private TextField cardNumberField;
@@ -42,6 +43,17 @@ public class PaymentController {
 
     @FXML
     public void initialize() {
+        double originalTotal = CartManager.getInstance().getCartItems().stream()
+                .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
+                .sum();
+
+        double discountedTotal = CartManager.getInstance().getCartItems().stream()
+                .mapToDouble(item -> item.getProduct().getDiscountedPrice(10) * item.getQuantity())
+                .sum();
+
+        originalTotalLabel.setText(String.format("$%.2f", originalTotal));
+        amountField.setText(String.format("$%.2f", discountedTotal));
+
         paymentMethodCombo.getItems().addAll("CreditCard", "PayPal");
 
         paymentMethodCombo.setOnAction(e -> {
@@ -119,7 +131,8 @@ public class PaymentController {
             OrderItem item = new OrderItem();
             item.setProduct(entityProduct);
             item.setQuantity(guiItem.getQuantity());
-            item.setPriceAtOrder(entityProduct.getPrice());
+            double discountedPrice = item.getProduct().getDiscountedPrice(10); // or use discount strategy
+            item.setPriceAtOrder(discountedPrice);
             item.setOrder(order);
 
             orderItems.add(item);

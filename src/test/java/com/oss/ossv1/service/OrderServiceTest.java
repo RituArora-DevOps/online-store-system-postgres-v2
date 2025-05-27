@@ -6,16 +6,15 @@ import com.oss.ossv1.dto.*;
 import com.oss.ossv1.gui.model.PaymentModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
 import java.util.Optional;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)
 public class OrderServiceTest {
 
     @Mock private OrderRepository orderRepository;
@@ -27,13 +26,14 @@ public class OrderServiceTest {
     @InjectMocks private OrderService orderService;
 
     @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
+    public void setup() {
+        // Auto-initialized by @ExtendWith in JUnit 5
+        System.out.println("Test setup complete.");
     }
 
     @Test
-    public void testPlaceOrder_withCreditCardPayment() {
-        System.out.println("Starting test: CreditCardPayment");
+    void testPlaceOrder_withCreditCardPayment() {
+        System.out.println("Running testPlaceOrder_withCreditCardPayment");
 
         OrderRequestDTO request = new OrderRequestDTO();
         request.setUserId(1L);
@@ -64,19 +64,17 @@ public class OrderServiceTest {
 
         Order result = orderService.placeOrder(request);
 
-        System.out.println("Order processed. Verifying...");
-
         assertNotNull(result);
         assertEquals(1, result.getItems().size());
         assertEquals(100.0, result.getItems().get(0).getPriceAtOrder() * result.getItems().get(0).getQuantity());
 
         verify(creditCardPaymentRepository).save(mockPayment);
-        System.out.println("CreditCardPayment test passed.\n");
+        System.out.println("Credit card payment processed successfully.\n");
     }
 
     @Test
-    public void testPlaceOrder_withPayPalPayment() {
-        System.out.println("Starting test: PayPalPayment");
+    void testPlaceOrder_withPayPalPayment() {
+        System.out.println("Running testPlaceOrder_withPayPalPayment");
 
         OrderRequestDTO request = new OrderRequestDTO();
         request.setUserId(2L);
@@ -88,7 +86,7 @@ public class OrderServiceTest {
 
         PaymentRequestDTO paymentDTO = new PaymentRequestDTO();
         paymentDTO.setType("paypal");
-        paymentDTO.setPaypalEmail("test@example.com");
+        paymentDTO.setPaypalEmail("paypal@example.com");
         request.setPayment(paymentDTO);
 
         Product product = new Electronics();
@@ -105,13 +103,11 @@ public class OrderServiceTest {
 
         Order result = orderService.placeOrder(request);
 
-        System.out.println("Order processed. Verifying...");
-
         assertNotNull(result);
         assertEquals(1, result.getItems().size());
         assertEquals(75.0, result.getItems().get(0).getPriceAtOrder());
 
         verify(payPalPaymentRepository).save(mockPayment);
-        System.out.println("PayPalPayment test passed.\n");
+        System.out.println("PayPal payment processed successfully.\n");
     }
 }
