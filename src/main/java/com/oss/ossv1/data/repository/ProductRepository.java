@@ -26,9 +26,9 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 /**
 | Principle   | Status | Notes                                                                                                                                                   |
 | ----------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **S (SRP)** | ✅      | This interface has only one responsibility: querying the database. It doesn't contain business logic or validation.                                     |
-| **O (OCP)** | ✅      | You can extend it by adding more derived query methods (`findByName`, `findByRating`, etc.) without modifying existing methods.                         |
-| **L (LSP)** | ✅      | It extends `JpaRepository<Product, Integer>`, and Spring can substitute it for any interface requiring `CrudRepository` or `JpaRepository` behavior.    |
-| **I (ISP)** | ✅      | It only declares methods that are relevant to the persistence of `Product`. No extra methods are forced.                                                |
-| **D (DIP)** | ✅      | `ProductService` depends on this interface, not a concrete implementation. Spring injects it via proxy. This is classic Dependency Inversion in action. |
+| **S (SRP)** |   Y    | This interface has only one responsibility: querying the database. It doesn't contain business logic or validation.                                     |
+| **O (OCP)** |   Y   | You can extend it by adding more derived query methods (`findByName`, `findByRating`, etc.) without modifying existing methods.                         |
+| **L (LSP)** |   Y    | It extends `JpaRepository<Product, Integer>`, and Spring can substitute it for any interface requiring `CrudRepository` or `JpaRepository` behavior.    |
+| **I (ISP)** |   Y   | It only declares methods that are relevant to the persistence of `Product`. No extra methods are forced.                                                |
+| **D (DIP)** |   Y   | `ProductService` depends on this interface, not a concrete implementation. Spring injects it via proxy. This is classic Dependency Inversion in action. |
 */

@@ -25,6 +25,7 @@
             <TableColumn fx:id="priceColumn" text="Discounted Price" prefWidth="100"/>
             <TableColumn fx:id="categoryColumn" text="Category" prefWidth="100" />
             <TableColumn fx:id="actionColumn" text="Action" prefWidth="100"/>
+            <!--  No need to hardcode dynamic fields like Size, Color, Warranty, or Expiry here -->
         </columns>
     </TableView>
     <HBox alignment="CENTER" spacing="10">

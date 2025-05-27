@@ -167,6 +167,16 @@ public class ProductController {
                     full.setPrice(base.getPrice());
                     full.setCategory(base.getCategory());
 
+                    // Subclass-specific fields
+                    if ("clothing".equalsIgnoreCase(base.getCategory()) && base instanceof Clothing source && full instanceof Clothing target) {
+                        target.setSize(source.getSize());
+                        target.setColor(source.getColor());
+                    } else if ("electronics".equalsIgnoreCase(base.getCategory()) && base instanceof Electronics source && full instanceof Electronics target) {
+                        target.setWarrantyPeriod(source.getWarrantyPeriod());
+                    } else if ("grocery".equalsIgnoreCase(base.getCategory()) && base instanceof Grocery source && full instanceof Grocery target) {
+                        target.setExpiryDate(source.getExpiryDate());
+                    }
+
                     ProductRegistry.register(full); // Cache each object using a registry to avoid duplicates.
                     enrichedList.add(ProductRegistry.get(full.getId())); // Then add the correct subclass into the observable list.
                 }
@@ -248,6 +258,7 @@ public class ProductController {
         }
     }
 
+    // The controller now supports dynamic columns for Clothing, Electronics, and Grocery via the updateDynamicColumns() method
     private void updateDynamicColumns(String category) {
         // Remove previously added dynamic columns
         productTable.getColumns().removeIf(col -> "dynamic".equals(col.getUserData()));
