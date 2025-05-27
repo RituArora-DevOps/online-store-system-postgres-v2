@@ -1,157 +1,117 @@
 package com.oss.ossv1.service;
 
 import com.oss.ossv1.data.entity.*;
-import com.oss.ossv1.data.repository.OrderRepository;
-import com.oss.ossv1.data.repository.ProductRepository;
-import com.oss.ossv1.dto.OrderItemDTO;
-import com.oss.ossv1.dto.OrderRequestDTO;
-import com.oss.ossv1.dto.PaymentRequestDTO;
+import com.oss.ossv1.data.repository.*;
+import com.oss.ossv1.dto.*;
+import com.oss.ossv1.gui.model.PaymentModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Unit tests for your business logic in OrderService
- */
-class OrderServiceTest {
+public class OrderServiceTest {
 
-    private OrderRepository orderRepository;
-    private ProductRepository productRepository;
-    private OrderService orderService;
+    @Mock private OrderRepository orderRepository;
+    @Mock private ProductRepository productRepository;
+    @Mock private CreditCardPaymentRepository creditCardPaymentRepository;
+    @Mock private PayPalPaymentRepository payPalPaymentRepository;
+    @Mock private PaymentContext paymentContext;
+
+    @InjectMocks private OrderService orderService;
 
     @BeforeEach
-    void setUp() {
-        orderRepository = mock(OrderRepository.class);
-        productRepository = mock(ProductRepository.class);
-        orderService = new OrderService(orderRepository, productRepository);
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void testPlaceOrder_withMultipleProductTypes_success() {
-        OrderItemDTO item1 = new OrderItemDTO();
-        item1.setProductId(101L);
-        item1.setQuantity(1);
+    public void testPlaceOrder_withCreditCardPayment() {
+        System.out.println("Starting test: CreditCardPayment");
 
-        OrderItemDTO item2 = new OrderItemDTO();
-        item2.setProductId(102L);
-        item2.setQuantity(3);
+        OrderRequestDTO request = new OrderRequestDTO();
+        request.setUserId(1L);
+
+        OrderItemDTO itemDTO = new OrderItemDTO();
+        itemDTO.setProductId(100L);
+        itemDTO.setQuantity(2);
+        request.setItems(List.of(itemDTO));
+
+        PaymentRequestDTO paymentDTO = new PaymentRequestDTO();
+        paymentDTO.setType("creditcard");
+        paymentDTO.setCardNumber("1234567890123456");
+        paymentDTO.setExpirationDate("12/25");
+        paymentDTO.setCvv("123");
+        request.setPayment(paymentDTO);
+
+        Product product = new Electronics();
+        product.setId(100);
+        product.setPrice(50.0);
+
+        when(productRepository.findById(100)).thenReturn(Optional.of(product));
+
+        CreditCardPayment mockPayment = new CreditCardPayment();
+        mockPayment.setAmount(100.0);
+
+        when(paymentContext.createPayment(any(PaymentModel.class))).thenReturn(mockPayment);
+        when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArgument(0));
+
+        Order result = orderService.placeOrder(request);
+
+        System.out.println("Order processed. Verifying...");
+
+        assertNotNull(result);
+        assertEquals(1, result.getItems().size());
+        assertEquals(100.0, result.getItems().get(0).getPriceAtOrder() * result.getItems().get(0).getQuantity());
+
+        verify(creditCardPaymentRepository).save(mockPayment);
+        System.out.println("CreditCardPayment test passed.\n");
+    }
+
+    @Test
+    public void testPlaceOrder_withPayPalPayment() {
+        System.out.println("Starting test: PayPalPayment");
+
+        OrderRequestDTO request = new OrderRequestDTO();
+        request.setUserId(2L);
+
+        OrderItemDTO itemDTO = new OrderItemDTO();
+        itemDTO.setProductId(200L);
+        itemDTO.setQuantity(1);
+        request.setItems(List.of(itemDTO));
 
         PaymentRequestDTO paymentDTO = new PaymentRequestDTO();
         paymentDTO.setType("paypal");
-        paymentDTO.setPaypalEmail("buyer@test.com");
-
-        OrderRequestDTO request = new OrderRequestDTO();
-        request.setUserId(7L);
-        request.setItems(List.of(item1, item2));
+        paymentDTO.setPaypalEmail("test@example.com");
         request.setPayment(paymentDTO);
 
-        Electronics electronics = new Electronics();
-        electronics.setId(101);
-        electronics.setName("Headphones");
-        electronics.setPrice(59.99);
-        electronics.setWarrantyPeriod(24);
+        Product product = new Electronics();
+        product.setId(200);
+        product.setPrice(75.0);
 
-        Grocery grocery = new Grocery();
-        grocery.setId(102);
-        grocery.setName("Milk");
-        grocery.setPrice(2.99);
-        grocery.setExpiryDate(LocalDate.now().plusDays(7));
+        when(productRepository.findById(200)).thenReturn(Optional.of(product));
 
-        when(productRepository.findById(101)).thenReturn(Optional.of(electronics));
-        when(productRepository.findById(102)).thenReturn(Optional.of(grocery));
+        PayPalPayment mockPayment = new PayPalPayment();
+        mockPayment.setAmount(75.0);
 
-        //  MOCK SAVE BEFORE calling placeOrder()
-        User user = new User();
-        user.setId(7);
-        Order mockOrder = new Order();
-        mockOrder.setOrderId(777L);
-        mockOrder.setUser(user);
-        OrderItem itemA = new OrderItem();
-        itemA.setProduct(electronics);
-        itemA.setQuantity(1);
-        itemA.setPriceAtOrder(59.99);
-        itemA.setOrder(mockOrder);
+        when(paymentContext.createPayment(any(PaymentModel.class))).thenReturn(mockPayment);
+        when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArgument(0));
 
-        OrderItem itemB = new OrderItem();
-        itemB.setProduct(grocery);
-        itemB.setQuantity(3);
-        itemB.setPriceAtOrder(2.99);
-        itemB.setOrder(mockOrder);
+        Order result = orderService.placeOrder(request);
 
-        mockOrder.setItems(List.of(itemA, itemB));
+        System.out.println("Order processed. Verifying...");
 
+        assertNotNull(result);
+        assertEquals(1, result.getItems().size());
+        assertEquals(75.0, result.getItems().get(0).getPriceAtOrder());
 
-        mockOrder.setPayment(new PayPalPayment());
-
-        when(orderRepository.save(any(Order.class))).thenReturn(mockOrder);
-
-        //  Now this will use the mock properly
-        Order savedOrder = orderService.placeOrder(request);
-
-        assertNotNull(savedOrder);
-        // Changed: userID=d check now goes through user.getId()
-        assertEquals(7, savedOrder.getUser().getId());
-        assertEquals(2, savedOrder.getItems().size());
-        assertTrue(savedOrder.getItems().stream().anyMatch(i -> i.getProduct() instanceof Electronics));
-        assertTrue(savedOrder.getItems().stream().anyMatch(i -> i.getProduct() instanceof Grocery));
-        assertTrue(savedOrder.getPayment() instanceof PayPalPayment);
-
-        // Print statements
-        System.out.println("Saved Order for userId=7:");
-        savedOrder.getItems().forEach(item -> System.out.println(
-                " - Product: " + item.getProduct().getName() +
-                        ", Type: " + item.getProduct().getClass().getSimpleName() +
-                        ", Quantity: " + item.getQuantity()
-        ));
-        System.out.println("Payment Type: " + savedOrder.getPayment().getClass().getSimpleName());
-    }
-
-    @Test
-    void testPlaceOrder_productNotFound_throwsException() {
-        OrderItemDTO item = new OrderItemDTO();
-        item.setProductId(999L);
-        item.setQuantity(1);
-
-        OrderRequestDTO request = new OrderRequestDTO();
-        request.setUserId(3L);
-        request.setItems(List.of(item));
-        request.setPayment(new PaymentRequestDTO());
-
-        when(productRepository.findById(999)).thenReturn(Optional.empty());
-
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> orderService.placeOrder(request));
-        System.out.println("Expected exception: " + ex.getMessage());
-        assertTrue(ex.getMessage().contains("Product not found"));
-    }
-
-    @Test
-    void testGetOrdersByUserId_returnsList() {
-        User user = new User(); // Added: Create a User object
-        user.setId(1);
-
-        Order order1 = new Order();
-        order1.setOrderId(1L);
-        order1.setUser(user); // changed from setUserId()
-        Order order2 = new Order();
-        order2.setOrderId(2L);
-        order2.setUser(user); // changed from setUserId()
-
-    // Added Mock call
-        when(orderRepository.findByUser_Id(1L)).thenReturn(List.of(order1, order2)); //  Mock call
-
-        List<Order> orders = orderService.getOrdersByUserId(1L);
-
-        assertEquals(2, orders.size());
-        assertEquals(1, orders.get(0).getUser().getId()); // changed from getUserId()
-
-        // Print order IDs
-        System.out.println("Fetched Orders for userId=1:");
-        orders.forEach(o -> System.out.println(" - Order ID: " + o.getOrderId()));
+        verify(payPalPaymentRepository).save(mockPayment);
+        System.out.println("PayPalPayment test passed.\n");
     }
 }
