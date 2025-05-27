@@ -1,13 +1,21 @@
 package com.oss.ossv1.service;
 
 import com.oss.ossv1.data.entity.*;
+import com.oss.ossv1.data.repository.CreditCardPaymentRepository;
 import com.oss.ossv1.data.repository.OrderRepository;
+import com.oss.ossv1.data.repository.PayPalPaymentRepository;
 import com.oss.ossv1.data.repository.ProductRepository;
 import com.oss.ossv1.dto.OrderRequestDTO;
 import com.oss.ossv1.dto.OrderItemDTO;
 import com.oss.ossv1.dto.PaymentRequestDTO;
+import com.oss.ossv1.gui.model.PaymentModel;
+
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.oss.ossv1.service.PaymentContext;
+import com.oss.ossv1.util.PaymentModelMapper;
 
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -21,8 +29,20 @@ import java.util.List;
  */
 public class OrderService {
 
-    private final OrderRepository orderRepository;
-    private final ProductRepository productRepository;
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private CreditCardPaymentRepository creditCardPaymentRepository;
+
+    @Autowired
+    private PayPalPaymentRepository payPalPaymentRepository;
+
+    @Autowired
+    private PaymentContext paymentContext;
 
     @Transactional
 /**
@@ -30,13 +50,9 @@ public class OrderService {
  */
     public Order placeOrder(OrderRequestDTO dto) {
         Order order = new Order();
-
-        //order.setUserId(dto.getUserId());
-        // This wraps the userId in a User object. JPA will handle the foreign key association.
         User user = new User();
         user.setId(Math.toIntExact(dto.getUserId()));
         order.setUser(user);
-
         order.setOrderDate(LocalDateTime.now());
 
         List<OrderItem> items = new ArrayList<>();
@@ -55,13 +71,25 @@ public class OrderService {
 
         order.setItems(items);
 
-        // Build the payment object directly here
-        PaymentEntity payment = buildPayment(dto.getPayment());
-        order.setPayment(payment);
+        // Calculate total
+        double totalAmount = items.stream()
+                .mapToDouble(i -> i.getPriceAtOrder() * i.getQuantity())
+                .sum();
 
+        // Convert and use strategy pattern
+        PaymentRequestDTO paymentRequest = dto.getPayment();
+        PaymentModel model = PaymentModelMapper.fromDTO(paymentRequest, totalAmount);
+        PaymentEntity payment = paymentContext.createPayment(model);
+
+        if (payment instanceof CreditCardPayment) {
+            creditCardPaymentRepository.save((CreditCardPayment) payment);
+        } else if (payment instanceof PayPalPayment) {
+            payPalPaymentRepository.save((PayPalPayment) payment);
+        }
+
+        order.setPayment(payment);
         return orderRepository.save(order);
     }
-
     @Transactional
 /**
  * saveOrder method.
@@ -72,7 +100,7 @@ public class OrderService {
 
 
 /**
- * buildPayment method.
+ * buildPayment method. (Replaced by PaymentContext + PaymentModelMapper for Strategy Pattern)
  */
     private PaymentEntity buildPayment(PaymentRequestDTO dto) {
         if ("creditcard".equalsIgnoreCase(dto.getType())) {
