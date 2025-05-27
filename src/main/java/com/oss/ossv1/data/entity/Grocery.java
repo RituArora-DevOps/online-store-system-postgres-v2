@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "grocery")
-@PrimaryKeyJoinColumn(name = "product_id")
+@PrimaryKeyJoinColumn(name = "product_id") // OCP: This class extends Product — no need to modify the Product class when adding a Grocery type.
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,11 +21,14 @@ public class Grocery extends Product {
     @Column(name = "expiration_date")
     @NotNull(message = "Expiration date is required")
     @Future(message = "Expiration date must be in the future")
-    private LocalDate expiryDate;
+    private LocalDate expiryDate; // SRP: Adds grocery-specific field only; class responsibility remains clear and focused.
+
 
     /**
      * Displays detailed information about the grocery product.
      * Includes inherited product details and the expiry date.
+     * OCP: Custom display behavior implemented via polymorphism.
+     * LSP: Grocery behaves like a Product — fully substitutable without surprises.
      */
     @Override
     public String displayInfo() {
