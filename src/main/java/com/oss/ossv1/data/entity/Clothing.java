@@ -11,7 +11,7 @@ import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "clothing")
-@PrimaryKeyJoinColumn(name = "product_id")
+@PrimaryKeyJoinColumn(name = "product_id") // OCP: Inherits from Product using JOINED strategy, enabling extensibility without modification.
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,9 +28,15 @@ public class Clothing extends Product {
     @Size(max = 50, message = "Color must be less than or equal to 50 characters")
     private String color;
 
+    // SRP: Adds clothing-specific attributes only, without handling unrelated concerns.
+    // ISP: Only implements the interface `Discountable` indirectly via Product. No unused or forced methods.
+
+
     /**
      * Displays detailed information about the clothing product.
      * Includes inherited product details and clothing-specific attributes.
+     * OCP: Extends functionality through overridden method, without modifying the Product base class.
+     * LSP: Can be substituted wherever Product is used. Works seamlessly with polymorphic logic.
      */
     @Override
     public String displayInfo() {
