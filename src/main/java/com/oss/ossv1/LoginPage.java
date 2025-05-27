@@ -31,7 +31,7 @@ public class LoginPage extends Application {
         }
 
         // ✅ Use Spring Boot's context bootstrapping
-        springContext = new SpringApplicationBuilder(AppConfig.class)
+        springContext = new SpringApplicationBuilder(OssV1Application.class)
                 .headless(false) // Important for JavaFX GUI apps
                 .run();
 
