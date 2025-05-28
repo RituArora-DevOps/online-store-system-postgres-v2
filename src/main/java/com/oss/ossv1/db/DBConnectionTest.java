@@ -12,9 +12,9 @@ public class DBConnectionTest {
         String password = "Vj!9r)VSVIpP";
 
         try (Connection connection = DriverManager.getConnection(url, username, password)) {
-            System.out.println("✅ Connection successful!");
+            System.out.println(" Connection successful!");
         } catch (SQLException e) {
-            System.err.println("❌ Connection failed:");
+            System.err.println(" Connection failed:");
             e.printStackTrace();
         }
     }

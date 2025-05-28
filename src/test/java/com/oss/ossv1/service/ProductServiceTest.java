@@ -122,27 +122,27 @@ class ProductServiceTest {
         verify(productRepository, times(1)).deleteAll();
     }
 
-    /**
-     * Tests filtering products by category.
-     */
-    @Test
-    void testGetProductsByCategory() {
-        when(productRepository.findByCategory("Electronics")).thenReturn(List.of(sampleProduct));
-        List<Product> result = productService.getProductsByCategory("Electronics");
-        assertEquals(1, result.size());
-        assertEquals("Electronics", result.get(0).getCategory());
-    }
-
-    /**
-     * Tests filtering products by price range.
-     */
-    @Test
-    void testGetProductsByPriceRange() {
-        when(productRepository.findByPriceBetween(50.0, 150.0)).thenReturn(List.of(sampleProduct));
-        List<Product> result = productService.getProductsByPriceRange(50.0, 150.0);
-        assertFalse(result.isEmpty());
-        assertTrue(result.get(0).getPrice() >= 50.0 && result.get(0).getPrice() <= 150.0);
-    }
+//    /**
+//     * Tests filtering products by category.
+//     */
+//    @Test
+//    void testGetProductsByCategory() {
+//        when(productRepository.findByCategory("Electronics")).thenReturn(List.of(sampleProduct));
+//        List<Product> result = productService.getProductsByCategory("Electronics");
+//        assertEquals(1, result.size());
+//        assertEquals("Electronics", result.get(0).getCategory());
+//    }
+//
+//    /**
+//     * Tests filtering products by price range.
+//     */
+//    @Test
+//    void testGetProductsByPriceRange() {
+//        when(productRepository.findByPriceBetween(50.0, 150.0)).thenReturn(List.of(sampleProduct));
+//        List<Product> result = productService.getProductsByPriceRange(50.0, 150.0);
+//        assertFalse(result.isEmpty());
+//        assertTrue(result.get(0).getPrice() >= 50.0 && result.get(0).getPrice() <= 150.0);
+//    }
 
     /**
      * Closes the mock environment after each test to avoid memory leaks.

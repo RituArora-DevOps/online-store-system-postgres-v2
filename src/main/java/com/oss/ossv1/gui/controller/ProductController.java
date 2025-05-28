@@ -1,5 +1,6 @@
 // JavaFX Controller: Handles logic for ProductView.fxml
 // Role in MVC: Controller
+// Delegates to the Spring Controller
 // Design Patterns Used:
 // - Strategy Pattern (search filtering via SearchContext)
 // - Singleton Pattern (CartManager, SingletonStore, ProductRegistry)
@@ -126,7 +127,7 @@ public class ProductController {
         // Fetch or load product data
         // If cache is empty, fetch from server once. Else use cached.
         if (SingletonStore.getInstance().getProducts().isEmpty()) {
-            fetchProductsFromUrl("http://localhost:8080/products");
+            fetchProductsFromUrl("http://localhost:8080/products"); // This is the actual call to Spring Boot or delgation point to send the HTTP GET request to the Spring Boot backend
         } else {
             setProductsToTable(SingletonStore.getInstance().getProducts());
         }
@@ -219,7 +220,7 @@ public class ProductController {
 
     private void fetchProductsFromUrl(String urlString) {
         try {
-            URL url = URI.create(urlString).toURL();
+            URL url = URI.create(urlString).toURL(); // // ← This constructs the full HTTP URL (e.g., http://localhost:8080/products)
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setConnectTimeout(5000);

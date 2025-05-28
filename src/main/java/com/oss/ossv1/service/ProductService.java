@@ -49,13 +49,15 @@ public class ProductService {
     public void deleteAllProducts() {
         productRepository.deleteAll();
     }
-    public List<Product> getProductsByCategory(String category) {
-        return productRepository.findByCategory(category);
-        // OCP: Extensible — if we add `findByBrand()` or `findByRating()`, no existing code breaks.
-    }
-    public List<Product> getProductsByPriceRange(double min, double max) {
-        return productRepository.findByPriceBetween(min, max);
-    }
+
+    // Redundant after the introduction of Search Strategy Design Pattern
+//    public List<Product> getProductsByCategory(String category) {
+//        return productRepository.findByCategory(category);
+//        // OCP: Extensible — if we add `findByBrand()` or `findByRating()`, no existing code breaks.
+//    }
+//    public List<Product> getProductsByPriceRange(double min, double max) {
+//        return productRepository.findByPriceBetween(min, max);
+//    }
 }
 
 // When you extend JpaRepository<Product, Integer>,

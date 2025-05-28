@@ -5,6 +5,12 @@ import java.util.List;
 
 /**
  * Strategy interface to abstract search logic.
+ * This design helps in filtering on the client side, using the data already fetched (e.g., from /products) and stored in the ProductRegistry
+ *
+ * Benefits:
+ *  Reduces backend calls
+ *  Improves UI responsiveness
+ *  Keeps filtering logic extensible via Strategy Pattern
  *
  * SOLID:
  * - SRP: This interface has one reason to change — if search behavior abstraction needs change.
