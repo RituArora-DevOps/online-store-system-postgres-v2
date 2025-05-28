@@ -1,54 +1,118 @@
 package com.oss.ossv1.gui.controller;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.oss.ossv1.LoginPage;
+import com.oss.ossv1.behavioral.observer.ReviewObserver;
 import com.oss.ossv1.service.OrderService;
 import com.oss.ossv1.service.ProductService;
 import com.oss.ossv1.service.ReviewService;
 import com.oss.ossv1.session.UserSession;
-import com.oss.ossv1.LoginPage;
+
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 
 /**
  * Controls the main dashboard view of the online store.
- * Manages the navigation bar
+ * Manages the navigation bar and implements ReviewObserver for admin notifications.
  */
-public class DashboardController {
+public class DashboardController implements ReviewObserver {
     // Main layout components
     @FXML private BorderPane rootPane;
     @FXML private StackPane contentArea;
     @FXML private Label dashboardWelcomeLabel;
     @FXML private final Map<String, Parent> viewCache = new HashMap<>();
+    @FXML private Button notificationsButton;
+    @FXML private ListView<String> notificationListView;
+    @FXML private VBox notificationPanel;
+    
+    private ObservableList<String> notifications;
 
     /**
      * Initializes the dashboard view.
-     * Sets up the welcome message based on user login status.
+     * Sets up the welcome message and notification system for admin users.
      */
     @FXML
     public void initialize() {
         rootPane.setUserData(this);
         updateWelcomeMessage();
         loadDashboard();
+        
+        // Initialize notifications if user is admin
+        if (UserSession.getInstance().getUser() != null && UserSession.getInstance().getUser().isAdmin()) {
+            initializeNotifications();
+        } else {
+            hideNotificationFeatures();
+        }
+    }
+    
+    /**
+     * Initialize notification system for admin users
+     */
+    private void initializeNotifications() {
+        notifications = FXCollections.observableArrayList();
+        if (notificationListView != null) {
+            notificationListView.setItems(notifications);
+        }
+        if (notificationsButton != null) {
+            notificationsButton.setVisible(true);
+        }
+        if (notificationPanel != null) {
+            notificationPanel.setVisible(true);
+        }
+        
+        // Register this controller as an observer for review notifications
+        try {
+            com.oss.ossv1.service.NotificationService notificationService = 
+                LoginPage.springContext.getBean(com.oss.ossv1.service.NotificationService.class);
+            notificationService.registerObserver(this);
+            
+        } catch (Exception e) {
+            System.err.println("Failed to register observer: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        // Add a welcome notification
+        addNotification("SYSTEM", "Admin notification system initialized");
+    }
+    
+    /**
+     * Hide notification features for non-admin users
+     */
+    private void hideNotificationFeatures() {
+        if (notificationsButton != null) {
+            notificationsButton.setVisible(false);
+        }
+        if (notificationPanel != null) {
+            notificationPanel.setVisible(false);
+        }
     }
 
     // Helper method to update welcome message
     private void updateWelcomeMessage() {
         if (UserSession.getInstance().isLoggedIn()) {
             String username = UserSession.getInstance().getUser().getUsername();
-            dashboardWelcomeLabel.setText("Welcome, " + username);
+            String role = UserSession.getInstance().getUser().isAdmin() ? "administrator" : "user";
+            dashboardWelcomeLabel.setText("Welcome, " + username + " (" + role + ")");
         } else {
             dashboardWelcomeLabel.setText("Welcome to Online Store System");
         }
@@ -82,6 +146,21 @@ public class DashboardController {
             VBox profileTile = createDashboardTile("Profile", "Manage your account");
             profileTile.setOnMouseClicked(e -> navigateToProfile());
             dashboardGrid.add(profileTile, 1, 1);
+
+            // Add notification tile for admin users
+            if (UserSession.getInstance().getUser() != null && UserSession.getInstance().getUser().isAdmin()) {
+                VBox notificationsTile = createDashboardTile("Notifications", "View review notifications");
+                notificationsTile.setOnMouseClicked(e -> showNotifications());
+                dashboardGrid.add(notificationsTile, 0, 2);
+                
+                VBox testTile = createDashboardTile("Test Notifications", "Generate sample notifications");
+                testTile.setOnMouseClicked(e -> testNotifications());
+                dashboardGrid.add(testTile, 1, 2);
+                
+                VBox testObserverTile = createDashboardTile("Test Observer", "Test Observer Pattern connection");
+                testObserverTile.setOnMouseClicked(e -> testObserverConnection());
+                dashboardGrid.add(testObserverTile, 0, 3);
+            }
 
             dashboardGrid.getStyleClass().add("dashboard-grid");
 
@@ -189,42 +268,7 @@ public class DashboardController {
         }
     }
 
-    /**
-     * Loads a view into the dashboard's content area.
-
-    public void loadView(String fxml) {
-        try {
-            Parent view = FXMLLoader.load(getClass().getResource(fxml));
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(view);
-        } catch (IOException e) {
-            e.printStackTrace();
-            showError("Navigation Error", null, "Unable to load view.");
-        }
-    }
-
-    // updated to debug wierd quantity increment and decrement
-    public void loadView(String fxml) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
-            Parent view = loader.load();
-
-            if (fxml.contains("ProductView")) {
-                ProductController pc = loader.getController();
-                System.out.println("Loaded ProductController once: " + pc);
-            }
-
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(view);
-        } catch (IOException e) {
-            e.printStackTrace();
-            showError("Navigation Error", null, "Unable to load view.");
-        }
-    }
-     */
-
-    // Added by RA- to cache views/controllers in DashboardController so they’re only loaded once.
-
+    // Added by RA- to cache views/controllers in DashboardController so they're only loaded once.
     public void loadView(String fxml) {
         try {
             Parent view;
@@ -275,5 +319,142 @@ public class DashboardController {
         alert.setHeaderText(header);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    // Notification methods for admin users
+    
+    /**
+     * Show notifications view for admin users
+     */
+    @FXML
+    public void showNotifications() {
+        if (UserSession.getInstance().getUser() != null && UserSession.getInstance().getUser().isAdmin()) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/NotificationsView.fxml"));
+                Parent notificationsView = loader.load();
+                
+                NotificationsController controller = loader.getController();
+                controller.setDashboardController(this);
+                
+                contentArea.getChildren().clear();
+                contentArea.getChildren().add(notificationsView);
+            } catch (IOException e) {
+                e.printStackTrace();
+                showError("Navigation Error", null, "Unable to load notifications view.");
+            }
+        }
+    }
+    
+    /**
+     * Get the notifications list for admin users
+     */
+    public ObservableList<String> getNotifications() {
+        return notifications != null ? notifications : FXCollections.observableArrayList();
+    }
+    
+    /**
+     * Clear all notifications
+     */
+    public void clearNotifications() {
+        if (notifications != null) {
+            notifications.clear();
+        }
+    }
+    
+    /**
+     * Add a notification manually
+     */
+    public void addNotification(String action, String details) {
+        if (notifications != null) {
+            Platform.runLater(() -> {
+                String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                String notification = String.format("[%s] %s: %s", timestamp, action, details);
+                notifications.add(0, notification); // Add to the top
+            });
+        }
+    }
+
+    /**
+     * Implementation of ReviewObserver interface
+     * Called when a review is updated (added, edited, or deleted)
+     */
+    @Override
+    public void onReviewUpdate(String action, String reviewDetails) {
+        if (UserSession.getInstance().getUser() != null && UserSession.getInstance().getUser().isAdmin()) {
+            addNotification(action, reviewDetails);
+        }
+    }
+
+    /**
+     * Test method to simulate review notifications (for admin users)
+     */
+    @FXML
+    public void testNotifications() {
+        if (UserSession.getInstance().getUser() != null && UserSession.getInstance().getUser().isAdmin()) {
+            try {
+                // Test 1: Direct Observer Pattern notification
+                com.oss.ossv1.service.NotificationService notificationService = 
+                    LoginPage.springContext.getBean(com.oss.ossv1.service.NotificationService.class);
+                
+                notificationService.addReview("LAPTOP001", "bob", "Excellent laptop for programming!", 5);
+                
+                // Test 2: Through ReviewService (real integration)
+                com.oss.ossv1.service.ReviewService reviewService = 
+                    LoginPage.springContext.getBean(com.oss.ossv1.service.ReviewService.class);
+                
+                // Create a test review through the actual service
+                Platform.runLater(() -> {
+                    try {
+                        Thread.sleep(1000);
+                        
+                        // Get some test data
+                        com.oss.ossv1.data.repository.ProductRepository productRepo = 
+                            LoginPage.springContext.getBean(com.oss.ossv1.data.repository.ProductRepository.class);
+                        com.oss.ossv1.data.repository.UserRepository userRepo = 
+                            LoginPage.springContext.getBean(com.oss.ossv1.data.repository.UserRepository.class);
+                        
+                        var products = productRepo.findAll();
+                        var users = userRepo.findAll();
+                        
+                        if (!products.isEmpty() && !users.isEmpty()) {
+                            // Create a real review through ReviewService
+                            reviewService.createReview(
+                                products.get(0), 
+                                users.stream().filter(u -> !u.isAdmin()).findFirst().orElse(users.get(0)),
+                                4, 
+                                "Test review created through ReviewService - this should trigger a notification!"
+                            );
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Error creating test review: " + e.getMessage());
+                    }
+                });
+                
+            } catch (Exception e) {
+                System.err.println("Failed to test notifications: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Test the Observer Pattern connection directly
+     */
+    @FXML
+    public void testObserverConnection() {
+        try {
+            // Get the ReviewNotificationManager bean directly
+            com.oss.ossv1.behavioral.observer.ReviewNotificationManager reviewNotificationManager = 
+                LoginPage.springContext.getBean(com.oss.ossv1.behavioral.observer.ReviewNotificationManager.class);
+            
+            if (reviewNotificationManager != null) {
+                // Test direct notification
+                reviewNotificationManager.notifyObservers("TEST_NOTIFICATION", "This is a direct test of the Observer Pattern");
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Error testing observer connection: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

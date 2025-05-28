@@ -25,6 +25,10 @@ public class ReviewService {
     @Autowired
     private ReviewRepository reviewRepository;
     
+    // Observer Pattern integration
+    @Autowired
+    private com.oss.ossv1.behavioral.observer.ReviewNotificationManager reviewNotificationManager;
+    
     /**
      * Gets all reviews from the database
      * @return List of all reviews
@@ -76,7 +80,29 @@ public class ReviewService {
             review.setReviewDate(LocalDateTime.now());
         }
         
-        return reviewRepository.save(review);
+        ProductReview savedReview = reviewRepository.save(review);
+        
+        // Debug logging
+        System.out.println("=== REVIEW SERVICE DEBUG ===");
+        System.out.println("Review saved to database: " + savedReview.getId());
+        System.out.println("Observer ReviewNotificationManager bean: " + (reviewNotificationManager != null ? "Available" : "NULL"));
+        
+        // Trigger Observer Pattern notification (live notifications only)
+        String productName = review.getProduct().getName();
+        String username = review.getUser().getUsername();
+        String details = String.format("Product: %s, User: %s, Rating: %d/5, Comment: %s", 
+            productName, username, review.getRating(), 
+            review.getComment() != null ? review.getComment() : "No comment");
+        
+        if (reviewNotificationManager != null) {
+            reviewNotificationManager.notifyObservers("REVIEW_ADDED", details);
+            System.out.println("Live notification sent: " + details);
+        } else {
+            System.err.println("ERROR: reviewNotificationManager is null - notification not sent!");
+        }
+        
+        logger.info("Review created and notification sent: {}", details);
+        return savedReview;
     }
     
     /**
@@ -97,7 +123,16 @@ public class ReviewService {
         review.setComment(comment);
         review.setReviewDate(LocalDateTime.now());
         
-        return reviewRepository.save(review);
+        ProductReview savedReview = reviewRepository.save(review);
+        
+        // Trigger Observer Pattern notification
+        String details = String.format("Product: %s, User: %s, Rating: %d/5, Comment: %s", 
+            product.getName(), user.getUsername(), rating, 
+            comment != null ? comment : "No comment");
+        reviewNotificationManager.notifyObservers("REVIEW_ADDED", details);
+        
+        logger.info("Review created and live notification sent: {}", details);
+        return savedReview;
     }
     
     /**
@@ -107,7 +142,19 @@ public class ReviewService {
         if (review == null || review.getId() == null) {
             throw new IllegalArgumentException("Review and Review ID must be specified");
         }
-        return reviewRepository.save(review);
+        
+        ProductReview savedReview = reviewRepository.save(review);
+        
+        // Trigger Observer Pattern notification
+        String productName = review.getProduct() != null ? review.getProduct().getName() : "Unknown Product";
+        String username = review.getUser() != null ? review.getUser().getUsername() : "Unknown User";
+        String details = String.format("Product: %s, User: %s, Updated Rating: %d/5, Updated Comment: %s", 
+            productName, username, review.getRating(), 
+            review.getComment() != null ? review.getComment() : "No comment");
+        reviewNotificationManager.notifyObservers("REVIEW_UPDATED", details);
+        
+        logger.info("Review updated and live notification sent: {}", details);
+        return savedReview;
     }
     
     /**
@@ -117,7 +164,25 @@ public class ReviewService {
         if (id == null) {
             throw new IllegalArgumentException("Review ID cannot be null");
         }
-        reviewRepository.deleteById(id);
+        
+        // Get review details before deletion for notification
+        ProductReview review = reviewRepository.findById(id).orElse(null);
+        if (review != null) {
+            String productName = review.getProduct() != null ? review.getProduct().getName() : "Unknown Product";
+            String username = review.getUser() != null ? review.getUser().getUsername() : "Unknown User";
+            String details = String.format("Product: %s, User: %s, Deleted Review (Rating was: %d/5)", 
+                productName, username, review.getRating());
+            
+            reviewRepository.deleteById(id);
+            
+            // Trigger Observer Pattern notification (live notifications only)
+            reviewNotificationManager.notifyObservers("REVIEW_DELETED", details);
+            
+            logger.info("Review deleted and live notification sent: {}", details);
+        } else {
+            reviewRepository.deleteById(id);
+            logger.info("Review with ID {} deleted (no details available)", id);
+        }
     }
     
     /**
