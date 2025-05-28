@@ -1,5 +1,6 @@
 package com.oss.ossv1.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.oss.ossv1.data.entity.User;
 
 /**
@@ -10,6 +11,8 @@ public class UserDTO {
     private Integer id;
     private String username;
     private String email;
+    @JsonProperty("isAdmin")
+    private boolean isAdmin;
 
 /**
  * UserDTO method.
@@ -25,6 +28,7 @@ public class UserDTO {
         this.id = user.getId();
         this.username = user.getUsername();
         this.email = user.getEmail();
+        this.isAdmin = user.isAdmin();
     }
 
     // Getters & Setters
@@ -69,5 +73,26 @@ public class UserDTO {
  */
     public void setEmail(String email) {
         this.email = email;
+    }
+
+/**
+ * getIsAdmin method.
+ */
+    public boolean getIsAdmin() {
+        return isAdmin;
+    }
+
+/**
+ * isAdmin method.
+ */
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+/**
+ * setIsAdmin method.
+ */
+    public void setIsAdmin(boolean isAdmin) {
+        this.isAdmin = isAdmin;
     }
 }
