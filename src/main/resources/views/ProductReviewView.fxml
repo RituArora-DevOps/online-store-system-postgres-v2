@@ -29,6 +29,7 @@
                     <TableColumn fx:id="commentColumn" text="Comment" prefWidth="350"/>
                     <TableColumn fx:id="dateColumn" text="Date" prefWidth="120"/>
                     <TableColumn fx:id="userColumn" text="User" prefWidth="100"/>
+                    <TableColumn fx:id="actionColumn" text="Actions" prefWidth="100"/>
                 </columns>
             </TableView>
         </VBox>

@@ -22,7 +22,8 @@ CREATE TABLE dbo.Users (
     UserID INT IDENTITY(1,1) PRIMARY KEY,
     Username NVARCHAR(50) NOT NULL,
     Email NVARCHAR(100) NOT NULL UNIQUE,
-    PasswordHash NVARCHAR(255) NOT NULL
+    PasswordHash NVARCHAR(255) NOT NULL,
+    is_admin BIT NOT NULL DEFAULT 0
 );
 
 -- Products Table (Single Table Inheritance)
@@ -81,4 +82,16 @@ CREATE TABLE dbo.ProductReviews (
     ReviewDate DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (UserID) REFERENCES dbo.Users(UserID),
     FOREIGN KEY (ProductID) REFERENCES dbo.Products(ProductID)
+);
+
+-- Notifications Table
+CREATE TABLE dbo.Notifications (
+    NotificationID INT IDENTITY(1,1) PRIMARY KEY,
+    UserID INT NOT NULL,
+    Action NVARCHAR(50) NOT NULL,
+    Details NVARCHAR(1000) NOT NULL,
+    NotificationType NVARCHAR(50) DEFAULT 'REVIEW',
+    IsRead BIT NOT NULL DEFAULT 0,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (UserID) REFERENCES dbo.Users(UserID)
 );

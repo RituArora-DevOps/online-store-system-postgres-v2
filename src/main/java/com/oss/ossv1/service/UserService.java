@@ -1,11 +1,13 @@
 package com.oss.ossv1.service;
 
-import com.oss.ossv1.data.entity.User;
-import com.oss.ossv1.data.repository.UserRepository;
+import java.util.Optional;
+import java.util.regex.Pattern;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.regex.Pattern;
-import java.util.Optional;
+
+import com.oss.ossv1.data.entity.User;
+import com.oss.ossv1.data.repository.UserRepository;
 
 @Service
 /**
@@ -44,7 +46,7 @@ public class UserService {
         }
 
         String hashedPassword = passwordEncoder.encode(rawPassword);
-        User newUser = new User(null, username, email, hashedPassword);
+        User newUser = new User(username, email, hashedPassword, false);
         userRepository.save(newUser);
     }
 

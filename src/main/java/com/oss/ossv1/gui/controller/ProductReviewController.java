@@ -21,8 +21,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -41,6 +43,7 @@ public class ProductReviewController implements Initializable {
     @FXML private TableColumn<ProductReview, String> commentColumn;
     @FXML private TableColumn<ProductReview, String> dateColumn;
     @FXML private TableColumn<ProductReview, String> userColumn;
+    @FXML private TableColumn<ProductReview, Void> actionColumn;
     
     // Form for writing new reviews
     @FXML private ComboBox<Product> productComboBox;        // Dropdown to select product
@@ -103,6 +106,34 @@ public class ProductReviewController implements Initializable {
         // Show username
         userColumn.setCellValueFactory(cell -> 
             new SimpleStringProperty(cell.getValue().getUser().getUsername()));
+
+        // Setup action column with delete button
+        actionColumn.setCellFactory(column -> new TableCell<ProductReview, Void>() {
+            private final Button deleteButton = new Button("Delete");
+            {
+                deleteButton.setStyle("-fx-background-color: #dc3545; -fx-text-fill: white;");
+                deleteButton.setOnAction(event -> {
+                    ProductReview review = getTableView().getItems().get(getIndex());
+                    handleDeleteReview(review);
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    ProductReview review = getTableView().getItems().get(getIndex());
+                    // Only show delete button for the user's own reviews
+                    if (UserSession.getInstance().getUser().getId().equals(review.getUser().getId())) {
+                        setGraphic(deleteButton);
+                    } else {
+                        setGraphic(null);
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -247,6 +278,29 @@ public class ProductReviewController implements Initializable {
             allReviews.clear();
             allReviews.addAll(reviewService.getAllReviews());
         }
+    }
+
+    /**
+     * Handles the deletion of a review
+     */
+    private void handleDeleteReview(ProductReview review) {
+        // Confirm deletion
+        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmDialog.setTitle("Delete Review");
+        confirmDialog.setHeaderText("Delete Review Confirmation");
+        confirmDialog.setContentText("Are you sure you want to delete this review?");
+
+        confirmDialog.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                try {
+                    reviewService.deleteReview(review.getId());
+                    loadAllReviews(); // Refresh the table
+                    showMessage("Review deleted successfully!", Alert.AlertType.INFORMATION);
+                } catch (Exception e) {
+                    showError("Error deleting review", null, "Failed to delete the review: " + e.getMessage());
+                }
+            }
+        });
     }
 
     // Methods to set up our services

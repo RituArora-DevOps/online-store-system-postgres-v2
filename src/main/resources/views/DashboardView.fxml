@@ -18,8 +18,11 @@
                 <Label fx:id="dashboardWelcomeLabel" style="-fx-font-size: 16px; -fx-text-fill: #B8BED9;" />
             </VBox>
 
-            <!-- Right side with logout -->
-            <Button text="Logout" onAction="#handleLogout" styleClass="nav-button, logout-button"/>
+            <!-- Right side with notifications (admin only) and logout -->
+            <HBox spacing="15" alignment="CENTER">
+                <Button fx:id="notificationsButton" text="Notifications" onAction="#showNotifications" styleClass="nav-button"/>
+                <Button text="Logout" onAction="#handleLogout" styleClass="nav-button, logout-button"/>
+            </HBox>
         </HBox>
     </top>
 

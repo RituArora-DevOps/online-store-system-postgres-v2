@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.oss.ossv1.gui.controller.NotificationsController"
+      spacing="20" styleClass="content-pane">
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30"/>
+    </padding>
+
+    <!-- Header -->
+    <HBox spacing="15" alignment="CENTER_LEFT">
+        <Label text="Review Notifications" styleClass="heading"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Clear All" onAction="#handleClearNotifications" styleClass="action-button"/>
+        <Button text="Back to Dashboard" onAction="#handleBack" styleClass="nav-button"/>
+    </HBox>
+
+    <!-- Notifications List -->
+    <VBox VBox.vgrow="ALWAYS" spacing="10">
+        <Label text="Recent Activity:" styleClass="section-title"/>
+        <ListView fx:id="notificationListView" VBox.vgrow="ALWAYS" styleClass="notification-list"/>
+    </VBox>
+
+    <!-- Empty state message -->
+    <Label fx:id="emptyStateLabel" text="No notifications yet. Review activity will appear here." 
+           visible="false" managed="false" 
+           styleClass="empty-state-label"
+           alignment="CENTER"/>
+           
+    <!-- Footer info -->
+    <HBox alignment="CENTER" spacing="10">
+        <Label text="💡 Tip: Live notifications appear in real-time when users add, update, or delete product reviews" 
+               styleClass="info-text"/>
+    </HBox>
+</VBox> 
