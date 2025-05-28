@@ -1,3 +1,18 @@
+// JavaFX Controller: Handles logic for ProductView.fxml
+// Role in MVC: Controller
+// Design Patterns Used:
+// - Strategy Pattern (search filtering via SearchContext)
+// - Singleton Pattern (CartManager, SingletonStore, ProductRegistry)
+// - Factory Pattern (in the commented block - subclass creation)
+// SOLID:
+// SRP - Handles UI logic only
+// OCP - Easily add new search filters (via Strategy)
+// DIP - Depends on abstractions (SearchStrategy)
+//
+// NEXT FLOW:
+// - Calls fetchProductsFromUrl → triggers HTTP GET to Spring REST Controller
+// - Maps response JSON to polymorphic Product model
+
 package com.oss.ossv1.gui.controller;
 
 import java.io.IOException;
@@ -21,8 +36,8 @@ import com.oss.ossv1.gui.model.Grocery;
 import com.oss.ossv1.gui.model.Product;
 import com.oss.ossv1.creational.SingletonStore;
 import com.oss.ossv1.gui.util.ProductRegistry;
-import com.oss.ossv1.creational.ProductFactory; // Added: For creating correct product subclass
-import com.oss.ossv1.creational.ProductFactoryProvider; // Added: Central registry for factories
+//import com.oss.ossv1.creational.ProductFactory; // Added: For creating correct product subclass
+//import com.oss.ossv1.creational.ProductFactoryProvider; // Added: Central registry for factories
 
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -45,6 +60,8 @@ import static com.oss.ossv1.gui.util.TableCellUtils.createCurrencyCell;
 
 public class ProductController {
 
+    // --- FXML-injected fields ---
+    // These are bound to ProductView.fxml
     @FXML private TableView<Product> productTable;
     @FXML private TableColumn<Product, Integer> idColumn;
     @FXML private TableColumn<Product, String> nameColumn;
@@ -73,6 +90,7 @@ public class ProductController {
 
     @FXML
     public void initialize() {
+        // Set table columns and styles
         System.out.println(" ProductController initialized: " + this + " | Hash: " + this.hashCode());
 
         ProductRegistry.clear();
@@ -95,38 +113,9 @@ public class ProductController {
         priceColumn.setCellFactory(col -> createCurrencyCell());
         categoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
 
-        actionColumn.setCellFactory(col -> new TableCell<>() {
-            private final Button addButton = new Button("Add to Cart");
-            private Product boundProduct;
+        setupActionColumn();
 
-            {
-                addButton.getStyleClass().add("add-to-cart-button");
-
-                // This handler never changes — just uses the latest bound product
-                addButton.setOnAction(e -> {
-                    if (boundProduct != null) {
-                        System.out.println(" [CLICK] Add to Cart for: " + boundProduct.getName() + " | ID: " + boundProduct.getId());
-                        CartManager.getInstance().addToCart(boundProduct);
-                        e.consume();
-                    }
-                });
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-
-                int index = getIndex();
-                if (empty || index < 0 || index >= getTableView().getItems().size()) {
-                    boundProduct = null;
-                    setGraphic(null);
-                } else {
-                    boundProduct = getTableView().getItems().get(index);
-                    setGraphic(addButton);
-                }
-            }
-        });
-
+        // Populate category options and attach listener
         categoryCombo.getItems().addAll("all","clothing", "electronics", "grocery");
         categoryCombo.setValue("all");
 
@@ -134,6 +123,7 @@ public class ProductController {
             updateDynamicFilters(newVal);
         });
 
+        // Fetch or load product data
         // If cache is empty, fetch from server once. Else use cached.
         if (SingletonStore.getInstance().getProducts().isEmpty()) {
             fetchProductsFromUrl("http://localhost:8080/products");
@@ -213,7 +203,6 @@ public class ProductController {
 //
 //                SingletonStore.getInstance().setProducts(enrichedList); // Store it into a singleton in-memory cache for reuse.
 //                productTable.setItems(enrichedList); //  Populate table with subclass-rich Product objects.
-//                productTable.setItems(enrichedList); //  Display products
 //                if (!enrichedList.isEmpty()) {
 //                    updateDynamicColumns(enrichedList.get(0).getCategory()); // Adjust columns
 //                    // Dynamically switch UI columns based on the type of product
@@ -477,6 +466,41 @@ public class ProductController {
             expiryCol.setUserData("dynamic");
             productTable.getColumns().add(expiryCol);
         }
+
+        // Ensure actionColumn is last
+        productTable.getColumns().remove(actionColumn); // Remove if exists
+        productTable.getColumns().add(actionColumn);    // Add to the end
+
+    }
+
+    private void setupActionColumn() {
+        actionColumn.setCellFactory(col -> new TableCell<>() {
+            private final Button addButton = new Button("Add to Cart");
+            private Product boundProduct;
+
+            {
+                addButton.getStyleClass().add("add-to-cart-button");
+                addButton.setOnAction(e -> {
+                    if (boundProduct != null) {
+                        CartManager.getInstance().addToCart(boundProduct);
+                        e.consume();
+                    }
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                int index = getIndex();
+                if (empty || index < 0 || index >= getTableView().getItems().size()) {
+                    boundProduct = null;
+                    setGraphic(null);
+                } else {
+                    boundProduct = getTableView().getItems().get(index);
+                    setGraphic(addButton);
+                }
+            }
+        });
     }
 
 }

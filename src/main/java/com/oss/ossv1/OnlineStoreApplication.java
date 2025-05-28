@@ -5,6 +5,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/**
+ * Represents the OnlineStoreApplication class.
+ * Loads the main dashboard view after login.
+ *
+ * Design Pattern: None
+ * SOLID: SRP - launches GUI dashboard only
+ */
 public class OnlineStoreApplication extends Application {
 
     @Override
@@ -18,6 +25,8 @@ public class OnlineStoreApplication extends Application {
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
         primaryStage.show();
+
+        // NEXT FLOW: Loads DashboardController (handles dashboard navigation)
     }
 
     public static void main(String[] args) {

@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!-- JavaFX View: Product Browser UI
+This is the View in MVC — no business logic here
+ Controlled by: ProductController.java
+ Design Pattern: None directly used here
+ SOLID:
+ SRP — Only handles layout
+ OCP — Dynamic filters (e.g., Size, Color, Warranty) are visible conditionally
+-->
+
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
@@ -43,7 +52,8 @@
             <TableColumn fx:id="priceColumn" text="Discounted Price" prefWidth="100"/>
             <TableColumn fx:id="categoryColumn" text="Category" prefWidth="100" />
             <TableColumn fx:id="actionColumn" text="Action" prefWidth="100"/>
-            <!--  No need to hardcode dynamic fields like Size, Color, Warranty, or Expiry here -->
+            <!-- Dynamic fields like Size, Color, Warranty, Expiry are handled programmatically in controller -->
+
         </columns>
     </TableView>
 
@@ -53,3 +63,5 @@
         <Button text="Back to Dashboard" onAction="#handleBackToDashboard"/>
     </HBox>
 </VBox>
+
+<!-- NEXT FLOW: User interaction triggers ProductController.java (onFilterClicked, handleViewCart, etc.) -->

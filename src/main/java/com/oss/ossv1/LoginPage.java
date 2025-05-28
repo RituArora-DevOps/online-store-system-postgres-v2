@@ -6,10 +6,22 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+//import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
  * Represents the LoginPage class.
+ * Entry point for launching the JavaFX GUI and bootstrapping Spring Boot context.
+ *
+ * Initializing the full Spring environment (Bootstrapping context), including:
+ * All @Component, @Service, @Repository, @Controller, and @RestController beans
+ * Dependency Injection container (Spring ApplicationContext)
+ * Configuration files (like application.properties)
+ * Auto-configurations (e.g., JPA, validation, etc.)
+ * Bootstrapping context = "Turning on and wiring up all Spring backend parts before showing the GUI"
+ *
+ * Design Pattern: None directly, but uses SpringApplicationBuilder to launch backend.
+ * SOLID Compliance:
+ * - Single Responsibility Principle: Only handles startup (JavaFX + Spring)
  */
 public class LoginPage extends Application {
 
@@ -24,13 +36,17 @@ public class LoginPage extends Application {
         // Debug check
         try {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            System.out.println("✅ JDBC Driver is on the classpath.");
+            System.out.println("JDBC Driver is on the classpath.");
         } catch (ClassNotFoundException e) {
-            System.err.println("❌ JDBC Driver NOT found on classpath!");
+            System.err.println(" JDBC Driver NOT found on classpath!");
             e.printStackTrace();
         }
 
-        // ✅ Use Spring Boot's context bootstrapping
+        //  Use Spring Boot's context bootstrapping
+        // Make all backend services (e.g., ProductService, UserRepository) available for injection
+        // You manually "bootstrap" the Spring context before loading your GUI,
+        // because you are combining JavaFX (GUI) with Spring Boot (backend + DI).
+        // JavaFX alone doesn't know how to autowire or inject beans
         springContext = new SpringApplicationBuilder(OssV1Application.class)
                 .headless(false) // Important for JavaFX GUI apps
                 .run();
