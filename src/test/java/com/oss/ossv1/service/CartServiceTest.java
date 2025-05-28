@@ -1,18 +1,25 @@
 package com.oss.ossv1.service;
 
-import com.oss.ossv1.data.entity.*;
-import com.oss.ossv1.data.repository.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.when;
+import org.mockito.MockitoAnnotations;
+
+import com.oss.ossv1.data.entity.Cart;
+import com.oss.ossv1.data.entity.CartItem;
+import com.oss.ossv1.data.entity.Product;
+import com.oss.ossv1.data.entity.User;
+import com.oss.ossv1.data.repository.CartRepository;
+import com.oss.ossv1.data.repository.ProductRepository;
 
 public class CartServiceTest {
 
@@ -42,7 +49,12 @@ public class CartServiceTest {
     void testGetOrCreateCart_existingCartReturned() {
         Integer userId = 2;
         Cart existingCart = new Cart();
-        existingCart.setUser(new User(userId, "test", "test@email.com", "hashed"));
+        User user = new User();
+        user.setId(userId);
+        user.setUsername("test");
+        user.setEmail("test@email.com");
+        user.setPasswordHash("hashed");
+        existingCart.setUser(user);
         existingCart.setItems(new ArrayList<>());
         when(cartRepository.findByUserId(userId)).thenReturn(existingCart);
 
@@ -63,7 +75,12 @@ public class CartServiceTest {
         product.setPrice(10.0);
 
         Cart cart = new Cart();
-        cart.setUser(new User(userId, "name", "email", "hash"));
+        User user = new User();
+        user.setId(userId);
+        user.setUsername("name");
+        user.setEmail("email");
+        user.setPasswordHash("hash");
+        cart.setUser(user);
         cart.setItems(new ArrayList<>());
 
         when(cartRepository.findByUserId(userId)).thenReturn(cart);
@@ -90,7 +107,12 @@ public class CartServiceTest {
         item.setQuantity(1);
 
         Cart cart = new Cart();
-        cart.setUser(new User(userId, "user", "mail", "pass"));
+        User user = new User();
+        user.setId(userId);
+        user.setUsername("user");
+        user.setEmail("mail");
+        user.setPasswordHash("pass");
+        cart.setUser(user);
         cart.setItems(new ArrayList<>());
         item.setCart(cart);
         cart.getItems().add(item);
@@ -117,7 +139,12 @@ public class CartServiceTest {
         item.setQuantity(1);
 
         Cart cart = new Cart();
-        cart.setUser(new User(userId, "user", "mail", "pass"));
+        User user = new User();
+        user.setId(userId);
+        user.setUsername("user");
+        user.setEmail("mail");
+        user.setPasswordHash("pass");
+        cart.setUser(user);
         cart.setItems(new ArrayList<>());
         item.setCart(cart);
         cart.getItems().add(item);
@@ -143,7 +170,12 @@ public class CartServiceTest {
         item.setQuantity(1);
 
         Cart cart = new Cart();
-        cart.setUser(new User(userId, "user", "mail", "pass"));
+        User user = new User();
+        user.setId(userId);
+        user.setUsername("user");
+        user.setEmail("mail");
+        user.setPasswordHash("pass");
+        cart.setUser(user);
         cart.setItems(new ArrayList<>());
         item.setCart(cart);
         cart.getItems().add(item);
@@ -168,7 +200,12 @@ public class CartServiceTest {
         item.setQuantity(1);
 
         Cart cart = new Cart();
-        cart.setUser(new User(userId, "user", "mail", "pass"));
+        User user = new User();
+        user.setId(userId);
+        user.setUsername("user");
+        user.setEmail("mail");
+        user.setPasswordHash("pass");
+        cart.setUser(user);
         cart.setItems(new ArrayList<>());
         item.setCart(cart);
         cart.getItems().add(item);
@@ -193,7 +230,12 @@ public class CartServiceTest {
         item.setQuantity(2);
 
         Cart cart = new Cart();
-        cart.setUser(new User(userId, "user", "mail", "pass"));
+        User user = new User();
+        user.setId(userId);
+        user.setUsername("user");
+        user.setEmail("mail");
+        user.setPasswordHash("pass");
+        cart.setUser(user);
         cart.setItems(new ArrayList<>());
         item.setCart(cart);
         cart.getItems().add(item);
