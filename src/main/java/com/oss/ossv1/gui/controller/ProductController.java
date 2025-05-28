@@ -7,6 +7,10 @@ import java.net.URL;
 import java.util.List;
 import java.util.Scanner;
 
+import com.oss.ossv1.behavioral.StrategyPattern.*;
+//import java.time.LocalDate;
+//import java.time.format.DateTimeParseException;
+
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -49,14 +53,20 @@ public class ProductController {
     @FXML private TableColumn<Product, String> categoryColumn;
     @FXML private TableColumn<Product, Void> actionColumn;
 
+    @FXML private TextField sizeField;
+    @FXML private TextField colorField;
+    @FXML private TextField warrantyField;
+    @FXML private TextField expiryDateField;
+    @FXML private TextField searchField;
+
     @FXML private ComboBox<String> categoryCombo;
     @FXML private TextField minPriceField;
     @FXML private TextField maxPriceField;
-    @FXML private Button filterButton;
-    @FXML private Button clearButton;
-    @FXML private String lastSelectedCategory;
-    @FXML private String lastMinPrice;
-    @FXML private String lastMaxPrice;
+//    @FXML private Button filterButton;
+//    @FXML private Button clearButton;
+//    @FXML private String lastSelectedCategory;
+//    @FXML private String lastMinPrice;
+//    @FXML private String lastMaxPrice;
     @FXML private TableColumn<Product, Double> originalPriceColumn;
 
     private boolean actionColumnInitialized = false;
@@ -66,9 +76,9 @@ public class ProductController {
         System.out.println(" ProductController initialized: " + this + " | Hash: " + this.hashCode());
 
         ProductRegistry.clear();
-        lastSelectedCategory = null;
-        lastMinPrice = "";
-        lastMaxPrice = "";
+//        lastSelectedCategory = null;
+//        lastMinPrice = "";
+//        lastMaxPrice = "";
 
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -119,6 +129,10 @@ public class ProductController {
 
         categoryCombo.getItems().addAll("all","clothing", "electronics", "grocery");
         categoryCombo.setValue("all");
+
+        categoryCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
+            updateDynamicFilters(newVal);
+        });
 
         // If cache is empty, fetch from server once. Else use cached.
         if (SingletonStore.getInstance().getProducts().isEmpty()) {
@@ -261,34 +275,121 @@ public class ProductController {
         }
     }
 
+    @FXML
+    private void updateDynamicFilters(String category) {
+        sizeField.setVisible(false);
+        colorField.setVisible(false);
+        warrantyField.setVisible(false);
+        expiryDateField.setVisible(false);
+
+        switch (category.toLowerCase()) {
+            case "clothing" -> {
+                sizeField.setVisible(true);
+                colorField.setVisible(true);
+            }
+            case "electronics" -> warrantyField.setVisible(true);
+            case "grocery" -> expiryDateField.setVisible(true);
+        }
+    }
+
+//    @FXML
+//    public void onFilterClicked() {
+//        lastSelectedCategory = categoryCombo.getValue();
+//        lastMinPrice = minPriceField.getText();
+//        lastMaxPrice = maxPriceField.getText();
+//
+//        String url;
+//        if (lastSelectedCategory != null && !lastSelectedCategory.isEmpty()) {
+//            url = "http://localhost:8080/products/category/" + lastSelectedCategory;
+//        } else if (!lastMinPrice.isEmpty() && !lastMaxPrice.isEmpty()) {
+//            url = "http://localhost:8080/products/price?min=" + lastMinPrice + "&max=" + lastMaxPrice;
+//        } else {
+//
+//            url = "http://localhost:8080/products";
+//        }
+//
+//        fetchProductsFromUrl(url);
+//    }
+
+    // Benefits
+    // Clean separation of concerns: Logic to build strategies is isolated.
+    //Easier to test: Each strategy and builder method can be tested independently.
+    //Scalable: Add new filters by simply adding .withXYZ() methods.
 
     @FXML
     public void onFilterClicked() {
-        lastSelectedCategory = categoryCombo.getValue();
-        lastMinPrice = minPriceField.getText();
-        lastMaxPrice = maxPriceField.getText();
+        // Step 1: Read user input from the UI
+        String selectedCategory = categoryCombo.getValue();
+        String minPriceStr = minPriceField.getText();
+        String maxPriceStr = maxPriceField.getText();
+        String searchKeyword = searchField.getText();
+        String size = sizeField.getText();
+        String color = colorField.getText();
+        String warrantyStr = warrantyField.getText();
+        String expiryStr = expiryDateField.getText();
 
-        String url;
-        if (lastSelectedCategory != null && !lastSelectedCategory.isEmpty()) {
-            url = "http://localhost:8080/products/category/" + lastSelectedCategory;
-        } else if (!lastMinPrice.isEmpty() && !lastMaxPrice.isEmpty()) {
-            url = "http://localhost:8080/products/price?min=" + lastMinPrice + "&max=" + lastMaxPrice;
-        } else {
+        // Step 2: Use builder to create search strategy
+        CompositeSearchStrategy strategy = new SearchCriteriaBuilder()
+                .withCategory(selectedCategory)
+                .withPriceRange(minPriceStr, maxPriceStr)
+                .withKeyword(searchKeyword)
+                .withSize(size)
+                .withColor(color)
+                .withWarranty(warrantyStr)
+                .withExpiryDate(expiryStr)
+                .build();
 
-            url = "http://localhost:8080/products";
+        // Step 3: Apply strategy using context
+        SearchContext context = new SearchContext();
+        context.setStrategy(strategy);
+
+        List<Product> baseProducts = SingletonStore.getInstance().getProducts();
+        List<Product> filtered = context.executeStrategy(baseProducts);
+
+        // Step 4: Display results
+        setProductsToTable(filtered);
+        if (!filtered.isEmpty()) {
+            updateDynamicColumns(filtered.get(0).getCategory());
         }
-
-        fetchProductsFromUrl(url);
     }
+
+
+
+//    @FXML
+//    public void onClearClicked() {
+//        categoryCombo.setValue(lastSelectedCategory);
+//        minPriceField.setText(lastMinPrice);
+//        maxPriceField.setText(lastMaxPrice);
+//
+//        fetchProductsFromUrl("http://localhost:8080/products");
+//    }
+
+
+//    SOLID Principles
+//    SRP: Now the method has one clear job — resetting UI state and displaying all data
+//    DIP: Relies on internal memory store, not backend — improves testability
 
     @FXML
     public void onClearClicked() {
-        categoryCombo.setValue(lastSelectedCategory);
-        minPriceField.setText(lastMinPrice);
-        maxPriceField.setText(lastMaxPrice);
+        // Clear all UI filters
+        categoryCombo.setValue("all");
+        minPriceField.clear();
+        maxPriceField.clear();
+        searchField.clear();
+        sizeField.clear();
+        colorField.clear();
+        warrantyField.clear();
+        expiryDateField.clear();
 
-        fetchProductsFromUrl("http://localhost:8080/products");
+        // Reset table with all cached products
+        List<Product> allProducts = SingletonStore.getInstance().getProducts();
+        setProductsToTable(allProducts);
+
+        if (!allProducts.isEmpty()) {
+            updateDynamicColumns("all");
+        }
     }
+
 
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);

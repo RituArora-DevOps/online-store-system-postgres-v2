@@ -9,13 +9,31 @@
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
     <Label text="Product Listing" style="-fx-font-size: 24px;" />
-    <HBox spacing="10">
-        <ComboBox fx:id="categoryCombo" promptText="Select Category"/>
+
+    <!-- Top Filters -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <ComboBox fx:id="categoryCombo" promptText="Category"/>
         <TextField fx:id="minPriceField" promptText="Min Price"/>
         <TextField fx:id="maxPriceField" promptText="Max Price"/>
+        <TextField fx:id="searchField" promptText="Search by Name"/>
+    </HBox>
+
+    <!-- Category-Specific Filters -->
+    <HBox fx:id="dynamicFiltersBox" spacing="10" alignment="CENTER_LEFT">
+        <TextField fx:id="sizeField" promptText="Size" visible="false"/>
+        <TextField fx:id="colorField" promptText="Color" visible="false"/>
+        <TextField fx:id="warrantyField" promptText="Warranty (months)" visible="false"/>
+        <TextField fx:id="expiryDateField" promptText="Expiry Date (yyyy-mm-dd)" visible="false"/>
+    </HBox>
+
+
+    <!-- Action Buttons -->
+    <HBox spacing="10">
         <Button fx:id="filterButton" text="Filter" onAction="#onFilterClicked"/>
         <Button fx:id="clearButton" text="Clear" onAction="#onClearClicked"/>
     </HBox>
+
+    <!-- TableView -->
     <TableView fx:id="productTable" prefHeight="400" prefWidth="600">
         <columns>
             <TableColumn fx:id="idColumn" text="ID" prefWidth="50" />
@@ -28,6 +46,8 @@
             <!--  No need to hardcode dynamic fields like Size, Color, Warranty, or Expiry here -->
         </columns>
     </TableView>
+
+    <!-- Navigation -->
     <HBox alignment="CENTER" spacing="10">
         <Button text="View Cart" onAction="#handleViewCart"/>
         <Button text="Back to Dashboard" onAction="#handleBackToDashboard"/>
