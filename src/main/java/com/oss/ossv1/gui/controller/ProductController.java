@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Scanner;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -116,14 +117,25 @@ public class ProductController {
             }
         });
 
-        categoryCombo.getItems().addAll("clothing", "electronics", "grocery");
+        categoryCombo.getItems().addAll("all","clothing", "electronics", "grocery");
+        categoryCombo.setValue("all");
 
         // If cache is empty, fetch from server once. Else use cached.
-            if (SingletonStore.getInstance().getProducts().isEmpty()) {
-                fetchProductsFromUrl("http://localhost:8080/products");
-            } else {
-                setProductsToTable(SingletonStore.getInstance().getProducts());
-            }
+        if (SingletonStore.getInstance().getProducts().isEmpty()) {
+            fetchProductsFromUrl("http://localhost:8080/products");
+        } else {
+            setProductsToTable(SingletonStore.getInstance().getProducts());
+        }
+        // Determine if all products are from the same category or mixed
+        List<Product> cached = SingletonStore.getInstance().getProducts();
+        if (!cached.isEmpty()) {
+            long distinctCategories = cached.stream().map(Product::getCategory).distinct().count();
+            String categoryForColumns = (distinctCategories == 1)
+                    ? cached.get(0).getCategory()
+                    : "all";
+            updateDynamicColumns(categoryForColumns);
+        }
+
     }
 
     private void setProductsToTable(List<Product> products) {
@@ -134,6 +146,73 @@ public class ProductController {
         }
         productTable.setItems(observable);
     }
+
+    // using Factory Pattern
+//    private void fetchProductsFromUrl(String urlString) {
+//        try {
+//            URL url = URI.create(urlString).toURL();
+//            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//            connection.setRequestMethod("GET");
+//            connection.setConnectTimeout(5000);
+//
+//            try (Scanner scanner = new Scanner(connection.getInputStream())) {
+//                StringBuilder json = new StringBuilder();
+//                while (scanner.hasNext()) {
+//                    json.append(scanner.nextLine());
+//                }
+//
+//                ObjectMapper mapper = new ObjectMapper();
+//                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // Ignore unknown or extra fields
+//                // We configure Jackson to ignore extra JSON fields so parsing doesn't break even if the backend sends more fields.
+//                List<Product> rawList = mapper.readValue(
+//                        json.toString(),
+//                        new TypeReference<List<Product>>() {}
+//                ); //  Base list
+//                // JSON response is parsed into a list of base Product objects, but these only contain common fields like name, price, id, etc.
+//
+//                ObservableList<Product> enrichedList = FXCollections.observableArrayList();
+//                for (Product base : rawList) {
+//                    // Create the correct subclass instance using Factory pattern
+//                    ProductFactory factory = ProductFactoryProvider.getFactory(base.getCategory()); //  Get correct factory
+//                    Product full = factory.createProduct(); //  Create correct subclass (Clothing, Electronics, etc.)
+//
+//                    // Copy the shared fields from the raw base product into the correct subclass instance.
+//                    full.setId(base.getId());
+//                    full.setName(base.getName());
+//                    full.setDescription(base.getDescription());
+//                    full.setPrice(base.getPrice());
+//                    full.setCategory(base.getCategory());
+//
+//                    // Subclass-specific fields
+//                    if ("clothing".equalsIgnoreCase(base.getCategory()) && base instanceof Clothing source && full instanceof Clothing target) {
+//                        target.setSize(source.getSize());
+//                        target.setColor(source.getColor());
+//                    } else if ("electronics".equalsIgnoreCase(base.getCategory()) && base instanceof Electronics source && full instanceof Electronics target) {
+//                        target.setWarrantyPeriod(source.getWarrantyPeriod());
+//                    } else if ("grocery".equalsIgnoreCase(base.getCategory()) && base instanceof Grocery source && full instanceof Grocery target) {
+//                        target.setExpiryDate(source.getExpiryDate());
+//                    }
+//
+//                    ProductRegistry.register(full); // Cache each object using a registry to avoid duplicates.
+//                    enrichedList.add(ProductRegistry.get(full.getId())); // Then add the correct subclass into the observable list.
+//                }
+//
+//                SingletonStore.getInstance().setProducts(enrichedList); // Store it into a singleton in-memory cache for reuse.
+//                productTable.setItems(enrichedList); //  Populate table with subclass-rich Product objects.
+//                productTable.setItems(enrichedList); //  Display products
+//                if (!enrichedList.isEmpty()) {
+//                    updateDynamicColumns(enrichedList.get(0).getCategory()); // Adjust columns
+//                    // Dynamically switch UI columns based on the type of product
+//                }
+//
+//            }
+//        } catch (IOException e) {
+//            showAlert(Alert.AlertType.ERROR, "Connection Error", "Could not read or connect to the server.");
+//            e.printStackTrace();
+//        }
+
+
+    // Updated fetchProductsFromUrl() (with polymorphic deserialization)
 
     private void fetchProductsFromUrl(String urlString) {
         try {
@@ -149,52 +228,39 @@ public class ProductController {
                 }
 
                 ObjectMapper mapper = new ObjectMapper();
-                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // Ignore unknown or extra fields
-                // We configure Jackson to ignore extra JSON fields so parsing doesn't break even if the backend sends more fields.
-                List<Product> rawList = mapper.readValue(json.toString(), new TypeReference<>() {}); //  Base list
-                // JSON response is parsed into a list of base Product objects, but these only contain common fields like name, price, id, etc.
+                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
+                // Enable LocalDate / Java 8 Time support
+                mapper.registerModule(new JavaTimeModule());
+
+                //  Deserialize into correct subclass (Clothing, Electronics, Grocery)
+                List<Product> fullList = mapper.readValue(
+                        json.toString(),
+                        new TypeReference<List<Product>>() {}
+                );
+
+                //  Register and cache each product
                 ObservableList<Product> enrichedList = FXCollections.observableArrayList();
-                for (Product base : rawList) {
-                    // Create the correct subclass instance using Factory pattern
-                    ProductFactory factory = ProductFactoryProvider.getFactory(base.getCategory()); //  Get correct factory
-                    Product full = factory.createProduct(); //  Create correct subclass (Clothing, Electronics, etc.)
-
-                    // Copy the shared fields from the raw base product into the correct subclass instance.
-                    full.setId(base.getId());
-                    full.setName(base.getName());
-                    full.setDescription(base.getDescription());
-                    full.setPrice(base.getPrice());
-                    full.setCategory(base.getCategory());
-
-                    // Subclass-specific fields
-                    if ("clothing".equalsIgnoreCase(base.getCategory()) && base instanceof Clothing source && full instanceof Clothing target) {
-                        target.setSize(source.getSize());
-                        target.setColor(source.getColor());
-                    } else if ("electronics".equalsIgnoreCase(base.getCategory()) && base instanceof Electronics source && full instanceof Electronics target) {
-                        target.setWarrantyPeriod(source.getWarrantyPeriod());
-                    } else if ("grocery".equalsIgnoreCase(base.getCategory()) && base instanceof Grocery source && full instanceof Grocery target) {
-                        target.setExpiryDate(source.getExpiryDate());
-                    }
-
-                    ProductRegistry.register(full); // Cache each object using a registry to avoid duplicates.
-                    enrichedList.add(ProductRegistry.get(full.getId())); // Then add the correct subclass into the observable list.
+                for (Product p : fullList) {
+                    ProductRegistry.register(p); // avoid duplicates
+                    enrichedList.add(ProductRegistry.get(p.getId()));
                 }
 
-                SingletonStore.getInstance().setProducts(enrichedList); // Store it into a singleton in-memory cache for reuse.
-                productTable.setItems(enrichedList); //  Populate table with subclass-rich Product objects.
-                productTable.setItems(enrichedList); //  Display products
+                //  Store in singleton and update table
+                SingletonStore.getInstance().setProducts(enrichedList);
+                productTable.setItems(enrichedList);
+
                 if (!enrichedList.isEmpty()) {
-                    updateDynamicColumns(enrichedList.get(0).getCategory()); // Adjust columns
-                    // Dynamically switch UI columns based on the type of product
+                    updateDynamicColumns(enrichedList.get(0).getCategory());
                 }
 
             }
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Connection Error", "Could not read or connect to the server.");
+            showAlert(Alert.AlertType.ERROR, "Connection Error", "Could not connect to server.");
             e.printStackTrace();
         }
     }
+
 
     @FXML
     public void onFilterClicked() {
@@ -208,6 +274,7 @@ public class ProductController {
         } else if (!lastMinPrice.isEmpty() && !lastMaxPrice.isEmpty()) {
             url = "http://localhost:8080/products/price?min=" + lastMinPrice + "&max=" + lastMaxPrice;
         } else {
+
             url = "http://localhost:8080/products";
         }
 

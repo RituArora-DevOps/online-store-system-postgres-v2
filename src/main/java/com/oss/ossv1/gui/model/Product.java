@@ -1,9 +1,21 @@
 package com.oss.ossv1.gui.model;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import javafx.beans.property.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type"  // <- this must match the JSON "type" field
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Clothing.class, name = "clothing"),
+        @JsonSubTypes.Type(value = Electronics.class, name = "electronics"),
+        @JsonSubTypes.Type(value = Grocery.class, name = "grocery")
+})
 public class Product {
     private final IntegerProperty id = new SimpleIntegerProperty();
     private final StringProperty name = new SimpleStringProperty();
