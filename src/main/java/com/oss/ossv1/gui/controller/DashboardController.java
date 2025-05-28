@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.oss.ossv1.LoginPage;
 import com.oss.ossv1.behavioral.observer.ReviewObserver;
+import com.oss.ossv1.service.OrderHistory;
 import com.oss.ossv1.service.OrderService;
 import com.oss.ossv1.service.ProductService;
 import com.oss.ossv1.service.ReviewService;
@@ -215,6 +216,7 @@ public class DashboardController implements ReviewObserver {
             // Inject OrderService to ensure order list is loaded
             OrderHistoryController controller = loader.getController();
             controller.setOrderService(LoginPage.springContext.getBean(OrderService.class));
+            controller.setOrderHistory(LoginPage.springContext.getBean(OrderHistory.class)); // Composite integration
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(root);
