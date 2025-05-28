@@ -72,3 +72,15 @@ public class Product {
         return Integer.hashCode(getId());
     }
 }
+
+/*
+| Aspect                  | **Entity Class (`com.oss.ossv1.data.entity`)** | **GUI Model (`com.oss.ossv1.gui.model`)**       |
+| ----------------------- | ---------------------------------------------- | ----------------------------------------------- |
+| **Used in**             | Spring Boot / Backend                          | JavaFX / GUI frontend                           |
+| **Data binding**        |  Not JavaFX-friendly                          |  Uses `StringProperty`, `DoubleProperty`, etc. |
+| **Serialization**       | Jackson/JPA compatible                       |  Not directly serialized by JPA               |
+| **Purpose**             | Persist to MySQL using JPA/Hibernate           | Bind to GUI components like `TableView`         |
+| **Validation**          | Uses `@NotBlank`, `@Min`, etc.               |  Validation is usually not applied here        |
+| **Performance Concern** | Heavier, involves ORM & Hibernate proxies      | Lightweight for UI rendering                    |
+
+ */

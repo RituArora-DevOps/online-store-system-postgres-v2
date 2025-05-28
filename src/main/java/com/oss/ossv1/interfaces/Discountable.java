@@ -7,7 +7,7 @@ package com.oss.ossv1.interfaces;
  * This interface is designed to support individual product discount logic,
  * such as applying a fixed percentage discount or calculating a discounted price.
  *
- *  Current Usage:
+ *  Intended Usage:
  * - This interface is currently **not active** in the main pricing logic.
  * - We are shifting to a **cart-level discount system** using the Adapter Pattern,
  *   which centrally applies discounts to the total cart value.
@@ -21,6 +21,6 @@ package com.oss.ossv1.interfaces;
  * discount layering is clearly defined and tested (e.g., product discount first, then cart).
  */
 public interface Discountable {
-    void applyDiscount(double percent);
+    // void applyDiscount(double percent);
     double getDiscountedPrice(double percent); // new
 }

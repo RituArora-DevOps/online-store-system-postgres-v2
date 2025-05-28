@@ -12,10 +12,29 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+/**
+ Entity: Abstract base class for all product types.
+ * - This is a shared template for Clothing, Electronics, Grocery
+ * - Defines the common fields and behaviors (name, price, category, etc.)
+ *
+ *  Design Patterns:
+ * -  Inheritance Pattern: Used via @Inheritance(strategy = JOINED)
+ * -  Strategy Pattern: via Discountable interface (dynamic discount behavior)
+ * -  Polymorphic Deserialization: @JsonTypeInfo and @JsonSubTypes for correct subclassing during deserialization
+ *
+ *  SOLID Principles:
+ * -  SRP: Only responsible for Product data and shared logic (e.g., discount)
+ * -  OCP: Open for extension via subclassing (Clothing, Electronics, Grocery)
+ * -  LSP: Subtypes can substitute Product without breaking correctness
+ * -  ISP: Only implements relevant interface (`Discountable`)
+ * -  DIP: Higher-level modules depend on abstraction (Product, not subtype directly)
+* Uses Jakarta Bean Validation (e.g., @NotBlank, @Min) for input integrity
+ */
 // SRP (Single Responsibility Principle)
 // This class only represents the core attributes and shared behavior of a product.
 // It does NOT handle persistence, UI, or business logic beyond basic discounting.
 // Good separation of concerns.
+    // @JsonTypeInfo + @JsonSubTypes -	Ensure correct subclass is created during deserialization
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,
@@ -28,13 +47,14 @@ import java.math.RoundingMode;
 })
 @Entity
 @Table(name = "products")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.JOINED) // Ensures each subclass has its own table (Avoids null fields in shared table ); normalized schema
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class Product implements Serializable, Discountable {
 
+    // Unique identifier for each product
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id", nullable = false)
@@ -58,14 +78,18 @@ public abstract class Product implements Serializable, Discountable {
     @Column(name = "category", nullable = false, length = 50)
     private String category;
 
-    @Override
-    public void applyDiscount(double percent) {
-        if (percent < 0 || percent > 100) {
-            throw new IllegalArgumentException("Discount must be between 0 and 100.");
-        }
-        this.price = this.price - (this.price * (percent / 100.0));
-    }
+    // Redundant
+//    @Override
+//    public void applyDiscount(double percent) {
+//        if (percent < 0 || percent > 100) {
+//            throw new IllegalArgumentException("Discount must be between 0 and 100.");
+//        }
+//        this.price = this.price - (this.price * (percent / 100.0));
+//    }
 
+    /**
+     * 🎯 Strategy Pattern: Implementing dynamic discount logic via Discountable interface
+     */
     @Override
     public double getDiscountedPrice(double percent) {
         if (percent < 0 || percent > 100) {
@@ -79,8 +103,14 @@ public abstract class Product implements Serializable, Discountable {
         return bd.doubleValue();
     }
 
+    /**
+     * Abstract method to be implemented by subclasses — allows customization
+     */
     public abstract String displayInfo();
 
+    /**
+     * Proper equals() and hashCode() implementation for data consistency
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
