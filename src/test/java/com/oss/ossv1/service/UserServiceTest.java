@@ -1,15 +1,19 @@
 package com.oss.ossv1.service;
 
-import com.oss.ossv1.data.entity.User;
-import com.oss.ossv1.data.repository.UserRepository;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import com.oss.ossv1.data.entity.User;
+import com.oss.ossv1.data.repository.UserRepository;
 
 /**
  * Unit tests for UserService
@@ -72,7 +76,11 @@ class UserServiceTest {
         String username = "loginUser";
         String rawPassword = "securePass";
         String hashed = new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode(rawPassword);
-        User mockUser = new User(1, username, "email@test.com", hashed);
+        User mockUser = new User();
+        mockUser.setId(1);
+        mockUser.setUsername(username);
+        mockUser.setEmail("email@test.com");
+        mockUser.setPasswordHash(hashed);
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
 
@@ -90,7 +98,11 @@ class UserServiceTest {
         String username = "loginUser";
         String rawPassword = "wrongPass";
         String hashed = new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode("correctPass");
-        User mockUser = new User(1, username, "email@test.com", hashed);
+        User mockUser = new User();
+        mockUser.setId(1);
+        mockUser.setUsername(username);
+        mockUser.setEmail("email@test.com");
+        mockUser.setPasswordHash(hashed);
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
 
