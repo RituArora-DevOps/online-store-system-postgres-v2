@@ -126,9 +126,12 @@ public class ProductController {
 
         // Fetch or load product data
         // If cache is empty, fetch from server once. Else use cached.
+        
         if (SingletonStore.getInstance().getProducts().isEmpty()) {
             fetchProductsFromUrl("http://localhost:8080/products"); // This is the actual call to Spring Boot or delgation point to send the HTTP GET request to the Spring Boot backend
         } else {
+            // Products fetched once are stored in SingletonStore
+            // SingletonStore is like a warehouse storing all products in one big shelf.
             setProductsToTable(SingletonStore.getInstance().getProducts());
         }
         // Determine if all products are from the same category or mixed
@@ -140,14 +143,15 @@ public class ProductController {
                     : "all";
             updateDynamicColumns(categoryForColumns);
         }
-
     }
 
+    // Then, each product is registered individually into ProductRegistry for ID-based use.
+    // ProductRegistry is like a product directory or index, giving you fast access to any product by ID.
     private void setProductsToTable(List<Product> products) {
         ObservableList<Product> observable = FXCollections.observableArrayList();
         for (Product p : products) {
-            ProductRegistry.register(p);
-            observable.add(ProductRegistry.get(p.getId()));
+            ProductRegistry.register(p); // Store product by ID
+            observable.add(ProductRegistry.get(p.getId())); // Add to TableView
         }
         productTable.setItems(observable);
     }
