@@ -304,12 +304,19 @@ public class ProductController {
         }
     }
 
-//    @FXML
+// Filtering Logic Flow
+// Before: UI → Controller → Server URL Logic → DB → Response
+// Filtering Server-side Pros:
+    // Scales for huge data sets
+    // Reduces memory load on client
+
+    //    @FXML
 //    public void onFilterClicked() {
 //        lastSelectedCategory = categoryCombo.getValue();
 //        lastMinPrice = minPriceField.getText();
 //        lastMaxPrice = maxPriceField.getText();
 //
+        // No need to maintain long if-else chain in controller with Strategy Pattern
 //        String url;
 //        if (lastSelectedCategory != null && !lastSelectedCategory.isEmpty()) {
 //            url = "http://localhost:8080/products/category/" + lastSelectedCategory;
@@ -327,7 +334,16 @@ public class ProductController {
     // Clean separation of concerns: Logic to build strategies is isolated.
     //Easier to test: Each strategy and builder method can be tested independently.
     //Scalable: Add new filters by simply adding .withXYZ() methods.
-
+    // After: UI → Controller → Strategy Pattern → In-memory Cache
+    // Client-side Pros:
+        // Instant filtering
+        // No extra HTTP requests
+        // Ideal for smaller, cached datasets
+    // Simplify controller logic
+        // Improve scalability (add filters easily)
+        // Enable local filtering on cached data
+        // Align with SOLID principles
+        // Clean, testable and flexible
     @FXML
     public void onFilterClicked() {
         // Step 1: Read user input from the UI
