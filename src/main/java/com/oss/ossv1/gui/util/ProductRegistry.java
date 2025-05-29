@@ -21,6 +21,7 @@ public class ProductRegistry {
 
     // Static ObservableMap to hold product ID and product object mappings.
     // ObservableMap is used instead of HashMap to support UI bindings if needed.
+    // Compared to List, Map allows quick lookup of product by ID. Better than a list when accessing frequently.
     private static final ObservableMap<Integer, Product> productMap = FXCollections.observableHashMap();
 
     /**
@@ -36,6 +37,8 @@ public class ProductRegistry {
             productMap.put(product.getId(), product);
         }
     }
+    // Assume we have a Product (subclass like Clothing) already created from JSON deserialization
+    // {101 -> Clothing [id=101, name="Plain T-Shirt", size="M", color="Blue", category="clothing"]}
 
     /**
      * Retrieves the product by its ID.
