@@ -157,6 +157,14 @@ public class ProductController {
     }
 
     // using Factory Pattern
+    // The Factory Pattern is a creational design pattern that delegates the instantiation of objects to factory classes.
+    // Purpose:
+    // Encapsulates object creation logic
+    // Promotes Open/Closed Principle
+    // Decouples client code from concrete class constructors
+//  Casting failed: Jackson was deserializing JSON into the base Product class
+// Subclass fields (size, warranty, expiryDate) were null or 0
+
 //    private void fetchProductsFromUrl(String urlString) {
 //        try {
 //            URL url = URI.create(urlString).toURL();
@@ -192,7 +200,7 @@ public class ProductController {
 //                    full.setPrice(base.getPrice());
 //                    full.setCategory(base.getCategory());
 //
-//                    // Subclass-specific fields
+//                    // Subclass-specific fields - manually casting
 //                    if ("clothing".equalsIgnoreCase(base.getCategory()) && base instanceof Clothing source && full instanceof Clothing target) {
 //                        target.setSize(source.getSize());
 //                        target.setColor(source.getColor());
@@ -220,7 +228,7 @@ public class ProductController {
 //        }
 
 
-    // Updated fetchProductsFromUrl() (with polymorphic deserialization)
+    // Updated fetchProductsFromUrl() (with Jackson polymorphic deserialization)
 
     private void fetchProductsFromUrl(String urlString) {
         try {
@@ -242,9 +250,19 @@ public class ProductController {
                 mapper.registerModule(new JavaTimeModule());
 
                 //  Deserialize into correct subclass (Clothing, Electronics, Grocery)
-                List<Product> fullList = mapper.readValue(
+                // JSON → Java object (deserialization) done by Jackson
+                // This automatically created the correct subclass with fields populated
+                List<Product> fullList = mapper.readValue( 
                         json.toString(),
-                        new TypeReference<List<Product>>() {}
+                        new TypeReference<List<Product>>() {} // Java has a limitation called type erasure — it forgets generic types like List<Product> at runtime.
+                         // So we use TypeReference to preserve type information for Jackson.
+                         // You call mapper.readValue(...)
+                         // Jackson:
+                            // Parses the JSON array
+                            // Detects type field on each object
+                            // Constructs the correct subclass (Clothing, Electronics, Grocery)
+                            // Populates its fields using reflection
+                        // Real-world JSON parsing works best when using a proven library like Jackson, especially with complex class hierarchies.
                 );
 
                 //  Register and cache each product
