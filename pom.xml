@@ -156,7 +156,7 @@
                 <version>3.4.5</version>
                 <configuration>
                     <layout>ZIP</layout>
-                    <mainClass>com.oss.ossv1.LoginPage</mainClass>
+                    <mainClass>com.oss.ossv1.OssV1Application</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>

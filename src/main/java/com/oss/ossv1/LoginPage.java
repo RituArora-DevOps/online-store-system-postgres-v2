@@ -1,3 +1,6 @@
+// NOTE: This class is only for local desktop use with JavaFX.
+// It should NOT be used in Docker, which runs only the backend (OssV1Application).
+
 package com.oss.ossv1;
 
 import javafx.application.Application;
@@ -74,9 +77,9 @@ public class LoginPage extends Application {
         primaryStage.show();
     }
 
-/**
- * main method.
- */
+    /**
+     * main method.
+     */
     public static void main(String[] args) {
         launch(args);
     }

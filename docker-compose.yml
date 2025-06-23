@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:15
+    container_name: oss-postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - oss-network
+
+  app:
+    image: oss-app
+    container_name: oss-backend
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - oss-network
+    env_file:
+      - .env
+    volumes:
+      - app-logs:/app/logs
+
+volumes:
+  postgres-data:
+  app-logs:
+
+networks:
+  oss-network:
