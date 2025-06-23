@@ -2,6 +2,7 @@ package com.oss.ossv1;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.validation.annotation.Validated;
 
 
@@ -13,7 +14,8 @@ import org.springframework.validation.annotation.Validated;
  * Design Pattern: None
  * SOLID: SRP - initializes Spring Boot
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.oss.ossv1")
+@EntityScan("com.oss.ossv1.data.entity")
 @Validated // To enable validation globally
 public class OssV1Application {
 

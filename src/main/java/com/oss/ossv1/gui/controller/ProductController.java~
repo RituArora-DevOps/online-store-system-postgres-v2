@@ -252,7 +252,7 @@ public class ProductController {
 
                 //  Deserialize into correct subclass (Clothing, Electronics, Grocery)
                 // JSON → Java object (deserialization) done by Jackson
-                // // This automatically created the correct subclass with fields populated
+                // This automatically created the correct subclass with fields populated
                 List<Product> fullList = mapper.readValue( 
                         json.toString(),
                         new TypeReference<List<Product>>() {} // Java has a limitation called type erasure — it forgets generic types like List<Product> at runtime.
@@ -335,9 +335,7 @@ public class ProductController {
     // Clean separation of concerns: Logic to build strategies is isolated.
     //Easier to test: Each strategy and builder method can be tested independently.
     //Scalable: Add new filters by simply adding .withXYZ() methods.
-
-    // After: UI → Controller → Strategy Pattern → In-memory
-
+    // After: UI → Controller → Strategy Pattern → In-memory Cache
     // Client-side Pros:
         // Instant filtering
         // No extra HTTP requests

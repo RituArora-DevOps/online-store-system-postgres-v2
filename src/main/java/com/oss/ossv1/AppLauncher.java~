@@ -1,0 +1,8 @@
+package com.oss.ossv1;
+
+public class AppLauncher {
+
+    public static void main(String[] args) {
+        LoginPage.main(args);
+    }
+}

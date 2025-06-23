@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*; // server-side validation using Jakarta Bean Validation annotations Hibernate Validator
 
 import lombok.*;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;

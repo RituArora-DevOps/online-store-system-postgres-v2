@@ -1,25 +1,24 @@
 package com.oss.ossv1.config;
 
-import java.util.Optional;
-
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 import com.oss.ossv1.data.entity.User;
 import com.oss.ossv1.data.repository.UserRepository;
-
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Component;
 
-@Configuration
+import java.util.Optional;
+
+@Component
 @RequiredArgsConstructor
-public class UserDataInitializer {
+public class UserDataInitializer implements ApplicationRunner {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    @PostConstruct
-    public void seedUsers() {
+    @Override
+    public void run(ApplicationArguments args) {
         // Check if alice exists and update her admin status
         Optional<User> aliceOpt = userRepository.findByUsername("alice");
         if (aliceOpt.isPresent()) {
@@ -36,7 +35,6 @@ public class UserDataInitializer {
             System.out.println("Created alice as admin user");
         }
 
-        // Create other users if they don't exist
         if (userRepository.findByUsername("bob").isEmpty()) {
             User bob = new User("bob", "bob@example.com", passwordEncoder.encode("bob123"), false);
             userRepository.save(bob);

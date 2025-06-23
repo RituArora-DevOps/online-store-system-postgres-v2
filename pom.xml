@@ -122,6 +122,12 @@
             <version>1.9.2</version> <!-- Or match your JUnit version -->
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.3</version>
+        </dependency>
+
 
     </dependencies>
 
@@ -147,7 +153,10 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.4.5</version>
                 <configuration>
+                    <layout>ZIP</layout>
+                    <mainClass>com.oss.ossv1.LoginPage</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
@@ -156,15 +165,7 @@
                     </excludes>
                 </configuration>
             </plugin>
-            <!--  JavaFX Plugin -->
-            <plugin>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.8</version>
-                <configuration>
-                    <mainClass>com.oss.ossv1.gui.ProductApp</mainClass>
-                </configuration>
-            </plugin>
+
             <!-- Enforce coverage minimum (80%) -->
             <plugin>
                 <groupId>org.jacoco</groupId>

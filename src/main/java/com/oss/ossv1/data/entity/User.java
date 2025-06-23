@@ -36,7 +36,7 @@ public class User {
     @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
 
-    @Column(name = "is_admin", nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(name = "is_admin", nullable = false)
     @JsonProperty("isAdmin")
     private boolean isAdmin = false;
 

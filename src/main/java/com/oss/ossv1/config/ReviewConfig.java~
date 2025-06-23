@@ -11,7 +11,7 @@ import com.oss.ossv1.behavioral.observer.ReviewNotificationManager;
  */
 @Configuration
 public class ReviewConfig {
-
+    
     /**
      * Create a ReviewNotificationManager bean for managing review notifications
      */
@@ -21,4 +21,4 @@ public class ReviewConfig {
         System.out.println("ReviewNotificationManager bean created for Observer pattern");
         return reviewNotificationManager;
     }
-}
+} 

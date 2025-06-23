@@ -19,7 +19,7 @@ public class OnlineStoreApplication extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/DashboardView.fxml"));
         Scene scene = new Scene(loader.load());
         scene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
-        
+
         primaryStage.setTitle("Online Store System - Dashboard");
         primaryStage.setScene(scene);
         primaryStage.setMinWidth(800);
@@ -32,4 +32,4 @@ public class OnlineStoreApplication extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-} 
+}

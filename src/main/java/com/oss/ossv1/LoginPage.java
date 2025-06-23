@@ -34,13 +34,22 @@ public class LoginPage extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         // Debug check
-        try {
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            System.out.println("JDBC Driver is on the classpath.");
-        } catch (ClassNotFoundException e) {
-            System.err.println(" JDBC Driver NOT found on classpath!");
-            e.printStackTrace();
-        }
+//        try {
+//            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+//            System.out.println("JDBC Driver is on the classpath.");
+//        } catch (ClassNotFoundException e) {
+//            System.err.println(" JDBC Driver NOT found on classpath!");
+//            e.printStackTrace();
+//        }
+
+//       // Debug check for PostgreSQL
+//        try {
+//            Class.forName("org.postgresql.Driver");
+//            System.out.println("PostgreSQL JDBC Driver is on the classpath.");
+//        } catch (ClassNotFoundException e) {
+//            System.err.println("PostgreSQL JDBC Driver NOT found on classpath!");
+//            e.printStackTrace();
+//        }
 
         //  Use Spring Boot's context bootstrapping
         // Make all backend services (e.g., ProductService, UserRepository) available for injection

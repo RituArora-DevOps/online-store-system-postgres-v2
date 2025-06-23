@@ -14,7 +14,7 @@ import java.util.List;
  *
  * The Repository Pattern:
  * Abstracts access to the database
- * Allows you to change data sources (MySQL → MongoDB) with minimal impact
+ *** Allows you to change data sources (MySQL → MongoDB) with minimal impact
  * Encourages decoupling between business logic and data access
  *
  * SOLID:
@@ -29,7 +29,7 @@ import java.util.List;
  *
  * You can use them directly in your ProductService or ProductController.
  * Here, JpaRepository<T, ID> is a Spring Data JPA interface
- * that provides built-in CRUD methods so you don’t have to write boilerplate SQL or JPQL.
+ *** that provides built-in CRUD methods so you don’t have to write boilerplate SQL or JPQL.
  */
 @Repository  // This annotation is optional for Spring Data repositories but adds clarity
 public interface ProductRepository extends JpaRepository<Product, Integer> {
